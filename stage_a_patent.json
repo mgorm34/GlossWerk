@@ -1,64 +1,77 @@
 {
-  "experiment": "stage_a_patent_de_en",
-  "date": "2026-03-13",
+  "experiment": "stage_a_patent_de_en_v2",
+  "date": "2026-03-14",
   "model": "google-t5/t5-base",
   "domain": "patent",
   "language_pair": "de-en",
   "training_data": {
     "corpus": "OPUS EuroPat v3",
-    "train_pairs": 75577,
-    "val_pairs": 9447,
-    "test_pairs": 9448
+    "total_available": "19.7M pairs",
+    "note": "Scaled from 75K to larger training set"
   },
   "training": {
     "epochs": 3,
     "precision": "bf16",
-    "loss_start": 7.08,
-    "loss_end": 3.1,
-    "training_time_minutes": 50
+    "batch_size": 16,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": "3e-4"
   },
   "results": {
     "opus_mt_baseline": {
-      "bleu": 47.75,
-      "chrf": 69.23,
-      "test_sentences": 9448
+      "bleu": 47.64,
+      "chrf": 69.12,
+      "test_sentences": 47332
     },
     "deepl_baseline": {
       "bleu": 53.78,
       "chrf": 73.74,
-      "test_sentences": 2450
+      "test_sentences": 2450,
+      "note": "Evaluated on earlier smaller-scale run"
     },
     "opus_mt_plus_ape": {
-      "bleu": 52.77,
-      "chrf": 72.09,
-      "test_sentences": 9448
+      "bleu": 54.35,
+      "chrf": 73.02,
+      "test_sentences": 47332
     },
     "deepl_plus_ape": {
       "bleu": 55.61,
       "chrf": 74.45,
-      "test_sentences": 2450
+      "test_sentences": 2450,
+      "note": "Evaluated on earlier smaller-scale run"
     },
     "improvements": {
       "opus_mt": {
-        "bleu_delta": 5.02,
-        "bleu_pct": 10.5,
-        "chrf_delta": 2.86,
-        "chrf_pct": 4.1
+        "bleu_delta": 6.71,
+        "bleu_pct": 14.1,
+        "chrf_delta": 3.90,
+        "chrf_pct": 5.6
       },
       "deepl": {
         "bleu_delta": 1.83,
         "bleu_pct": 3.4,
         "chrf_delta": 0.71,
-        "chrf_pct": 1.0
+        "chrf_pct": 1.0,
+        "note": "From earlier run; re-evaluation on scaled model pending"
       }
     }
   },
   "model_behavior": {
-    "active_edit_rate": 0.85,
+    "active_edit_rate": 0.90,
+    "edited_sentences": 42499,
+    "total_test_sentences": 47332,
     "correction_types": [
-      "terminology (e.g. quantities → amounts)",
-      "patent formatting (e.g. Figure → FIG.)",
-      "domain-specific compound nouns"
+      "terminology (e.g. square signals → quadrature signals)",
+      "compound nouns (e.g. rest picture → latching recess)",
+      "patent formatting (e.g. Fig. → FIG.)",
+      "syntactic restructuring (e.g. provides for a process → provides a method)"
     ]
+  },
+  "previous_run": {
+    "name": "stage_a_patent_de_en_v1",
+    "opus_mt_bleu": 52.77,
+    "opus_mt_chrf": 72.09,
+    "train_pairs": 75577,
+    "test_pairs": 9448,
+    "note": "v2 improved +1.58 BLEU over v1 from data scaling"
   }
 }
