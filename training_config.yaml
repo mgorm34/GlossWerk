@@ -1,0 +1,44 @@
+# GlossWerk Training Configuration
+# Stage A: opus-mt → human reference (patent domain)
+
+model:
+  name: google-t5/t5-base
+  parameters: 220M
+
+training:
+  precision: bf16  # CRITICAL: fp16 causes NaN divergence on Blackwell
+  batch_size: 16
+  gradient_accumulation_steps: 4
+  effective_batch_size: 64
+  learning_rate: 3e-4
+  epochs: 3
+  warmup_steps: 500
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  optimizer: adafactor
+
+data:
+  source: OPUS EuroPat v3
+  language_pair: de-en
+  quality_filters:
+    min_length: 10
+    max_length: 500
+    min_alpha_ratio: 0.4
+    length_ratio_min: 0.3
+    length_ratio_max: 3.0
+    max_ter: 0.5
+  splits:
+    train: 75577
+    validation: 9447
+    test: 9448
+
+tokenizer:
+  max_source_length: 256
+  max_target_length: 256
+  prefix: "postedit: "
+
+infrastructure:
+  gpu: NVIDIA RTX 5090 (24GB VRAM, Blackwell sm_120)
+  cuda: "12.8 (cu128)"
+  pytorch: "2.12 nightly"
+  training_time: ~50 minutes

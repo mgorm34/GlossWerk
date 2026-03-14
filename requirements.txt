@@ -1,0 +1,11 @@
+torch>=2.12
+transformers>=4.40
+datasets>=2.18
+sentencepiece>=0.2.0
+sacrebleu>=2.4
+pyter3>=0.3
+deepl>=1.17
+sqlite-utils>=3.36
+tqdm>=4.66
+pandas>=2.2
+pyyaml>=6.0

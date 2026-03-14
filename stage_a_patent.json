@@ -1,0 +1,64 @@
+{
+  "experiment": "stage_a_patent_de_en",
+  "date": "2026-03-13",
+  "model": "google-t5/t5-base",
+  "domain": "patent",
+  "language_pair": "de-en",
+  "training_data": {
+    "corpus": "OPUS EuroPat v3",
+    "train_pairs": 75577,
+    "val_pairs": 9447,
+    "test_pairs": 9448
+  },
+  "training": {
+    "epochs": 3,
+    "precision": "bf16",
+    "loss_start": 7.08,
+    "loss_end": 3.1,
+    "training_time_minutes": 50
+  },
+  "results": {
+    "opus_mt_baseline": {
+      "bleu": 47.75,
+      "chrf": 69.23,
+      "test_sentences": 9448
+    },
+    "deepl_baseline": {
+      "bleu": 53.78,
+      "chrf": 73.74,
+      "test_sentences": 2450
+    },
+    "opus_mt_plus_ape": {
+      "bleu": 52.77,
+      "chrf": 72.09,
+      "test_sentences": 9448
+    },
+    "deepl_plus_ape": {
+      "bleu": 55.61,
+      "chrf": 74.45,
+      "test_sentences": 2450
+    },
+    "improvements": {
+      "opus_mt": {
+        "bleu_delta": 5.02,
+        "bleu_pct": 10.5,
+        "chrf_delta": 2.86,
+        "chrf_pct": 4.1
+      },
+      "deepl": {
+        "bleu_delta": 1.83,
+        "bleu_pct": 3.4,
+        "chrf_delta": 0.71,
+        "chrf_pct": 1.0
+      }
+    }
+  },
+  "model_behavior": {
+    "active_edit_rate": 0.85,
+    "correction_types": [
+      "terminology (e.g. quantities → amounts)",
+      "patent formatting (e.g. Figure → FIG.)",
+      "domain-specific compound nouns"
+    ]
+  }
+}
