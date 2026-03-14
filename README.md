@@ -110,4 +110,4 @@ MIT
 
 ## Contact
 
-Matt Gorman — [LinkedIn](https://linkedin.com/in/YOUR_PROFILE) | [Email](mailto:your@email.com)
+Matt Gorman — [LinkedIn](https://www.linkedin.com/in/matthew-gorman-3b251a266/) | [Email](matthewjgorman34@gmail.com)
