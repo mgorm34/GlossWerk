@@ -8,25 +8,31 @@ Current focus: German → English patent translation (EuroPat v3 corpus).
 
 ## Results
 
-Stage A evaluation on 9,448 held-out patent test sentences:
+Stage A evaluation on 47,332 held-out patent test sentences:
 
 | System | BLEU | chrF |
 |---|---|---|
-| opus-mt (baseline) | 47.75 | 69.23 |
+| opus-mt (baseline) | 47.64 | 69.12 |
+| opus-mt + GlossWerk | 54.35 (+6.71) | 73.02 (+3.90) |
+
+DeepL cross-engine evaluation (2,450 sentences, from earlier smaller-scale run):
+
+| System | BLEU | chrF |
+|---|---|---|
 | DeepL (baseline) | 53.78 | 73.74 |
-| opus-mt + GlossWerk | 52.77 (+5.02) | 72.09 (+2.86) |
 | DeepL + GlossWerk | 55.61 (+1.83) | 74.45 (+0.71) |
 
 The model improves DeepL output **despite never seeing DeepL translations during training**. Correction patterns learned from opus-mt errors transfer across MT engines.
 
 ### Example Corrections
 
-| Source (DE) | DeepL Output | GlossWerk Output | Reference |
+| Source (DE) | opus-mt Output | GlossWerk Output | Reference |
 |---|---|---|---|
-| ...wobei die Mengen der einzelnen Komponenten... | ...wherein the quantities of the individual components... | ...wherein the amounts of the individual components... | ...wherein the amounts of the individual components... |
-| ...dargestellt in Figur 3... | ...shown in Figure 3... | ...shown in FIG. 3... | ...shown in FIG. 3... |
+| ...die gewünschten Quadratursignale erzeugen lassen. | ...the desired **square signals** can be generated. | ...the desired **quadrature signals** can be generated. | ...the desired quadrature signals can be obtained. |
+| Die Rastaufnahme 31 besteht aus einer Auflagewand 35... | The **rest picture** 31 consists of a support wall 35... | The **latching recess** 31 consists of a support wall 35... | The latching receptacle 31 includes a bearing wall 35... |
+| Die Düsen können gemäß Fig. | The nozzles can be according to **Fig.** | The nozzles according to **FIG.** | The nozzles can be arranged according to FIG. |
 
-The model actively edits 85% of input sentences, targeting terminology corrections, patent formatting conventions, and domain-specific compound nouns.
+The model actively edits 90% of input sentences, targeting terminology corrections, patent formatting conventions, and domain-specific compound nouns.
 
 ## Architecture
 
@@ -83,7 +89,7 @@ glosswerk/
 | Framework | PyTorch 2.12 nightly (CUDA 12.8 / cu128), HuggingFace Transformers |
 | Base Model | google-t5/t5-base (220M parameters) |
 | Training | bf16 mixed precision, batch_size=16, grad_accum=4, lr=3e-4, 3 epochs |
-| Data | OPUS EuroPat v3 — 19.7M DE-EN pairs, 94K after quality filtering |
+| Data | OPUS EuroPat v3 — 19.7M DE-EN pairs, ~47K test after quality filtering |
 | Training Time | ~50 minutes on RTX 5090 |
 
 ## Technical Notes
@@ -110,4 +116,4 @@ MIT
 
 ## Contact
 
-Matt Gorman — [LinkedIn](https://www.linkedin.com/in/matthew-gorman-3b251a266/) | [Email](matthewjgorman34@gmail.com)
+Matt Gorman — [LinkedIn](https://linkedin.com/in/YOUR_PROFILE) | [Email](mailto:your@email.com)
