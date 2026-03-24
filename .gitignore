@@ -1,5 +1,7 @@
 # Data & models
 data/
+!data/demo_codes.json
+!data/demo_users.json
 models/
 
 # Python

@@ -92,6 +92,10 @@ def validate_code(code):
     """
     Validate an invite code and return status.
 
+    Checks (in order):
+    1. Master code from GLOSSWERK_MASTER_CODE env var (unlimited, no expiry)
+    2. Codes in demo_codes.json (standard limits apply)
+
     Returns:
         dict with:
         - valid: bool
@@ -101,6 +105,19 @@ def validate_code(code):
         - company: str
     """
     code = code.strip().upper()
+
+    # Master code bypass (for testing / admin access)
+    master_code = os.environ.get("GLOSSWERK_MASTER_CODE", "").strip().upper()
+    if master_code and code == master_code:
+        return {
+            "valid": True,
+            "message": "Admin access granted.",
+            "patents_remaining": 999,
+            "days_remaining": 999,
+            "company": "GlossWerk Admin",
+            "email": "",
+        }
+
     codes = _load_json(CODES_FILE)
 
     if code not in codes:
