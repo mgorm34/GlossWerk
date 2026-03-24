@@ -246,10 +246,26 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             max-width: 1200px;
             margin: 0 auto;
+        }
+
+        .features-grid .feature-card:nth-child(4),
+        .features-grid .feature-card:nth-child(5) {
+            max-width: 380px;
+            justify-self: center;
+        }
+
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .features-grid .feature-card:nth-child(4),
+            .features-grid .feature-card:nth-child(5) {
+                max-width: none;
+            }
         }
 
         .feature-card {
@@ -293,7 +309,8 @@
 
         /* Quality Triage Visual */
         .triage-section {
-            margin: 4rem 0;
+            margin: 4rem auto 0;
+            max-width: 1200px;
         }
 
         .triage-title {
@@ -301,6 +318,7 @@
             font-weight: 700;
             margin-bottom: 2rem;
             color: #1f2937;
+            text-align: center;
         }
 
         .triage-demo {
@@ -500,14 +518,55 @@
 
         /* Footer */
         footer {
-            background: #1f2937;
+            background: #1a1a2e;
             color: #d1d5db;
-            padding: 3rem 2rem;
+            padding: 3rem 2rem 2rem;
             text-align: center;
         }
 
+        .footer-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-tagline {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #10b981;
+        }
+
+        .footer-divider {
+            width: 60px;
+            height: 2px;
+            background: #10b981;
+            margin: 0 auto 1.5rem;
+            border-radius: 1px;
+        }
+
         footer p {
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
         }
 
         footer a {
@@ -632,6 +691,11 @@
                 <h3>One-Click Fixes</h3>
                 <p>QE suggestions with highlighted changes. Apply fixes instantly or edit further before confirming.</p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Publication-Ready Export</h3>
+                <p>Export polished .docx files with consistent formatting, confirmed terminology, and full traceability to the source patent.</p>
+            </div>
         </div>
 
         <!-- Quality Triage Demo -->
@@ -699,51 +763,71 @@
                     <input type="email" id="email" name="email" required>
                 </div>
 
+                <div class="form-group">
+                    <label for="role">Your Role</label>
+                    <select id="role" name="role" style="width:100%;padding:0.875rem 1rem;border:1px solid #e5e7eb;border-radius:0.5rem;font-family:'DM Sans',sans-serif;font-size:1rem;background:#fff;color:#1f2937;">
+                        <option value="">Select your role</option>
+                        <option value="Project Manager">Project Manager</option>
+                        <option value="Translator / Post-Editor">Translator / Post-Editor</option>
+                        <option value="Quality Manager">Quality Manager</option>
+                        <option value="Executive / Director">Executive / Director</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="form-submit">Request Access</button>
             </form>
 
             <p class="form-note">
-                Demo includes 5 patent translations. No credit card required.
+                Demo includes 3 patent translations. No credit card required.
             </p>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 GlossWerk</p>
-        <p>Contact: <a href="mailto:hello@glosswerk.de">hello@glosswerk.de</a></p>
+        <div class="footer-brand">GlossWerk</div>
+        <p class="footer-tagline">AI-Powered Patent Translation</p>
+        <div class="footer-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#features">Features</a>
+            <a href="#lsp">For LSPs</a>
+            <a href="#demo">Request Demo</a>
+        </div>
+        <div class="footer-divider"></div>
+        <p>Contact: <a href="mailto:mjg@glosswerk.com">mjg@glosswerk.com</a></p>
+        <p>&copy; 2026 GlossWerk. All rights reserved.</p>
     </footer>
 
     <script>
-        // Handle form submission
+        // Handle form submission via Formspree
         document.getElementById('demo-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const name = document.getElementById('name').value;
-            const company = document.getElementById('company').value;
-            const email = document.getElementById('email').value;
+            const form = e.target;
+            const data = new FormData(form);
+            const submitBtn = form.querySelector('.form-submit');
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
 
-            // POST to placeholder endpoint
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('company', company);
-            formData.append('email', email);
-
-            fetch('/api/demo-request', {
+            fetch('https://formspree.io/f/xwvrgjye', {
                 method: 'POST',
-                body: formData
+                body: data,
+                headers: { 'Accept': 'application/json' }
             })
             .then(response => {
                 if (response.ok) {
-                    alert('Thank you! We\'ll be in touch within 24 hours.');
-                    document.getElementById('demo-form').reset();
+                    form.innerHTML = '<p style="text-align:center;color:#10b981;font-size:1.2rem;padding:2rem 0;">Thank you! We\'ll be in touch within 24 hours.</p>';
                 } else {
-                    alert('Something went wrong. Please try again or email hello@glosswerk.de');
+                    submitBtn.textContent = 'Request Access';
+                    submitBtn.disabled = false;
+                    alert('Something went wrong. Please email mjg@glosswerk.com directly.');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('Something went wrong. Please try again or email hello@glosswerk.de');
+                submitBtn.textContent = 'Request Access';
+                submitBtn.disabled = false;
+                alert('Something went wrong. Please email mjg@glosswerk.com directly.');
             });
         });
     </script>

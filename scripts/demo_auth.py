@@ -8,7 +8,7 @@ Usage:
     Stores data in a local JSON file (demo_users.json).
 
 Demo limits:
-    - 5 patents per invite code
+    - 3 patents per invite code
     - 14-day expiry from first use
     - Per-user daily API spend ceiling ($5)
 """
@@ -22,7 +22,7 @@ from pathlib import Path
 
 
 # --- Config ---
-MAX_PATENTS = 5
+MAX_PATENTS = 3
 EXPIRY_DAYS = 14
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "demo_users.json")
 CODES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "demo_codes.json")
