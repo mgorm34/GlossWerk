@@ -225,6 +225,16 @@ def show_auth_gate():
         else:
             st.session_state.demo_auth = None
 
+    # Try to recover auth from query params (survives session reconnects)
+    query_params = st.query_params
+    if "code" in query_params:
+        saved_code = query_params["code"].strip().upper()
+        result = validate_code(saved_code)
+        if result["valid"]:
+            st.session_state.demo_auth = result
+            st.session_state.demo_code = saved_code
+            return result
+
     # Show login
     st.markdown("""
     <style>
@@ -257,6 +267,7 @@ def show_auth_gate():
                 if result["valid"]:
                     st.session_state.demo_auth = result
                     st.session_state.demo_code = code.strip().upper()
+                    st.query_params["code"] = code.strip().upper()
                     st.rerun()
                 else:
                     st.error(result["message"])
