@@ -195,8 +195,11 @@ Syntactic calque detection (CRITICAL — do not overlook these):
    German often uses morphologically related words in the same sentence (Notfall + Nottracheotomie, Unfall + Unfall-Set) that both map to the same English root. If the translation preserves both as the same English word ("emergency ... emergency tracheotomy"), flag as "minor" for reordering and suggest a rephrasing that avoids the echo.
    BAD: "For the emergency of an emergency tracheotomy" → GOOD: "In the case of an emergency tracheotomy" or "When an emergency tracheotomy must be performed"
 
+CROSS-SEGMENT CONSISTENCY (CRITICAL):
+The same error type must receive the same severity rating regardless of which segment it appears in. If a terminology error (e.g., "Rollbrett" translated as "rolling board" instead of using the glossary term) is "minor" in segment 3, it MUST be "minor" in segment 12 too — unless the second instance has ADDITIONAL errors that trigger escalation. Do not let surrounding sentence quality, sentence length, or structural complexity influence the rating of an individual error type. Rate each error on its own merits first, then apply escalation rules if multiple distinct errors co-occur.
+
 MULTI-FAILURE ESCALATION:
-When a single segment has TWO OR MORE distinct errors (not two instances of the same error type, but genuinely different problems — e.g., a terminology error AND a reordering issue, or an omission AND a calque), escalate to at least "major". If it already qualifies as "major" from any single error, the combination pushes it to "critical". List ALL errors in the explanation, separated by semicolons.
+When a single segment has TWO OR MORE distinct errors (not two instances of the same error type, but genuinely different problems — e.g., a terminology error AND a reordering issue, or an omission AND a calque), escalate to at least "major". If it already qualifies as "major" from any single error, the combination pushes it to "critical". List ALL errors in the explanation, separated by semicolons. When escalating, EXPLICITLY state which errors triggered the escalation (e.g., "Escalated from minor to major: terminology error + reordering calque").
 
 General principle: if a sentence is grammatically correct but reads like it was translated by preserving the German syntactic frame rather than rebuilding for English, it is NOT "good". A publishable patent translation should read as if it were originally drafted in English.
 
@@ -292,10 +295,17 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
 
     user_message = (
         "Evaluate each numbered translation segment below. "
-        "For each segment, return a JSON array with one object per segment:\n\n"
+        "For each segment, return a JSON array with one object per segment.\n\n"
+        "CRITICAL — FIELD ORDER: You MUST write 'analysis' FIRST, then 'rating'. "
+        "This forces you to reason through the issue before committing to a severity level. "
+        "If your analysis concludes the translation is actually acceptable, you MUST rate it 'good' — "
+        "do not leave a 'minor' or 'major' rating that contradicts your own reasoning.\n\n"
         "```json\n"
         "[\n"
-        '  {"index": 1, "rating": "good|minor|major|critical", '
+        '  {"index": 1, '
+        '"analysis": "Think through: is there a real error here? If so, what kind and how severe? '
+        'If an apparent issue is actually standard patent English, say so and rate good.", '
+        '"rating": "good|minor|major|critical", '
         '"error_category": "terminology|reordering|omission|grammar|addition|other|none", '
         '"explanation": "Brief explanation or empty if good", '
         '"suggestion": "Improved translation if rating is not good, otherwise empty string", '
@@ -315,14 +325,16 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
         "or omission + calque), list ALL errors in the explanation separated by semicolons, "
         "and escalate the rating per the MULTI-FAILURE ESCALATION rule.\n\n"
         "Be precise and consistent. Do not be overly generous — "
-        "a translation with awkward word order IS a reordering problem even if meaning is preserved.\n\n"
+        "a translation with awkward word order IS a reordering problem even if meaning is preserved. "
+        "But equally, do NOT flag standard patent English constructions as errors. "
+        "'This object is achieved by' is standard patent phrasing, not a calque.\n\n"
         f"{segments_text}"
     )
 
     try:
         message = client.messages.create(
             model=model,
-            max_tokens=16384,
+            max_tokens=32768,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )

@@ -64,6 +64,13 @@ Lexical redundancy avoidance:
 - German often uses morphologically related words that map to the same English root: Notfall + Nottracheotomie ("emergency" + "emergency tracheotomy"), Unfall-Set + Unfallversorgung ("accident kit" + "accident care"). When both land on the same English word within the same clause, rephrase one of them to avoid the echo. Example: "Für den Notfall einer ... Nottracheotomie" → "In the case of an emergency tracheotomy" or "When an emergency tracheotomy must be performed" — NOT "For the emergency of an emergency tracheotomy".
 - Similarly, avoid stacking the same modifier: "dagger-shaped instrument set" repeated within the same sentence should use a pronoun or short reference on the second mention.
 
+German patent claim preambles ("Bei einem/einer..."):
+- German independent claims often open with "Bei einem [Gegenstand], insbesondere einem [spezifischer Gegenstand], mit [Merkmal], wobei/bei der/bei dem [kennzeichnende Merkmale]...". The "Bei" here introduces the subject of the claim — it does NOT mean "in" or "at" in English.
+- Standard English claim translation: drop "Bei" entirely and use the indefinite article + "comprising/having": "Bei einem Rollbrett, insbesondere einem Skateboard, mit mindestens einer Grundplatte" → "A rolling board, in particular a skateboard, having at least one base plate" — NOT "In a rolling board..." or "For a rolling board..."
+- "bei der/bei dem" within the claim introduces characterizing features: translate as "wherein" or restructure into relative clauses.
+- "mit" in the preamble = "comprising" or "having" (not "with"), per standard patent claim convention.
+- For the genus-species structure ("Rollbrett, insbesondere Skateboard"): preserve the generic term as the genus ("rolling board", "wheeled board", "fastening means") and the specific term as the species ("skateboard", "screw"). Do NOT collapse both to the same English word — this destroys the patent's claim scope.
+
 Complex sentence restructuring:
 - When a German sentence has deeply nested prenominal phrases (extended participial attributes with prepositional modifiers), do NOT mirror the nesting in English. Instead, break out nested modifiers into separate clauses or front them before the main noun phrase. The English reader should not need to mentally backtrack to connect modifiers to their heads.
 - Example: "an den den Schneiden der Scherenblätter abgewandten Aussenseiten des dolchartigen Instrumentariums" → restructure so "that face away from the cutting edges" is clearly a relative clause modifying "outer sides", not buried after intervening phrases."""

@@ -183,14 +183,22 @@ with st.sidebar:
                                         "claude-haiku-4-5-20251001"], index=0)
 
     with st.expander("Advanced", expanded=False):
-        min_adj_freq = st.slider("Min adjective frequency", 1, 10, 2)
-        batch_size_trans = st.slider("Translation batch size", 10, 100, 50)
-        batch_size_qe = st.slider("QE batch size", 5, 40, 15)
-        n_few_shot = st.slider("Few-shot QE examples", 0, 50, 30)
+        st.caption("**Translation batching** — how many sentences to send to the API at once. "
+                   "Larger = faster but uses more memory per call.")
+        batch_size_trans = st.slider("Translation batch size", 10, 100, 50,
+                                     help="Sentences per API call during translation")
+        st.caption("**QE batching** — segments evaluated per API call. "
+                   "Smaller = more granular feedback but slower.")
+        batch_size_qe = st.slider("QE batch size", 5, 40, 15,
+                                   help="Segments per API call during quality estimation")
+        n_few_shot = st.slider("Few-shot QE examples", 0, 50, 30,
+                               help="Number of reference examples for QE calibration")
         training_pairs_path = st.text_input(
             "Training pairs",
             value=os.path.join(PROJECT_ROOT, "data", "hter_training", "training_pairs.jsonl"),
         )
+    # Adjective frequency moved to terminology tab
+    min_adj_freq = 2  # default, overridden in terminology tab
 
     st.divider()
     st.markdown("### Document")
@@ -353,21 +361,39 @@ with tab_terms:
     auto_default = max(2, min(8, round(n_sents / 20)))
     slider_max = max(auto_default + 3, 10)
 
-    st.markdown(f"**Noun frequency threshold** — {n_sents} sentences detected")
-    freq_col, help_col = st.columns([3, 2])
-    with freq_col:
+    st.markdown(f"**Frequency thresholds** — {n_sents} sentences detected")
+    st.caption("Control how many times a term must appear to be included in the scan. "
+               "Lower = more terms (noisier). Higher = only high-frequency core terms.")
+
+    freq_c1, freq_c2, freq_c3 = st.columns(3)
+    with freq_c1:
         min_noun_freq = st.slider(
-            "Min appearances to include a noun", min_value=1,
+            "Nouns", min_value=1,
             max_value=slider_max, value=auto_default,
-            label_visibility="collapsed",
+            help=f"Recommended: {auto_default} for {n_sents} sentences",
         )
-    with help_col:
-        st.caption(
-            f"📏 Recommended: **{auto_default}** for this patent length. "
-            f"Lower = more terms (noisier). Higher = only high-frequency core terms."
+    with freq_c2:
+        min_adj_freq = st.slider(
+            "Adjectives", min_value=1, max_value=10, value=2,
+            help="Technical adjectives with this many occurrences or more",
+        )
+    with freq_c3:
+        min_verb_freq = st.slider(
+            "Verbs", min_value=1, max_value=10, value=2,
+            help="Patent verbs with this many occurrences or more",
         )
 
-    if st.button("Scan & Translate Terminology", type="primary", use_container_width=True):
+    # Show scan button only if scan hasn't been done yet
+    scan_done = st.session_state.get("noun_counts") is not None
+    if scan_done:
+        st.success("Terminology scan complete. Review terms below, then proceed to Translate & QE.")
+        rescan_col, _ = st.columns([1, 3])
+        with rescan_col:
+            rescan = st.button("Re-scan", type="secondary")
+    else:
+        rescan = False
+
+    if (not scan_done and st.button("Scan & Translate Terminology", type="primary", use_container_width=True)) or rescan:
       try:
         progress = st.progress(0, text="Extracting terms...")
 
@@ -405,6 +431,8 @@ with tab_terms:
         progress.progress(0.25, text="Extracting adjectives & verbs...")
         adj_freq, adj_variants = extract_technical_adjectives(sentences, min_freq=min_adj_freq)
         verb_info = extract_patent_verbs(sentences)
+        # Filter verbs by frequency threshold
+        verb_info = {k: v for k, v in verb_info.items() if v.get("frequency", 0) >= min_verb_freq}
 
         st.session_state.noun_counts = noun_counts
         st.session_state.adj_counts = adj_freq
@@ -584,6 +612,14 @@ with tab_terms:
                 with col_avoid:
                     if avoid_val:
                         st.markdown(f"~~{avoid_val}~~")
+                    edit_avoid = st.text_input(
+                        f"avoid_{adj}", value=avoid_val or "",
+                        key=f"adj_avoid_{adj}", label_visibility="collapsed",
+                        placeholder="Add avoid term..."
+                    )
+                    if edit_avoid != (avoid_val or "") and adj in adj_proposals:
+                        adj_proposals[adj]["avoid"] = edit_avoid
+                        st.session_state.adj_proposals[adj]["avoid"] = edit_avoid
 
                 with col_reason:
                     if reasoning:
@@ -676,7 +712,17 @@ with tab_translate:
         st.error("Install anthropic: pip install anthropic")
         st.stop()
 
-    if st.button("Translate & Evaluate", type="primary", use_container_width=True):
+    # Show translate button only if not already done
+    translate_done = st.session_state.get("translations") is not None
+    if translate_done:
+        st.success("Translation & QE complete. Proceed to the Review tab.")
+        retrans_col, _ = st.columns([1, 3])
+        with retrans_col:
+            retranslate = st.button("Re-translate", type="secondary")
+    else:
+        retranslate = False
+
+    if (not translate_done and st.button("Translate & Evaluate", type="primary", use_container_width=True)) or retranslate:
         # Demo mode: check remaining patents
         if DEMO_MODE:
             recheck = validate_code(st.session_state.demo_code)
@@ -814,11 +860,26 @@ with tab_review:
 
     st.progress(pct_confirmed / 100, text=f"**{pct_confirmed}%** confirmed ({n_confirmed}/{total_segs})  ·  {needs_review} segments need review")
 
+    # Show glossary additions made during review
+    review_glossary = st.session_state.get("user_glossary_additions", {})
+    if review_glossary:
+        with st.expander(f"📖 Terms added during review ({len(review_glossary)})", expanded=False):
+            for find_t, replace_t in review_glossary.items():
+                gcol1, gcol2, gcol3 = st.columns([3, 3, 1])
+                with gcol1:
+                    st.text(find_t)
+                with gcol2:
+                    st.text(f"→ {replace_t}")
+                with gcol3:
+                    if st.button("✕", key=f"rm_glos_{find_t}"):
+                        del st.session_state["user_glossary_additions"][find_t]
+                        st.rerun()
+
     # Filter controls
     col_filter, _ = st.columns([4, 1])
     with col_filter:
         view_mode = st.radio(
-            "Show", ["Needs review", "All segments", "Red only", "Confirmed"],
+            "Show", ["All segments", "Needs review", "Red only", "Confirmed"],
             horizontal=True, label_visibility="collapsed",
         )
 
@@ -875,6 +936,40 @@ with tab_review:
                                 st.session_state[f"edit_{idx}"] = clean_suggestion
                                 st.session_state[f"applied_{idx}"] = True
                                 st.rerun()
+
+        # --- Add term & apply across document ---
+        with st.expander("📝 Add term & apply to all", expanded=False):
+            tcol1, tcol2, tcol3 = st.columns([2, 2, 1])
+            with tcol1:
+                find_term = st.text_input("Find (in English)", key=f"find_term_{idx}",
+                                          placeholder="e.g. rolling board")
+            with tcol2:
+                replace_term = st.text_input("Replace with", key=f"replace_term_{idx}",
+                                             placeholder="e.g. skateboard")
+            with tcol3:
+                st.markdown("<br>", unsafe_allow_html=True)  # vertical alignment
+                if st.button("Apply all", key=f"term_apply_{idx}", type="primary"):
+                    if find_term and replace_term and find_term != replace_term:
+                        count = 0
+                        for t in translations:
+                            t_idx = t["index"]
+                            # Get current text (edited or original)
+                            current = st.session_state.get(f"edit_{t_idx}", t.get("translation", ""))
+                            if find_term in current:
+                                new_text = current.replace(find_term, replace_term)
+                                st.session_state[f"edit_{t_idx}"] = new_text
+                                # Also update the underlying translation data
+                                t["translation"] = new_text
+                                # Update confirmed segments too
+                                if t_idx in st.session_state.confirmed:
+                                    st.session_state.confirmed[t_idx] = new_text
+                                count += 1
+                        # Add to session glossary for future use
+                        if "user_glossary_additions" not in st.session_state:
+                            st.session_state["user_glossary_additions"] = {}
+                        st.session_state["user_glossary_additions"][find_term] = replace_term
+                        st.toast(f"Replaced '{find_term}' → '{replace_term}' in {count} segment(s)")
+                        st.rerun()
 
         # --- Side by side ---
         col_de, col_en = st.columns(2)
@@ -1023,9 +1118,34 @@ with tab_export:
             file_name="qe_results.json", mime="application/json",
         )
 
-    if st.session_state.glossary:
+    # Merge scan glossary + review-time additions for export
+    combined_glossary = dict(st.session_state.glossary) if st.session_state.glossary else {}
+    review_additions = st.session_state.get("user_glossary_additions", {})
+    if review_additions:
+        # Review additions use English find→replace, store as-is for reference
+        combined_glossary.update({f"[review] {k}": v for k, v in review_additions.items()})
+
+    if combined_glossary:
         st.divider()
-        glossary_tsv = "\n".join(f"{de}\t{en}" for de, en in sorted(st.session_state.glossary.items()))
+        st.markdown("### Glossary Export")
+        n_scan = len(st.session_state.glossary) if st.session_state.glossary else 0
+        n_review = len(review_additions)
+        st.caption(f"{n_scan} terms from scan · {n_review} terms added during review")
+
+        glossary_tsv_lines = []
+        # Scan terms (DE → EN)
+        if st.session_state.glossary:
+            glossary_tsv_lines.append("# Terms from terminology scan (DE → EN)")
+            for de, en in sorted(st.session_state.glossary.items()):
+                glossary_tsv_lines.append(f"{de}\t{en}")
+        # Review additions (EN find → EN replace)
+        if review_additions:
+            glossary_tsv_lines.append("")
+            glossary_tsv_lines.append("# Terms added during review (find → replace)")
+            for find_t, replace_t in sorted(review_additions.items()):
+                glossary_tsv_lines.append(f"{find_t}\t{replace_t}")
+
+        glossary_tsv = "\n".join(glossary_tsv_lines)
         st.download_button(
             "Glossary (TSV)", data=glossary_tsv,
             file_name="glossary.tsv", mime="text/tab-separated-values",
