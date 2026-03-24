@@ -1,0 +1,26 @@
+{
+  "eval_id": "eval-1-mitral-valve",
+  "prompt": "I have a German patent about a mitral valve stent that I need to translate. Before I start, I want to scan it for terminology and decide on consistent English translations. The file is mitralvalvestent.docx. Extract the terms and give me translation options.",
+  "assertions": [
+    {
+      "id": "extracted_40plus_terms",
+      "description": "Output identifies at least 40 recurring German terms"
+    },
+    {
+      "id": "multiple_translation_options",
+      "description": "Terms have 2-3 English translation options, not just one"
+    },
+    {
+      "id": "frequency_grouping",
+      "description": "Terms are organized by frequency (high/medium/low)"
+    },
+    {
+      "id": "glossary_tsv_produced",
+      "description": "A glossary.tsv file exists with tab-separated de→en pairs"
+    },
+    {
+      "id": "domain_recognition",
+      "description": "Output recognizes this is a cardiac/medical device patent"
+    }
+  ]
+}

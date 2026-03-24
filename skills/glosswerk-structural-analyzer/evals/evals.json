@@ -1,0 +1,23 @@
+{
+  "skill_name": "glosswerk-structural-analyzer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run structural analysis on this German mitral valve stent patent before I translate it. I want to know which sentences will be hardest to get right in English. File: mitralvalvestent.docx",
+      "expected_output": "Produces per-sentence risk scores for all ~137 sentences, identifies the highest-risk sentences with specific structural reasons (clause depth, verb-final spans, participial constructions), generates translation hints for medium/high-risk segments, and provides a summary showing risk distribution.",
+      "files": ["mitralvalvestent.docx"]
+    },
+    {
+      "id": 2,
+      "prompt": "Analyze the structural difficulty of this engineering patent. I want to correlate the risk scores with my HTER ratings. File: test_patent.docx",
+      "expected_output": "Produces per-sentence structural features and risk scores in JSON format suitable for correlation analysis. Includes all six feature dimensions. Longer engineering patent should show more high-risk sentences due to complex technical descriptions.",
+      "files": ["test_patent.docx"]
+    },
+    {
+      "id": 3,
+      "prompt": "I have a German patent I've already scanned for terminology. Now I need the structural analysis before translation. Show me just the high-risk sentences so I know where to focus my review. File: mitralvalvestent.docx",
+      "expected_output": "Runs structural analysis and filters to show only high and medium-risk sentences with their specific risk factors and translation hints. Does not re-run terminology scanning.",
+      "files": ["mitralvalvestent.docx"]
+    }
+  ]
+}

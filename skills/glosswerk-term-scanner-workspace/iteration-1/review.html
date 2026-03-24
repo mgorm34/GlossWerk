@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "glosswerk-term-scanner", "runs": [{"id": "eval-1-mitral-valve-with_skill", "prompt": "I have a German patent about a mitral valve stent that I need to translate. Before I start, I want to scan it for terminology and decide on consistent English translations. The file is mitralvalvestent.docx. Extract the terms and give me translation options.", "eval_id": "eval-1-mitral-valve", "outputs": [{"name": "SUMMARY.md", "type": "text", "content": "# GlossWerk Terminology Scan Summary\n\n## Document Processed\n- **File**: mitralvalvestent.docx\n- **Type**: German patent (mitral valve stent)\n- **Processing Date**: 2026-03-22\n\n## Extraction Results\n\n### Extraction Details\n- **Total paragraphs**: 114\n- **Total sentences**: 137\n- **Extraction method**: Heuristic (capitalization-based German noun detection)\n- **Unique nouns found**: 314\n- **Terms meeting frequency threshold (\u22653)**: 54\n\n### Frequency Distribution\n- **High frequency (18+ occurrences)**: 4 terms\n- **Medium-high frequency (15-17 occurrences)**: 3 terms\n- **Medium frequency (10-14 occurrences)**: 6 terms\n- **Medium-low frequency (6-9 occurrences)**: 10 terms\n- **Lower frequency (4-5 occurrences)**: 11 terms\n- **Lowest frequency (3 occurrences)**: 20 terms\n\n## Key Terminology Findings\n\n### Most Frequent Terms\n1. **Stent** (58x) - Core device term\n2. **Stentb\u00fcgel** (29x) - Stent frame/structure\n3. **Mitralklappenstent** (23x) - Primary device type\n4. **Abschnitt** (18x) - Document sectioning\n\n### Anatomical Terms\nThe document contains standard cardiac anatomy terminology:\n- Mitralklappe, Aortenklappe (valve types)\n- Vorhof, Ventrikel (heart chambers)\n- Annulus, Chordae (valve structures)\n\n### Device-Specific Terms\n- Stentb\u00fcgel (stent frame)\n- Formged\u00e4chtnislegierung (shape memory alloy)\n- Kartusche (delivery cartridge)\n- Verankerungselementen (anchoring elements)\n\n### Figure/Drawing References\nMultiple view-related terms identified:\n- Ansicht, Darstellung (views)\n- Draufsicht, Seitenansicht, Lateral-Ansicht (specific view types)\n- Detailansicht (detail view)\n\n## Deliverables Generated\n\n### 1. mitralvalvestent_candidates.json\nRaw extraction output from the extraction script containing:\n- All 54 terms with frequencies\n- Variant forms (inflected plurals, genitive cases, etc.)\n- Frequency counts grouped by primary form\n\n### 2. term_review.md\nFormatted terminology review document organized by frequency bands:\n- 54 terms with translation options (2-3 per term)\n- Medical/anatomical notes explaining context-dependent choices\n- Instructions for translator review and selection\n- Ready for translator approval workflow\n\n### 3. glossary.tsv\nTab-separated glossary file containing:\n- German term (left column)\n- Recommended English translation (right column)\n- 54 term pairs formatted for downstream translation tools\n- No header row (clean for import)\n\n### 4. translations.json\nComplete translation proposal with:\n- All 54 German terms\n- 2-3 English options per term (ranked by convention)\n- Contextual notes explaining disambiguation where needed\n- Medical device/patent terminology standards applied\n\n## Translation Quality Notes\n\n### Terminology Consistency Opportunities\n1. **Valve terminology**: \"Klappe\" appears in multiple compounds - using unified \"valve\" base ensures consistency\n2. **View references**: 5 different view-related terms all translate to \"view\" - standardizing on this term avoids variation\n3. **Anchoring terms**: Both \"Verankerung\" and \"Befestigung\" relate to attachment - recommended distinctions provided\n4. **Plural forms**: \"Mehrzahl\" and \"Vielzahl\" both express multiplicity - context-appropriate options provided\n\n### High-Risk Terms (Review Recommended)\n- **Kartusche** in medical context - confirmed as \"cartridge\" in device delivery systems\n- **St\u00fctzb\u00fcgel** vs **Stentb\u00fcgel** - both frame types but distinct structures\n- **Darstellung** - requires \"view\" for figures, \"representation\" for technical description\n- **Zustand** - context determines whether \"state,\" \"condition,\" or \"configuration\"\n\n## Next Steps\n\n1. **Translator Review**: Open term_review.md with translator\n2. **Selection**: Translator confirms recommended options or selects alternatives\n3. **Glossary Export**: Approved selections exported to final glossary.tsv\n4. **Translation**: Use glossary.tsv as input to translation workflow for consistency\n\n## Files Location\nAll outputs saved to:\n```\n/sessions/admiring-relaxed-mccarthy/mnt/glosswerk/skills/glosswerk-term-scanner-workspace/iteration-1/eval-1-mitral-valve/with_skill/outputs/\n```\n"}, {"name": "glossary.tsv", "type": "binary", "mime": "text/tab-separated-values", "data_uri": "data:text/tab-separated-values;base64,U3RlbnQJc3RlbnQKU3RlbnRiw7xnZWwJc3RlbnQgZnJhbWUKTWl0cmFsa2xhcHBlbnN0ZW50CW1pdHJhbCB2YWx2ZSBzdGVudApBYnNjaG5pdHQJc2VjdGlvbgpNaXRyYWxrbGFwcGVuc2VnZWwJbWl0cmFsIGxlYWZsZXQKS2xhcHBlCXZhbHZlCktsYXBwZW5zdGVudAl2YWx2ZSBzdGVudApLYXJ0dXNjaGUJY2FydHJpZGdlClp1c3RhbmQJc3RhdGUKSGVyemtsYXBwZW5wcm90aGVzZQljYXJkaWFjIHZhbHZlIHByb3N0aGVzaXMKRXJmaW5kdW5nCWludmVudGlvbgpIZXJ6a2xhcHBlCWNhcmRpYWMgdmFsdmUKTWl0cmFsa2xhcHBlCW1pdHJhbCB2YWx2ZQpBbm51bHVzCWFubnVsdXMKSW1wbGFudGF0aW9uCWltcGxhbnRhdGlvbgpQb3NpdGlvbmllcnVuZwlwb3NpdGlvbmluZwpEYXJzdGVsbHVuZwl2aWV3CkhlcnplbgloZWFydApWb3Job2YJYXRyaXVtCk1laHJ6YWhsCXBsdXJhbGl0eQpGdW5rdGlvbglmdW5jdGlvbgpWZW50cmlrZWwJdmVudHJpY2xlCk3DtmdsaWNoa2VpdAlwb3NzaWJpbGl0eQpBdcOfZW4Jb3V0ZXIKQmVmZXN0aWd1bmcJYXR0YWNobWVudApWZXJhbmtlcnVuZwlhbmNob3JpbmcKQW9ydGVua2xhcHBlCWFvcnRpYyB2YWx2ZQpWZXJhbmtlcnVuZ3NlbGVtZW50ZW4JYW5jaG9yaW5nIGVsZW1lbnRzCsOWc2VuCWxvb3BzCkJlcmVpY2gJcmVnaW9uCkFuc2ljaHQJdmlldwpLYXRoZXRlcgljYXRoZXRlcgpTdMO8dHpiw7xnZWwJc3VwcG9ydCBmcmFtZQpGb3JtZ2Vkw6RjaHRuaXNsZWdpZXJ1bmcJc2hhcGUgbWVtb3J5IGFsbG95ClNlaXRlCXNpZGUKUGxhdHoJc3BhY2UKQW50ZWlsCXBvcnRpb24KV2lua2VsCWFuZ2xlCkNob3JkYWUJY2hvcmRhZQpGaXhhdGlvbglmaXhhdGlvbgpWaWVsemFobAltdWx0aXBsaWNpdHkKU2NobGF1ZmVuCWxvb3BzCkRyYXVmc2ljaHQJdG9wIHZpZXcKSGVyemthbW1lcgljYXJkaWFjIGNoYW1iZXIKU2VobmVuZsOkZGVuCXRlbmRpbm91cyB0aHJlYWRzClplaWNobnVuZ2VuCWRyYXdpbmdzClZlcmjDpGx0bmlzc2UJcHJvcG9ydGlvbnMKS2xhcHBlbnNlZ2VsCXZhbHZlIGxlYWZsZXQKU2VpdGVuYW5zaWNodAlzaWRlIHZpZXcKRGV0YWlsYW5zaWNodAlkZXRhaWwgdmlldwpGZWRlcmVsZW1lbnRlCXNwcmluZyBlbGVtZW50cwpLYXRoZXRlcnN5c3RlbQljYXRoZXRlciBzeXN0ZW0KTGF0ZXJhbC1BbnNpY2h0CWxhdGVyYWwgdmlldwpBYmRpY2h0dW5nc21lbWJyYW4Jc2VhbGluZyBtZW1icmFuZQo="}, {"name": "mitralvalvestent_candidates.json", "type": "text", "content": "{\n  \"source_file\": \"mitralvalvestent.docx\",\n  \"total_sentences\": 137,\n  \"total_candidates\": 54,\n  \"min_frequency\": 3,\n  \"extraction_method\": \"heuristic\",\n  \"terms\": [\n    {\n      \"de\": \"Stent\",\n      \"frequency\": 58,\n      \"variants\": [\n        \"Stents\"\n      ]\n    },\n    {\n      \"de\": \"Stentb\u00fcgel\",\n      \"frequency\": 29,\n      \"variants\": [\n        \"Stentb\u00fcgels\",\n        \"Stentb\u00fcgeln\"\n      ]\n    },\n    {\n      \"de\": \"Mitralklappenstent\",\n      \"frequency\": 23,\n      \"variants\": [\n        \"Mitralklappenstents\"\n      ]\n    },\n    {\n      \"de\": \"Abschnitt\",\n      \"frequency\": 18,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mitralklappensegel\",\n      \"frequency\": 17,\n      \"variants\": [\n        \"Mitralklappensegels\"\n      ]\n    },\n    {\n      \"de\": \"Klappe\",\n      \"frequency\": 16,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Klappenstent\",\n      \"frequency\": 15,\n      \"variants\": [\n        \"Klappenstents\"\n      ]\n    },\n    {\n      \"de\": \"Kartusche\",\n      \"frequency\": 14,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zustand\",\n      \"frequency\": 13,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzklappenprothese\",\n      \"frequency\": 12,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Erfindung\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzklappe\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mitralklappe\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Annulus\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Implantation\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Positionierung\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Darstellung\",\n      \"frequency\": 7,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzen\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Vorhof\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mehrzahl\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Funktion\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ventrikel\",\n      \"frequency\": 6,\n      \"variants\": [\n        \"Ventrikels\"\n      ]\n    },\n    {\n      \"de\": \"M\u00f6glichkeit\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Au\u00dfen\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Befestigung\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verankerung\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Aortenklappe\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verankerungselementen\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"\u00d6sen\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Bereich\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ansicht\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Katheter\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"St\u00fctzb\u00fcgel\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Formged\u00e4chtnislegierung\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Seite\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Platz\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Anteil\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Winkel\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Chordae\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Fixation\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Vielzahl\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Schlaufen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Draufsicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzkammer\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Sehnenf\u00e4den\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zeichnungen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verh\u00e4ltnisse\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Klappensegel\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Seitenansicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Detailansicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Federelemente\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Kathetersystem\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Lateral-Ansicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Abdichtungsmembran\",\n      \"frequency\": 3,\n      \"variants\": []\n    }\n  ]\n}"}, {"name": "term_review.md", "type": "text", "content": "# TERMINOLOGY REVIEW \u2014 mitralvalvestent.docx\n\nFound 54 recurring terms across 137 sentences.\n\n## HIGH FREQUENCY (18+ occurrences)\n\n- **Stent** (58x) \u2192 stent\n- **Stentb\u00fcgel** (29x) \u2192 stent frame | stent strut\n- **Mitralklappenstent** (23x) \u2192 mitral valve stent | mitral stent\n- **Abschnitt** (18x) \u2192 section | segment\n\n## MEDIUM-HIGH FREQUENCY (15-17 occurrences)\n\n- **Mitralklappensegel** (17x) \u2192 mitral leaflet | mitral cusp\n- **Klappe** (16x) \u2192 valve | leaflet\n  *Note: Use \"valve\" for the device, \"leaflet\" when referring to valve anatomy*\n- **Klappenstent** (15x) \u2192 valve stent | stented valve\n\n## MEDIUM FREQUENCY (10-14 occurrences)\n\n- **Kartusche** (14x) \u2192 cartridge | catheter housing | delivery cartridge\n- **Zustand** (13x) \u2192 state | condition | configuration\n- **Herzklappenprothese** (12x) \u2192 cardiac valve prosthesis | heart valve prosthesis\n- **Erfindung** (10x) \u2192 invention\n- **Herzklappe** (10x) \u2192 cardiac valve | heart valve\n- **Mitralklappe** (10x) \u2192 mitral valve\n\n## MEDIUM-LOW FREQUENCY (6-9 occurrences)\n\n- **Annulus** (8x) \u2192 annulus\n  *Note: Anatomical term, typically not translated*\n- **Implantation** (8x) \u2192 implantation\n- **Positionierung** (8x) \u2192 positioning\n- **Darstellung** (7x) \u2192 view | representation | depiction\n  *Note: Usually \"view\" in figure captions*\n- **Herzen** (6x) \u2192 heart\n  *Note: Plural form referring to hearts or cardiac contexts*\n- **Vorhof** (6x) \u2192 atrium\n- **Mehrzahl** (6x) \u2192 plurality | multiplicity\n- **Funktion** (6x) \u2192 function\n- **Ventrikel** (6x) \u2192 ventricle\n- **M\u00f6glichkeit** (6x) \u2192 possibility | option | capability\n\n## LOWER FREQUENCY (4-5 occurrences)\n\n- **Au\u00dfen** (5x) \u2192 outer | external | outside\n- **Befestigung** (5x) \u2192 attachment | fixation | fastening\n- **Verankerung** (5x) \u2192 anchoring | anchorage | fixation\n- **Aortenklappe** (5x) \u2192 aortic valve\n- **Verankerungselementen** (5x) \u2192 anchoring elements | anchor elements\n- **\u00d6sen** (4x) \u2192 loops | eyelets | eyes\n- **Bereich** (4x) \u2192 region | area | zone\n- **Ansicht** (4x) \u2192 view\n- **Katheter** (4x) \u2192 catheter\n- **St\u00fctzb\u00fcgel** (4x) \u2192 support frame | support strut | reinforcement frame\n- **Formged\u00e4chtnislegierung** (4x) \u2192 shape memory alloy\n  *Note: Standard medical device term*\n\n## LOWEST FREQUENCY (3 occurrences)\n\n- **Seite** (3x) \u2192 side | face\n- **Platz** (3x) \u2192 space | room | position\n- **Anteil** (3x) \u2192 portion | part | share\n- **Winkel** (3x) \u2192 angle\n- **Chordae** (3x) \u2192 chordae\n  *Note: Anatomical term (chordae tendinae), often left untranslated*\n- **Fixation** (3x) \u2192 fixation\n- **Vielzahl** (3x) \u2192 multiplicity | plurality | multitude\n- **Schlaufen** (3x) \u2192 loops\n- **Draufsicht** (3x) \u2192 top view | plan view\n- **Herzkammer** (3x) \u2192 cardiac chamber | heart chamber | ventricle\n- **Sehnenf\u00e4den** (3x) \u2192 tendinous threads | chordae tendinae | chordal threads\n- **Zeichnungen** (3x) \u2192 drawings | figures\n- **Verh\u00e4ltnisse** (3x) \u2192 proportions | relationships | ratios\n- **Klappensegel** (3x) \u2192 valve leaflet | valve cusp\n- **Seitenansicht** (3x) \u2192 side view | lateral view\n- **Detailansicht** (3x) \u2192 detail view | enlarged view\n- **Federelemente** (3x) \u2192 spring elements | elastic elements\n- **Kathetersystem** (3x) \u2192 catheter system\n- **Lateral-Ansicht** (3x) \u2192 lateral view | side view\n- **Abdichtungsmembran** (3x) \u2192 sealing membrane | occlusion membrane\n\n---\n\n## Translation Instructions for Reviewer\n\nFor each term, the **first option** is the recommended default translation. Review the list and:\n\n1. **Confirm** the recommended option, or\n2. **Select an alternative** from the provided options, or\n3. **Enter your own** preferred translation\n\nOnce confirmed, your selections will be exported to a glossary file to ensure consistent translation throughout the document.\n\n**Key notes:**\n- Anatomical terms like *Annulus* and *Chordae* are typically preserved in English medical literature\n- Compound nouns (e.g., *Mitralklappenstent*) should always be translated as complete units\n- Technical terms like *Formged\u00e4chtnislegierung* (shape memory alloy) have standard English equivalents in patent literature\n- View references (*Darstellung*, *Ansicht*) in figure captions should consistently use \"view\"\n"}, {"name": "translations.json", "type": "text", "content": "[\n  {\"de\": \"Stent\", \"en\": [\"stent\"], \"note\": \"Standard English medical term, no alternative needed\"},\n  {\"de\": \"Stentb\u00fcgel\", \"en\": [\"stent frame\", \"stent strut\"]},\n  {\"de\": \"Mitralklappenstent\", \"en\": [\"mitral valve stent\", \"mitral stent\"]},\n  {\"de\": \"Abschnitt\", \"en\": [\"section\", \"segment\"]},\n  {\"de\": \"Mitralklappensegel\", \"en\": [\"mitral leaflet\", \"mitral cusp\"]},\n  {\"de\": \"Klappe\", \"en\": [\"valve\", \"leaflet\"], \"note\": \"Valve for the device, leaflet when referring to valve anatomy\"},\n  {\"de\": \"Klappenstent\", \"en\": [\"valve stent\", \"stented valve\"]},\n  {\"de\": \"Kartusche\", \"en\": [\"cartridge\", \"catheter housing\", \"delivery cartridge\"]},\n  {\"de\": \"Zustand\", \"en\": [\"state\", \"condition\", \"configuration\"]},\n  {\"de\": \"Herzklappenprothese\", \"en\": [\"cardiac valve prosthesis\", \"heart valve prosthesis\"]},\n  {\"de\": \"Erfindung\", \"en\": [\"invention\"]},\n  {\"de\": \"Herzklappe\", \"en\": [\"cardiac valve\", \"heart valve\"]},\n  {\"de\": \"Mitralklappe\", \"en\": [\"mitral valve\"]},\n  {\"de\": \"Annulus\", \"en\": [\"annulus\"], \"note\": \"Anatomical term, typically not translated\"},\n  {\"de\": \"Implantation\", \"en\": [\"implantation\"]},\n  {\"de\": \"Positionierung\", \"en\": [\"positioning\"]},\n  {\"de\": \"Darstellung\", \"en\": [\"view\", \"representation\", \"depiction\"], \"note\": \"Usually 'view' in figure captions\"},\n  {\"de\": \"Herzen\", \"en\": [\"heart\"], \"note\": \"Plural form referring to hearts or cardiac\"},\n  {\"de\": \"Vorhof\", \"en\": [\"atrium\"]},\n  {\"de\": \"Mehrzahl\", \"en\": [\"plurality\", \"multiplicity\"]},\n  {\"de\": \"Funktion\", \"en\": [\"function\"]},\n  {\"de\": \"Ventrikel\", \"en\": [\"ventricle\"]},\n  {\"de\": \"M\u00f6glichkeit\", \"en\": [\"possibility\", \"option\", \"capability\"]},\n  {\"de\": \"Au\u00dfen\", \"en\": [\"outer\", \"external\", \"outside\"]},\n  {\"de\": \"Befestigung\", \"en\": [\"attachment\", \"fixation\", \"fastening\"]},\n  {\"de\": \"Verankerung\", \"en\": [\"anchoring\", \"anchorage\", \"fixation\"]},\n  {\"de\": \"Aortenklappe\", \"en\": [\"aortic valve\"]},\n  {\"de\": \"Verankerungselementen\", \"en\": [\"anchoring elements\", \"anchor elements\"]},\n  {\"de\": \"\u00d6sen\", \"en\": [\"loops\", \"eyelets\", \"eyes\"]},\n  {\"de\": \"Bereich\", \"en\": [\"region\", \"area\", \"zone\"]},\n  {\"de\": \"Ansicht\", \"en\": [\"view\"]},\n  {\"de\": \"Katheter\", \"en\": [\"catheter\"]},\n  {\"de\": \"St\u00fctzb\u00fcgel\", \"en\": [\"support frame\", \"support strut\", \"reinforcement frame\"]},\n  {\"de\": \"Formged\u00e4chtnislegierung\", \"en\": [\"shape memory alloy\"], \"note\": \"Standard medical device term\"},\n  {\"de\": \"Seite\", \"en\": [\"side\", \"face\"]},\n  {\"de\": \"Platz\", \"en\": [\"space\", \"room\", \"position\"]},\n  {\"de\": \"Anteil\", \"en\": [\"portion\", \"part\", \"share\"]},\n  {\"de\": \"Winkel\", \"en\": [\"angle\"]},\n  {\"de\": \"Chordae\", \"en\": [\"chordae\"], \"note\": \"Anatomical term (chordae tendinae), often left untranslated\"},\n  {\"de\": \"Fixation\", \"en\": [\"fixation\"]},\n  {\"de\": \"Vielzahl\", \"en\": [\"multiplicity\", \"plurality\", \"multitude\"]},\n  {\"de\": \"Schlaufen\", \"en\": [\"loops\"]},\n  {\"de\": \"Draufsicht\", \"en\": [\"top view\", \"plan view\"]},\n  {\"de\": \"Herzkammer\", \"en\": [\"cardiac chamber\", \"heart chamber\", \"ventricle\"]},\n  {\"de\": \"Sehnenf\u00e4den\", \"en\": [\"tendinous threads\", \"chordae tendinae\", \"chordal threads\"]},\n  {\"de\": \"Zeichnungen\", \"en\": [\"drawings\", \"figures\"]},\n  {\"de\": \"Verh\u00e4ltnisse\", \"en\": [\"proportions\", \"relationships\", \"ratios\"]},\n  {\"de\": \"Klappensegel\", \"en\": [\"valve leaflet\", \"valve cusp\"]},\n  {\"de\": \"Seitenansicht\", \"en\": [\"side view\", \"lateral view\"]},\n  {\"de\": \"Detailansicht\", \"en\": [\"detail view\", \"enlarged view\"]},\n  {\"de\": \"Federelemente\", \"en\": [\"spring elements\", \"elastic elements\"]},\n  {\"de\": \"Kathetersystem\", \"en\": [\"catheter system\"]},\n  {\"de\": \"Lateral-Ansicht\", \"en\": [\"lateral view\", \"side view\"]},\n  {\"de\": \"Abdichtungsmembran\", \"en\": [\"sealing membrane\", \"occlusion membrane\"]}\n]\n"}], "grading": {"run_id": "eval-1-mitral-valve-with_skill", "expectations": [{"text": "extracted_40plus_terms", "passed": true, "evidence": "term_review.md identifies 54 recurring terms across 137 sentences, well exceeding the 40-term threshold"}, {"text": "multiple_translation_options", "passed": true, "evidence": "term_review.md provides 2-3 translation options for most terms (e.g., Stentb\u00fcgel: 'stent frame | stent strut'; Klappe: 'valve | leaflet'; Kartusche: 'cartridge | catheter housing | delivery cartridge')"}, {"text": "frequency_grouping", "passed": true, "evidence": "term_review.md organizes terms by frequency: HIGH FREQUENCY (18+ occurrences), MEDIUM-HIGH (15-17), MEDIUM (10-14), MEDIUM-LOW (6-9), LOWER (4-5), LOWEST (3)"}, {"text": "glossary_tsv_produced", "passed": true, "evidence": "glossary.tsv exists with 54 lines of tab-separated de\u2192en pairs in format: German_term[TAB]English_translation"}, {"text": "domain_recognition", "passed": true, "evidence": "Output explicitly recognizes this as a cardiac/medical device patent with notes about mitral valve stent anatomy, anatomical terms, and medical device terminology"}]}}, {"id": "eval-1-mitral-valve-without_skill", "prompt": "I have a German patent about a mitral valve stent that I need to translate. Before I start, I want to scan it for terminology and decide on consistent English translations. The file is mitralvalvestent.docx. Extract the terms and give me translation options.", "eval_id": "eval-1-mitral-valve", "outputs": [{"name": "glossary.tsv", "type": "binary", "mime": "text/tab-separated-values", "data_uri": "data:text/tab-separated-values;base64,R2VybWFuIFRlcm0JRW5nbGlzaCBUcmFuc2xhdGlvbglDb250ZXh0CU5vdGVzCk1pdHJhbGtsYXBwZW5zdGVudAlNaXRyYWwgdmFsdmUgc3RlbnQJRGV2aWNlCVByaW1hcnkgZGV2aWNlIHRlcm07IGFwcGVhcnMgNDArIHRpbWVzClN0ZW50YsO8Z2VsCVN0ZW50IHN0cnV0CURldmljZSBzdHJ1Y3R1cmUJVXNlICJzdHJ1dCIgZm9yIHRlY2huaWNhbDsgImFybSIgZm9yIGFuYXRvbWljYWwKVmVyYW5rZXJ1bmdzZWxlbWVudGUJQW5jaG9yaW5nIGVsZW1lbnRzCURldmljZSBzdHJ1Y3R1cmUJUHJveGltYWwgZml4YXRpb24gc3RydWN0dXJlcwpLbGFwcGVuc3RlbnQJVmFsdmUgc3RlbnQJRGV2aWNlCUludGVncmF0ZWQgc3RlbnQtdmFsdmUgdW5pdApTdMO8dHpiw7xnZWwJU3VwcG9ydCBzdHJ1dAlEZXZpY2Ugc3RydWN0dXJlCVZhcmlhbnQgb2YgU3RlbnRiw7xnZWwgZm9yIHN1cHBvcnRpdmUgZnVuY3Rpb24KTWl0cmFsa2xhcHBlCU1pdHJhbCB2YWx2ZQlBbmF0b215CVN0YW5kYXJkIHRlcm0KYW50ZXJpb3JlcyBNaXRyYWxrbGFwcGVuc2VnZWwJQW50ZXJpb3IgbWl0cmFsIGxlYWZsZXQJQW5hdG9teQlBTUw7IHN0YW5kYXJkIGFuYXRvbWljYWwgdGVybQpwb3N0ZXJpb3JlcyBNaXRyYWxrbGFwcGVuc2VnZWwJUG9zdGVyaW9yIG1pdHJhbCBsZWFmbGV0CUFuYXRvbXkJUE1MOyBzdGFuZGFyZCBhbmF0b21pY2FsIHRlcm0KTWl0cmFsa2xhcHBlbmFubnVsdXMJTWl0cmFsIGFubnVsdXMJQW5hdG9teQlPciAibWl0cmFsIHZhbHZlIGFubnVsdXMiClNlaG5lbmbDpGRlbglDaG9yZGFlIHRlbmRpbmVhZQlBbmF0b215CUFsc28gImNob3JkYWwgc3RydWN0dXJlcyIgZm9yIGNsaW5pY2FsIGNvbnRleHRzCkNob3JkYWUgdGVuZGluZWFlCUNob3JkYWUgdGVuZGluZWFlCUFuYXRvbXkJTGF0aW4vRW5nbGlzaCBzdGFuZGFyZApQYXBpbGxhcm11c2tlbAlQYXBpbGxhcnkgbXVzY2xlCUFuYXRvbXkJU3RhbmRhcmQgYW5hdG9taWNhbCB0ZXJtCmxpbmtlciBWb3Job2YJTGVmdCBhdHJpdW0JQW5hdG9teQlBYmJyZXZpYXRpb246IExBCmxpbmtlIEhlcnprYW1tZXIJTGVmdCB2ZW50cmljbGUJQW5hdG9teQlBYmJyZXZpYXRpb246IExWCmxpbmtlciBWZW50cmlrZWwJTGVmdCB2ZW50cmljbGUJQW5hdG9teQlBbHRlcm5hdGl2ZSB0byBsaW5rZSBIZXJ6a2FtbWVyCkFvcnRlbmtsYXBwZQlBb3J0aWMgdmFsdmUJQW5hdG9teQlTdGFuZGFyZCB0ZXJtCkF1c2ZsdXNzdHJha3QJT3V0ZmxvdyB0cmFjdAlBbmF0b215CUxlZnQgdmVudHJpY3VsYXIgb3V0ZmxvdyB0cmFjdCAoTFZPVCkgd2hlbiBjb250ZXh0dWFsaXplZApIZXJ6a2xhcHBlbnNrbGVyb3NlCVZhbHZlIHNjbGVyb3NpcwlQYXRob2xvZ3kJQWxzbyAidmFsdmUgY2FsY2lmaWNhdGlvbiIgd2hlbiBtb3JlIHNwZWNpZmljCktsYXBwZXJza2xlcm9zZQlWYWx2ZSBzY2xlcm9zaXMJUGF0aG9sb2d5CVZhcmlhbnQgdGVybWlub2xvZ3kKS2xhcHB2ZXJrYWxrdW5nCVZhbHZlIGNhbGNpZmljYXRpb24JUGF0aG9sb2d5CU1vcmUgc3BlY2lmaWMgdGhhbiBzY2xlcm9zaXMKU2FtLVBow6Rub21lbglTeXN0b2xpYyBBbnRlcmlvciBNb3ZlbWVudAlQYXRob2xvZ3kJT2ZmaWNpYWw6IFNBTTsgR2VybWFuOiBTQU0tUGjDpG5vbWVuClN5c3RvbGljIEFudGVyaW9yIE1vdmVtZW50CVN5c3RvbGljIEFudGVyaW9yIE1vdmVtZW50CVBhdGhvbG9neQlBbHJlYWR5IGluIEVuZ2xpc2g7IFNBTSBhY3JvbnltCkxpbmtzaGVyei1EZWtvbXBlbnNhdGlvbglMZWZ0IGhlYXJ0IGRlY29tcGVuc2F0aW9uCVBhdGhvbG9neQlPciAibGVmdCB2ZW50cmljdWxhciBkZWNvbXBlbnNhdGlvbiIKQmx1dGZsdXNzCUJsb29kIGZsb3cJSGVtb2R5bmFtaWNzCVN0YW5kYXJkIHRlcm0KRHVyY2hmbHVzcwlGbG93IC8gVGhyb3VnaHB1dAlIZW1vZHluYW1pY3MJQ29udGV4dC1kZXBlbmRlbnQgdXNhZ2UKVm9yd8OkcnRzLURyw6RuZ2VuCUZvcndhcmQgZGlzcGxhY2VtZW50CU1lY2hhbmljcwlJbiBjb250ZXh0IG9mIHZhbHZlIGxlYWZsZXQgbW90aW9uCnBlcmt1dGFuZSBJbXBsYW50YXRpb24JUGVyY3V0YW5lb3VzIGltcGxhbnRhdGlvbglQcm9jZWR1cmUJU3RhbmRhcmQgbWVkaWNhbCB0ZXJtCnBlcmt1dGFuCVBlcmN1dGFuZW91c2x5CVByb2NlZHVyZQlBZHZlcmJpYWwgZm9ybQptaW5pbWFsLWludmFzaXYJTWluaW1hbGx5IGludmFzaXZlCVByb2NlZHVyZQlTdGFuZGFyZCBtZWRpY2FsIHRlcm0KTWluaW1hbC1pbnZhc2l2ZSBPcGVyYXRpb24JTWluaW1hbGx5IGludmFzaXZlIHByb2NlZHVyZQlQcm9jZWR1cmUJU3VyZ2ljYWwgY29udGV4dAplbmRvdmFza3Vsw6RyCUVuZG92YXNjdWxhcglQcm9jZWR1cmUJSW50ZXJ2ZW50aW9uYWwvdmFzY3VsYXIgY29udGV4dApLYXRoZXRlcglDYXRoZXRlcglEZXZpY2UJU3RhbmRhcmQgbWVkaWNhbCB0ZXJtCkthdGhldGVyc3lzdGVtCUNhdGhldGVyIHN5c3RlbQlEZXZpY2UJSW50ZWdyYXRlZCBkZWxpdmVyeSBzeXN0ZW0KS2FydHVzY2hlCURlbGl2ZXJ5IGNhcnRyaWRnZQlEZXZpY2UJRGV2aWNlLXNwZWNpZmljIHRlcm0gZm9yIGxvYWRpbmcgY2FydHJpZGdlCkltcGxhbnRhdGlvbglJbXBsYW50YXRpb24JUHJvY2VkdXJlCVN0YW5kYXJkIHRlcm0gKG5vIHRyYW5zbGF0aW9uKQpFbnRmYWx0dW5nCURlcGxveW1lbnQgLyBFeHBhbnNpb24JUHJvY2VkdXJlCVVzZSAiZGVwbG95bWVudCIgKG1lY2hhbmljYWwpOyAiZXhwYW5zaW9uIiAocGh5c2lvbG9naWNhbCkKZW50ZmFsdGVuCVRvIGRlcGxveSAvIFRvIGV4cGFuZAlQcm9jZWR1cmUJVmVyYiBmb3JtIG9mIEVudGZhbHR1bmcKWnVzYW1tZW5mYWx0ZW4JVG8gZm9sZCAvIFRvIGNvbGxhcHNlCVByb2NlZHVyZQlEZXZpY2UgZGVsaXZlcnkgY29udGV4dApGYWx0dW5nCUZvbGRpbmcgLyBDb2xsYXBzaW5nCVByb2NlZHVyZQlOb3VuIGZvcm07IHVzZSAiY29sbGFwc2UiIGluIGRlbGl2ZXJ5IHN5c3RlbXMKRWlucm9sbGVuCVRvIGN1cmwgLyBUbyByb2xsIHVwCVByb2NlZHVyZQlWYWx2ZSBsZWFmbGV0IGFjdGlvbjsgZGVzY3JpYmUgc3BpcmFsaW5nIG1vdGlvbgpFaW5yb2xsdW5nCUN1cmxpbmcgLyBSb2xsaW5nIG1vdGlvbglQcm9jZWR1cmUJTm91biBmb3JtIG9mIEVpbnJvbGxlbgpFaW5wYWNrZW4JVG8gdHVjayAvIFRvIGZvbGQgdW5kZXIJUHJvY2VkdXJlCURlc2NyaWJlcyB2YWx2ZSBsZWFmbGV0IGRpc3BsYWNlbWVudAplaW5rbGFwcGVuCVRvIGZvbGQgLyBUbyB0dWNrCVByb2NlZHVyZQlTaW1pbGFyIG1lYW5pbmcgdG8gRWlucGFja2VuClZlcmFua2VydW5nCUFuY2hvcmluZyAvIEZpeGF0aW9uCVByb2NlZHVyZQlSZWNvbW1lbmQgImFuY2hvcmluZyIgZm9yIG1lY2hhbmlzbQp2ZXJhbmtlcm4JVG8gYW5jaG9yIC8gVG8gZml4CVByb2NlZHVyZQlWZXJiIGZvcm0KVmVyZHLDpG5nZW4JVG8gZGlzcGxhY2UJUHJvY2VkdXJlCVB1c2hpbmcgb2xkIHZhbHZlIG91dCBvZiB0aGUgd2F5Clp1csO8Y2tkcsOkbmdlbglUbyBwdXNoIGJhY2sgLyBUbyByZXRyYWN0CVByb2NlZHVyZQlNb3JlIHNwZWNpZmljIHRoYW4gVmVyZHLDpG5nZW4KQW5oZWZ0ZW4JVG8gc3V0dXJlIC8gVG8gYWZmaXgJUHJvY2VkdXJlCVN1cmdpY2FsIGNvbnRleHQ7IGF0dGFjaGluZyB0byBhbm51bHVzCkhlcmF1c3ppZWhlbglUbyByZXRyYWN0IC8gVG8gd2l0aGRyYXcJUHJvY2VkdXJlCURldmljZSBkZXBsb3ltZW50CkZvcm1nZWTDpGNodG5pc2xlZ2llcnVuZwlTaGFwZSBtZW1vcnkgYWxsb3kJTWF0ZXJpYWwJVGVjaG5pY2FsIHN0YW5kYXJkOyBvZnRlbiBhYmJyZXZpYXRlZCBTTUEKTmlUaU5vbAlOaVRpTm9sCU1hdGVyaWFsCU5pY2tlbC1UaXRhbml1bSBhbGxveTsga2VlcCBhcy1pcwpFbGFzdGl6aXTDpHQJRWxhc3RpY2l0eQlNYXRlcmlhbCBwcm9wZXJ0eQlTdGFuZGFyZCB0ZXJtCmVsYXN0aXNjaAlFbGFzdGljCU1hdGVyaWFsIHByb3BlcnR5CUFkamVjdGl2YWwgZm9ybQpGZWRlcmVsZW1lbnRlCVNwcmluZyBlbGVtZW50cwlDb21wb25lbnQJTWVjaGFuaWNhbCBjb21wb25lbnRzIGZvciBmbGV4aWJpbGl0eQrDlnNlbglFeWVsZXRzIC8gRXllLWxvb3BzCUNvbXBvbmVudAlTbWFsbCBhdHRhY2htZW50IHBvaW50cwpTY2hsYXVmZW4JTG9vcHMgLyBMb29wIGVsZW1lbnRzCUNvbXBvbmVudAlMYXJnZXIgYXR0YWNobWVudCBzdHJ1Y3R1cmVzIHRoYW4gw5ZzZW4Kw7ZzZW5mw7ZybWlnZSBTY2hsYXVmZW4JRXllbGV0LWZvcm1pbmcgbG9vcHMJQ29tcG9uZW50CUNvbWJpbmVkIHN0cnVjdHVyZQpTZWxic3RleHBhbnNpb24JU2VsZi1leHBhbnNpb24JTWVjaGFuaXNtCVN0YW5kYXJkIG1lZGljYWwgZGV2aWNlIHRlcm0Kc2VsYnN0ZXhwYW5kaWVyYmFyCVNlbGYtZXhwYW5kaW5nCU1lY2hhbmlzbQlBZGplY3RpdmFsIGZvcm0KVm9yc3Bhbm51bmcJUmFkaWFsIHByZWxvYWQgLyBQcmVzdHJlc3NpbmcgZm9yY2UJTWVjaGFuaXNtCUNvbnRleHQgb2YgY29tcHJlc3NlZCBkZWxpdmVyeSBzdGF0ZQpzcGlyYWxhcnRpZwlTcGlyYWxpbmcgLyBIZWxpY2FsCU1lY2hhbmlzbQlEZXNjcmliZXMgcm9sbGluZyBtb3Rpb24Kc3BpcmFsZsO2cm1pZwlTcGlyYWwgLyBIZWxpY2FsCU1lY2hhbmlzbQlWYXJpYW50IG9mIHNwaXJhbGFydGlnCk1vemFydGxvY2tlCU1vemFydCBjdXJsCU1lY2hhbmlzbQlJZGlvbWF0aWM7IGRlc2NyaXB0aXZlIG9mIGNvaWxlZCBsZWFmbGV0IGFwcGVhcmFuY2UKQmVmZXN0aWd1bmdzZWxlbWVudGUJQXR0YWNobWVudCBlbGVtZW50cyAvIEZpeGF0aW9uIGVsZW1lbnRzCUNvbXBvbmVudAlHZW5lcmFsIHRlcm0gZm9yIGF0dGFjaG1lbnQgc3RydWN0dXJlcwpBYmRpY2h0dW5nc21lbWJyYW4JU2VhbGluZyBtZW1icmFuZSAvIFNraXJ0CUNvbXBvbmVudAlEZXZpY2UgY29tcG9uZW50IGJldHdlZW4gdmFsdmUgYW5kIHN0ZW50ClZpc3VhbGlzaWVydW5ncy1Lb250cm9sbGUJVmlzdWFsIGd1aWRhbmNlIC8gSW1hZ2UgZ3VpZGFuY2UJUHJvY2VkdXJlCUNsaW5pY2FsIG1vbml0b3JpbmcgY29udGV4dApFY2hvCUVjaG9jYXJkaW9ncmFwaHkJSW1hZ2luZwlTdGFuZGFyZCBFbmdsaXNoIGFiYnJldmlhdGlvbgpOTVIJTk1SIC8gTVJJCUltYWdpbmcJTnVjbGVhciBNYWduZXRpYyBSZXNvbmFuY2UKRmx1b3Jvc2tvcGllCUZsdW9yb3Njb3B5CUltYWdpbmcJU3RhbmRhcmQgdGVybQpDb21wdXRlcnRvbW9ncmFwaGllCUNvbXB1dGVkIHRvbW9ncmFwaHkgLyBDVAlJbWFnaW5nCVN0YW5kYXJkIHRlcm0KQm93ZGVuesO8Z2UJQm93ZGVuIGNhYmxlcwlNZWNoYW5pc20JTWVjaGFuaWNhbCBjb250cm9sIGVsZW1lbnQ7IGtlZXAgYXMgdGVjaG5pY2FsIHRlcm0KQmV0w6R0aWd1bmdzZWxlbWVudGUJQWN0dWF0aW9uIGVsZW1lbnRzIC8gQ29udHJvbCBlbGVtZW50cwlDb21wb25lbnQJTWVjaGFuaXNtcyBmb3IgbW92aW5nIHBhcnRzCmFubnVsw6RyCUFubnVsYXIJUG9zaXRpb24JUmVsYXRpbmcgdG8gdGhlIGFubnVsdXMKc3VwcmF2YWx2dWzDpHIJU3VwcmF2YWx2dWxhcglQb3NpdGlvbglBYm92ZSB0aGUgdmFsdmUgcGxhbmUKYXRyaWFsCUF0cmlhbAlQb3NpdGlvbglSZWxhdGVkIHRvIGF0cml1bQphdHJpYWxlIEFudGVpbAlBdHJpYWwgY29tcG9uZW50CVBvc2l0aW9uCVBvc2l0aW9uaW5nIGRlc2NyaXB0b3IKdmVudHJpa3Vsw6RyCVZlbnRyaWN1bGFyCVBvc2l0aW9uCVJlbGF0ZWQgdG8gdmVudHJpY2xlCnZlbnRyaWt1bGFyCVZlbnRyaWN1bGFyCVBvc2l0aW9uCVZhcmlhbnQgc3BlbGxpbmcKdmVudHJpa3Vsw6RyZSBBbnRlaWwJVmVudHJpY3VsYXIgY29tcG9uZW50CVBvc2l0aW9uCVBvc2l0aW9uaW5nIGRlc2NyaXB0b3IKbWVkaWFsCU1lZGlhbAlQb3NpdGlvbglBbmF0b21pY2FsIGRpcmVjdGlvbiAobm8gdHJhbnNsYXRpb24pCmxhdGVyYWwJTGF0ZXJhbAlQb3NpdGlvbglBbmF0b21pY2FsIGRpcmVjdGlvbiAobm8gdHJhbnNsYXRpb24pCmJhc2FsCUJhc2FsCVBvc2l0aW9uCUFuYXRvbWljYWwgZGlyZWN0aW9uIChubyB0cmFuc2xhdGlvbikKZGlzdGFsCURpc3RhbAlQb3NpdGlvbglBbmF0b21pY2FsIGRpcmVjdGlvbiAobm8gdHJhbnNsYXRpb24pCnByb3hpbWFsCVByb3hpbWFsCVBvc2l0aW9uCUFuYXRvbWljYWwgZGlyZWN0aW9uIChubyB0cmFuc2xhdGlvbikKYW50ZWdyYWQJQW50ZXJvZ3JhZGUJUG9zaXRpb24JRGlyZWN0aW9uIG9mIGRldmljZSBpbnNlcnRpb24KcmV0cm9ncmFkCVJldHJvZ3JhZGUJUG9zaXRpb24JRGlyZWN0aW9uIG9mIGRldmljZSBpbnNlcnRpb247IHJldmVyc2UgZmxvdwpOZW8tQW5udWx1cwlOZW8tYW5udWx1cwlBbmF0b215CUFsdGVyZWQgYW5udWx1cyBjcmVhdGVkIGJ5IHZhbHZlIGludGVyYWN0aW9uClZvcmhvZi1WZW50cmlrZWwtRnVua3Rpb24JQXRyaWFsLXZlbnRyaWN1bGFyIGZ1bmN0aW9uCUFuYXRvbXkJRnVuY3Rpb25hbCByZWxhdGlvbnNoaXAKVmVudHJpa2VsZ2VvbWV0cmllCVZlbnRyaWN1bGFyIGdlb21ldHJ5CUFuYXRvbXkJR2VvbWV0cmljIGNvbmZpZ3VyYXRpb24KVmVudHJpa2VsZnVua3Rpb24JVmVudHJpY3VsYXIgZnVuY3Rpb24JQW5hdG9teQlGdW5jdGlvbmFsIGNhcGFiaWxpdHkKS2xhcHBlbmFudGVpbGUJVmFsdmUgY29tcG9uZW50cyAvIFZhbHZlIHNlZ21lbnRzCUFuYXRvbXkJU3RydWN0dXJhbCBkaXZpc2lvbnMKS2xhcHBlbnNlZ2VsCVZhbHZlIGxlYWZsZXQgLyBWYWx2ZSBjdXNwCUFuYXRvbXkJVXNlICJsZWFmbGV0IiBmb3IgbWl0cmFsIHZhbHZlCktsYXBwZXJmdW5rdGlvbglWYWx2ZSBmdW5jdGlvbglBbmF0b215CUZ1bmN0aW9uYWwgcGVyZm9ybWFuY2UKSGVyem11c2tlbGdld2ViZQlDYXJkaWFjIG11c2NsZSB0aXNzdWUgLyBNeW9jYXJkaWFsIHRpc3N1ZQlBbmF0b215CUhlYXJ0IG11c2NsZQpzbGlkaW5nIHRlY2huaXF1ZQlTbGlkaW5nIHRlY2huaXF1ZQlQcm9jZWR1cmUJQWxyZWFkeSBpbiBFbmdsaXNoOyBhYmlsaXR5IHRvIGFkdmFuY2UvcmV0cmFjdApnb2xkZW5lciBTdGFuZGFyZAlHb2xkIHN0YW5kYXJkCVByb2NlZHVyZQlTdGFuZGFyZCBwcmFjdGljZSByZWZlcmVuY2UKRmVobGZ1bmt0aW9uCU1hbGZ1bmN0aW9uIC8gRHlzZnVuY3Rpb24JUGF0aG9sb2d5CURldmljZSBvciBhbmF0b21pY2FsIGZhaWx1cmUKRmVobGltcGxhbnRhdGlvbglNaXNwbGFjZW1lbnQgLyBNYWxwb3NpdGlvbmluZwlQYXRob2xvZ3kJSW5jb3JyZWN0IGRldmljZSBwbGFjZW1lbnQKYW5ndWxhcmUgQXVzcmljaHR1bmcJQW5ndWxhciBhbGlnbm1lbnQgLyBBbmd1bGFyIG9yaWVudGF0aW9uCVBvc2l0aW9uCVJvdGF0aW9uYWwgcG9zaXRpb25pbmcKZXhha3RlIFBvc2l0aW9uaWVydW5nCVByZWNpc2UgcG9zaXRpb25pbmcgLyBBY2N1cmF0ZSBwb3NpdGlvbmluZwlQcm9jZWR1cmUJRGV2aWNlIHBsYWNlbWVudCBhY2N1cmFjeQpkZWZpbmllcnRlIEVudGZlcm51bmcJRGVmaW5lZCBkaXN0YW5jZSAvIFNwZWNpZmllZCBkaXN0YW5jZQlNZWFzdXJlbWVudAlNZWFzdXJlZCBzcGFjaW5nCg=="}, {"name": "term_review.md", "type": "text", "content": "# German-English Terminology Review\n## Mitral Valve Stent Patent (DE 10 2006 052 564 B3)\n\n### Overview\nThis document catalogs key German medical and technical terminology extracted from a German patent on a collapsible mitral valve stent. The terminology spans cardiology, anatomy, surgical procedures, and device engineering. Recommended English translations prioritize consistency with established medical literature and FDA/international regulatory terminology.\n\n---\n\n## Primary Device and Component Terms\n\n### **Stent Structure**\n- **Mitralklappenstent** \u2192 *Mitral valve stent*\n  - Preferred over \"mitral valve stent prosthesis\" in this context, as the valve is integrated separately\n  - Appears 40+ times; critical for consistency\n\n- **Stentb\u00fcgel** \u2192 *Stent strut* OR *Stent arm*\n  - \"Strut\" is more technical (preferred in engineering contexts)\n  - \"Arm\" is more anatomical (preferred in clinical contexts)\n  - Recommendation: Use **\"stent strut\"** for technical descriptions; reserve \"arm\" for anatomical positioning\n  - Appears with variants: Stentb\u00fcgel, St\u00fctzb\u00fcgel (support strut)\n\n- **Verankerungselemente** \u2192 *Anchoring elements* OR *Anchor hooks*\n  - Used for proximal (atrial) fixation\n  - \"Anchoring elements\" is more neutral; \"anchor hooks\" emphasizes the mechanical function\n  - Recommendation: **\"Anchoring elements\"** for component descriptions\n\n- **Klappenstent** \u2192 *Valve stent* OR *Stented valve*\n  - Compound term referring to integrated stent-valve unit\n  - Recommendation: **\"Valve stent\"** (preserves German word order convention)\n\n---\n\n## Anatomical Components\n\n### **Mitral Valve Anatomy**\n- **Mitralklappe** \u2192 *Mitral valve* (standard)\n\n- **anteriores Mitralklappensegel** / **vorderes Mitralklappensegel** \u2192 *Anterior mitral valve leaflet* OR *Anterior mitral leaflet*\n  - \"Leaflet\" is standard medical terminology\n  - Appears frequently; critical for clarity\n  - Abbreviation in text: AMKS\n\n- **posteriores Mitralklappensegel** / **hinteres Mitralklappensegel** \u2192 *Posterior mitral valve leaflet* OR *Posterior mitral leaflet*\n  - \"Leaflet\" is standard medical terminology\n  - Abbreviation in text: PMKS\n\n- **Mitralklappenannulus** / **Mitralannulus** / **Annulus** \u2192 *Mitral annulus* OR *Mitral valve annulus*\n  - \"Mitral annulus\" is the established international term\n  - Alternative: *Mitral valve ring* (less common in English)\n  - Recommendation: **\"Mitral annulus\"** (consistent with EVAR/endovascular terminology)\n\n- **Sehnenf\u00e4den** / **Chordae tendineae** \u2192 *Chordae tendineae* OR *Chordal structures* OR *Tendinous chords*\n  - Latin term \"Chordae tendineae\" is used in English medical literature\n  - \"Chordal structures\" is more accessible\n  - Recommendation: **\"Chordae tendineae\"** (for technical/anatomical contexts); **\"chordal structures\"** (for clinical descriptions)\n\n- **Papillarmuskel** \u2192 *Papillary muscle*\n  - Standard anatomical term\n  - Variants: anteriorer Papillarmuskel (anterior papillary muscle), posteriorer Papillarmuskel (posterior papillary muscle)\n\n### **Cardiac Chambers and Adjacent Structures**\n- **linker Vorhof** \u2192 *Left atrium*\n  - Abbreviation: LA (used in text)\n\n- **linke Herzkammer** / **linker Ventrikel** \u2192 *Left ventricle*\n  - Abbreviation: LV (used in text)\n\n- **Aortenklappe** \u2192 *Aortic valve*\n  - Standard term\n\n- **Ausflusstrakt** \u2192 *Outflow tract* OR *Left ventricular outflow tract*\n  - Context-dependent: LVOT is common abbreviation in TAVI/interventional cardiology\n\n---\n\n## Pathophysiological and Clinical Concepts\n\n### **Conditions and Complications**\n- **Herzklappensklerose** / **Klappersklerose** \u2192 *Valve sclerosis* OR *Valve calcification*\n  - Patent uses both; \"calcification\" is more clinically specific in this context\n\n- **Klappverkalkung** \u2192 *Valve calcification*\n  - More specific than sclerosis\n\n- **Sam-Ph\u00e4nomen** / **Systolic Anterior Movement** \u2192 *Systolic Anterior Movement (SAM)* OR *SAM phenomenon*\n  - English acronym is standard; keep both German and English designations\n\n- **Linksherz-Dekompensation** \u2192 *Left heart decompensation* OR *Left ventricular decompensation*\n  - More specific: **\"Left ventricular decompensation\"**\n\n### **Hemodynamics**\n- **Blutfluss** / **Durchfluss** \u2192 *Blood flow*\n  - \"Blutfluss\" = blood flow; \"Durchfluss\" = flow/throughput\n\n- **Vorw\u00e4rts-Dr\u00e4ngen** \u2192 *Forward displacement* OR *Forward prolapse*\n  - Context-specific; in this case: \"anterior displacement\" or \"systolic anterior movement\"\n\n---\n\n## Surgical and Procedural Terms\n\n### **Surgical Approach**\n- **perkutane Implantation** / **perkutan** \u2192 *Percutaneous implantation* / *Percutaneously*\n  - Standard medical term\n\n- **minimal-invasiv** / **Minimal-invasive Operation** \u2192 *Minimally invasive* / *Minimally invasive procedure*\n  - Standard terminology\n\n- **endovaskul\u00e4r** \u2192 *Endovascular* OR *Endovasculary*\n  - Standard in interventional radiology\n\n- **Katheter** \u2192 *Catheter*\n  - Also: Kathetersystem (catheter system)\n\n- **Kartusche** \u2192 *Cartridge* OR *Catheter cartridge*\n  - Device-specific term; refers to the loading/delivery cartridge\n  - Recommendation: **\"Delivery cartridge\"** (context in device deployment)\n\n### **Surgical Actions**\n- **Implantation** \u2192 *Implantation* (standard)\n  - Common in patent context\n\n- **Entfaltung** / **entfalten** \u2192 *Deployment* / *To deploy* OR *Expansion* / *To expand*\n  - Mechanical context: **\"deployment\"**\n  - Physiological context: **\"expansion\"**\n\n- **Zusammenfalten** / **Faltung** \u2192 *Folding* / *To fold* OR *Collapsing* / *To collapse*\n  - In delivery context: **\"Collapse\"** is preferred (e.g., \"collapsed state,\" \"to collapse\")\n  - Recommendation: Use **\"collapsed state\"** and **\"to collapse\"** for delivery systems\n\n- **Einrollen** / **Einrollung** \u2192 *Curling* / *To curl* OR *Coiling* / *To coil* OR *Rolling up* / *To roll up*\n  - Patient-specific (curling of the valve leaflet)\n  - Device-specific (rolling mechanism)\n  - Recommendation: **\"To curl\"** / **\"curling\"** for leaflet action; **\"to roll\"** / **\"rolling\"** for mechanical spiraling action\n\n- **Einpacken** / **einklappen** \u2192 *Tucking* / *To tuck* OR *Folding* / *To fold under*\n  - Describes displacement of valve leaflet\n  - Recommendation: **\"Tucking\"** (more surgical terminology)\n\n- **Verankerung** / **verankern** \u2192 *Anchoring* / *To anchor* OR *Fixation* / *To fix*\n  - Recommendation: **\"Anchoring\"** / **\"to anchor\"** (emphasizes the mechanism)\n\n- **Verdr\u00e4ngen** \u2192 *To displace* OR *To push aside*\n  - Context: pushing the old valve leaflet out of the way\n  - Recommendation: **\"Displacement\"** / **\"to displace\"**\n\n- **Zur\u00fcckdr\u00e4ngen** \u2192 *To push back* OR *To retract*\n  - Slightly more specific than \"displace\"\n  - Recommendation: **\"To push back\"** or **\"retracting\"**\n\n- **Anheften** \u2192 *To suture* OR *To affix* OR *To anchor to*\n  - Surgical context referring to attaching valve to annulus\n  - Recommendation: **\"To affix to\"** or **\"to suture to\"**\n\n- **Herausziehen** \u2192 *To retract* / *To withdraw* / *To pull back*\n  - Device deployment context\n  - Recommendation: **\"To retract\"** (most precise in medical context)\n\n---\n\n## Material and Engineering Terms\n\n### **Material Properties**\n- **Formged\u00e4chtnislegierung** \u2192 *Shape memory alloy*\n  - Standard technical term; often abbreviated SMA\n\n- **NiTiNol** \u2192 *NiTiNol* (no translation; keep as is)\n  - Nickel-Titanium alloy\n\n- **Elastizit\u00e4t** / **elastisch** \u2192 *Elasticity* / *Elastic*\n  - Standard term\n\n- **Federelemente** \u2192 *Spring elements* OR *Spring mechanisms*\n  - Mechanical components\n  - Recommendation: **\"Spring elements\"** (preserves the German concept)\n\n- **\u00d6sen** \u2192 *Eyelets* OR *Loops* OR *Eye-loops*\n  - Small attachment points\n  - Recommendation: **\"Eyelets\"** (more precise in mechanical/device context)\n\n- **Schlaufen** \u2192 *Loops* / *Loop elements*\n  - Similar to \u00d6sen but larger\n  - Sometimes combined: \"\u00f6senf\u00f6rmige Schlaufen\" = *eyelet-forming loops* or *loop eyelets*\n\n### **Mechanical Properties and Actions**\n- **Selbstexpansion** / **selbstexpandierbar** \u2192 *Self-expansion* / *Self-expanding*\n  - Standard medical device terminology\n\n- **Vorspannung** \u2192 *Preload* / *Pre-tension* OR *Prestressing*\n  - Context: radial outward force in compressed state\n  - Recommendation: **\"Radial preload\"** or **\"prestressing force\"**\n\n- **spiralartig** / **spiralf\u00f6rmig** \u2192 *Helically* / *Spiral* OR *Spiraling*\n  - Describes the rolling motion\n  - Recommendation: **\"Spiraling outward\"** / **\"to spiral outward\"**\n\n- **Mozartlocke** \u2192 *Mozart curl* (idiomatic; keep as-is with explanation)\n  - Descriptive term for the coiled leaflet appearance\n  - Recommendation: Keep German term with description: *\"Mozart curl (spiraled leaflet configuration)\"*\n\n### **Device Attachment Points**\n- **Befestigungselemente** \u2192 *Attachment elements* OR *Fixation elements*\n  - General term for attachment structures\n  - Recommendation: **\"Attachment elements\"** (broader); **\"fixation elements\"** (more specific for permanent fixation)\n\n- **Abdichtungsmembran** \u2192 *Sealing membrane* OR *Skirt*\n  - Device component between valve and stent\n  - Recommendation: **\"Sealing membrane\"** or **\"skirt\"** (common TAVI term for similar structures)\n\n---\n\n## Visualization and Control Terms\n\n### **Imaging and Guidance**\n- **Visualisierungs-Kontrolle** \u2192 *Visualization control* OR *Visual control* OR *Image guidance*\n  - Clinical context\n  - Recommendation: **\"Visual guidance\"** or **\"Image-guided\"**\n\n- **Echo, NMR, Fluoroskopie, Computertomographie** \u2192 Keep as standard English: *Echocardiography, NMR, Fluoroscopy, Computed tomography*\n\n### **Control Mechanisms**\n- **Bowdenz\u00fcge** \u2192 *Bowden cables* (keep German term with explanation)\n  - Mechanical control element; \"Bowden cable\" is technical term from engineering\n  - Recommendation: *\"Bowden cables (flexible control cables)\"*\n\n- **Bet\u00e4tigungselemente** \u2192 *Actuation elements* / *Control elements* / *Manipulation elements*\n  - General term for mechanisms that move parts\n  - Recommendation: **\"Actuation elements\"** (technical); **\"control elements\"** (clinical)\n\n---\n\n## Positioning and Anatomical Relationships\n\n### **Positioning Concepts**\n- **Annul\u00e4r** / **supravalvul\u00e4r** \u2192 *Annular* / *Supravalvular*\n  - Positional terms\n\n- **atrial** / **atriale Anteil** \u2192 *Atrial* / *Atrial component*\n  - Anatomical positioning\n\n- **ventrikul\u00e4r** / **ventrikular** / **ventrikul\u00e4re Anteil** \u2192 *Ventricular* / *Ventricular component*\n  - Anatomical positioning\n\n- **medial** / **lateral** / **basal** / **distal** / **proximal** \u2192 Keep standard anatomical directions (no translation needed)\n\n- **antegrad** / **retrograd** \u2192 *Anterograde* / *Retrograde*\n  - Directional terms in catheter/device insertion\n\n- **Neo-Annulus** \u2192 *Neo-annulus* (compound; keep as-is)\n  - The altered annulus created by the old valve and new prosthesis interaction\n\n---\n\n## Anatomy-Related Terms (Compound with Valve)\n\n- **Vorhof-Ventrikel-Funktion** \u2192 *Atrial-ventricular function* OR *Atrioventricular function*\n\n- **Ventrikelgeometrie** \u2192 *Ventricular geometry*\n\n- **Ventrikelfunktion** \u2192 *Ventricular function*\n\n- **Klappenanteile** \u2192 *Valve components* / *Valve segments*\n\n- **Klappensegel** \u2192 *Valve leaflet* / *Valve cusp*\n  - In context of mitral valve: **\"leaflet\"** (technical)\n\n- **Klapperfunktion** \u2192 *Valve function*\n\n- **Klappensklerose** \u2192 *Valve sclerosis* / *Valve calcification*\n\n---\n\n## Key Phrases and Compound Terms\n\n### **Critical Concept: SAM Prevention**\n- **\"Systolic Anterior Movement\"** (SAM-Ph\u00e4nomen)\n  - In German text: Often called \"Sam-Ph\u00e4nomen\"\n  - Recommendation: Consistently use *\"Systolic Anterior Movement (SAM)\"* as official term with German abbreviation in parentheses where needed\n\n### **Surgical Technique Reference**\n- **\"sliding technique\"** (mentioned in text)\n  - Keep English term; refers to the ability to advance/retract the stent to optimize position\n  - German: *\"Sliding technique\"* (already in English in the original)\n\n---\n\n## Summary of Translation Decisions\n\n| German Term | Recommended English | Rationale |\n|---|---|---|\n| Mitralklappenstent | Mitral valve stent | Standard international term |\n| Stentb\u00fcgel | Stent strut | Technical precision in device context |\n| Verankerungselemente | Anchoring elements | Neutral, mechanism-focused |\n| Klappensegel | Valve leaflet | Anatomical standard |\n| Annulus | Mitral annulus | Established medical term |\n| Sehnenf\u00e4den | Chordae tendineae | Latin/English anatomical standard |\n| Entfaltung | Deployment/Expansion | Context-dependent |\n| Einrollen | Curling/Spiraling | Descriptive of leaflet motion |\n| Formged\u00e4chtnislegierung | Shape memory alloy | Technical standard |\n| Kartusche | Delivery cartridge | Device-specific |\n| Abdichtungsmembran | Sealing membrane | Functional description |\n| perkutan | Percutaneous | Medical standard |\n| minimal-invasiv | Minimally invasive | Medical standard |\n| Bowdenz\u00fcge | Bowden cables | Engineering term |\n| antegrad | Anterograde | Directional standard |\n| retrograd | Retrograde | Directional standard |\n\n---\n\n## Notes for Translator\n\n1. **Consistency is critical**: The terms \"Mitralklappenstent,\" \"Stentb\u00fcgel,\" and \"Verankerungselemente\" appear throughout. Maintain consistent translations.\n\n2. **Technical vs. Clinical**: This patent balances technical device engineering with clinical application. Use more technical terminology in device descriptions (sections describing structure) and more clinical terminology in procedure sections.\n\n3. **Compound Terms**: German frequently uses compound terms (e.g., \"Mitralklappensegel\"). English translations should preserve the semantic relationship (e.g., \"anterior mitral leaflet\" not \"anterior valve leaflet\").\n\n4. **Anatomical Directions**: Proximal/distal, anterior/posterior, atrial/ventricular, lateral/medial are absolute and should not be translated\u2014they describe anatomical relationships.\n\n5. **Abbreviations**: Watch for in-text abbreviations (AMKS, PMKS, LA, LV, CT, SAM). Maintain parallel abbreviations in English translation (AMKS\u2192AML for Anterior Mitral Leaflet, if desired, but original abbreviations are language-neutral).\n\n6. **Latin Terms**: The document uses both German and Latin terms (Chordae tendineae). In English, the Latin term is preferred in technical contexts.\n\n7. **Device Behavior**: Terms like \"einrollen\" describe a specific mechanical behavior. The spiraling/curling action should be consistently translated to maintain reader understanding of the innovation.\n"}], "grading": {"run_id": "eval-1-mitral-valve-without_skill", "expectations": [{"text": "extracted_40plus_terms", "passed": true, "evidence": "term_review.md identifies 41 unique terms with analysis by frequency, meeting the 40-term threshold"}, {"text": "multiple_translation_options", "passed": true, "evidence": "Multiple translation options provided throughout (e.g., Stentb\u00fcgel: 'Stent strut' OR 'Stent arm'; Verankerungselemente: 'Anchoring elements' OR 'Anchor hooks'; provides extensive explanation of alternatives)"}, {"text": "frequency_grouping", "passed": true, "evidence": "Terms organized by category: Primary Device and Component Terms, Anatomical Components, Pathophysiological and Clinical Concepts, Surgical and Procedural Terms, Material and Engineering Terms, with frequency counts"}, {"text": "glossary_tsv_produced", "passed": true, "evidence": "glossary.tsv exists with 102 lines including 103 tab-separated entries with German terms and English translations"}, {"text": "domain_recognition", "passed": true, "evidence": "Output extensively recognizes medical device context, includes anatomical terminology guidance, patent translation conventions, and clinical terminology. Notes on FDA/international regulatory terminology."}]}}, {"id": "eval-2-engineering-patent-with_skill", "prompt": "I need to build a glossary for this engineering patent before translating it. The German document is test_patent.docx. Pull out the key terms and suggest English equivalents.", "eval_id": "eval-2-engineering-patent", "outputs": [{"name": "EXTRACTION_SUMMARY.txt", "type": "text", "content": "================================================================================\nGLOSSARY EXTRACTION SUMMARY \u2014 test_patent.docx\n================================================================================\n\nEXTRACTION COMPLETED SUCCESSFULLY\n\nSource: /sessions/admiring-relaxed-mccarthy/mnt/glosswerk/test_patent.docx\nExtraction Method: Heuristic (German noun capitalization patterns)\nTotal Sentences: 259\nTotal Unique Nouns Found: 487\nTerms with Frequency >= 3: 109\nFinal Glossary Entries: 94\n\n================================================================================\nOUTPUT FILES GENERATED\n================================================================================\n\n1. candidates.json (10 KB)\n   \u2192 Raw extraction output from extract_terms.py script\n   \u2192 Contains all 109 terms with frequency counts and variants\n   \u2192 Format: JSON array with {\"de\": \"...\", \"frequency\": N, \"variants\": [...]}\n\n2. translations.json (13 KB)\n   \u2192 Patent terminology expert review with 2-3 translation options per term\n   \u2192 Format: JSON array with {\"de\": \"...\", \"en\": [...], \"note\": \"...\"}\n   \u2192 All 94 primary terms covered\n   \u2192 Explanatory notes for translation decisions\n\n3. term_review.md (14 KB)\n   \u2192 Formatted markdown review organized by frequency bands\n   \u2192 High Frequency (30+x): 30 terms\n   \u2192 Medium-High Frequency (10-29x): 32 terms\n   \u2192 Medium Frequency (5-9x): 32 terms\n   \u2192 Includes terminology patterns, domain notes, and QA guidelines\n\n4. glossary.tsv (3.1 KB)\n   \u2192 Final glossary in TSV format (tab-separated, no header)\n   \u2192 Format: German_term\\tEnglish_term\n   \u2192 Recommended primary translations only\n   \u2192 Ready to use with translation workflow\n\n================================================================================\nTOP 20 TERMS BY FREQUENCY\n================================================================================\n\nProduktionseinheit (59x)          \u2192 production unit\nEngineering (50x)                \u2192 engineering\nProduktionsprozess (50x)          \u2192 production process\nSystem (47x)                      \u2192 system\nProdukt (46x)                     \u2192 product\nProzedur (43x)                    \u2192 procedure\nKonfigurationsstruktur (36x)      \u2192 configuration structure\nPlanungskonfigurationsstruktur (36x) \u2192 planning configuration structure\nPlanungsverfahren (34x)           \u2192 planning method\nAuswahlsubstrukturen (34x)        \u2192 selection substructures\n\n================================================================================\nDOMAIN CHARACTERISTICS\n================================================================================\n\nEngineering Domain: Manufacturing Planning & Production Systems\nKey Patterns:\n  \u2022 Complex compound nouns with system architecture terminology\n  \u2022 Process/procedural workflow language (Schritt, Verfahren, Prozedur)\n  \u2022 Software/database library terminology (*-bibliothek)\n  \u2022 Optimization and AI/ML concepts (Optimierung, Inferenz, Weiterbildung)\n  \u2022 Robotics and assembly terminology (Montage, Trajektorie, Dynamiksimulation)\n\nTerminology Consistency Notes:\n  \u2022 15 compound nouns with \"Schritt\" (step) suffix \u2014 ensure consistent rendering\n  \u2022 8 compound nouns with \"Bibliothek\" (library) suffix \u2014 all translate to \"[noun] library\"\n  \u2022 7 variants of Substrukturen family \u2014 treat as architectural term, not literal decomposition\n  \u2022 Multiple process terms (Prozedur/Verfahren/Prozess/Methode) \u2014 use context-dependent translations\n\n================================================================================\nTRANSLATOR REVIEW CHECKLIST\n================================================================================\n\n\u25a1 Review HIGH FREQUENCY terms (30+x) in term_review.md\n\u25a1 Confirm or modify translation options in translations.json\n\u25a1 Address any domain-specific terminology conflicts\n\u25a1 Review \"note\" fields for translation decision justifications\n\u25a1 Finalize glossary.tsv selections (first-option recommendations provided)\n\u25a1 Flag any verbs appearing frequently for context-dependent translation\n\u25a1 Note any client-specific term preferences that override standard conventions\n\nReady to proceed to translation with glossary.tsv as reference.\n\n================================================================================\n"}, {"name": "candidates.json", "type": "text", "content": "{\n  \"source_file\": \"test_patent.docx\",\n  \"total_sentences\": 259,\n  \"total_candidates\": 109,\n  \"min_frequency\": 3,\n  \"extraction_method\": \"heuristic\",\n  \"terms\": [\n    {\n      \"de\": \"Produktionseinheit\",\n      \"frequency\": 59,\n      \"variants\": [\n        \"Produktionseinheiten\"\n      ]\n    },\n    {\n      \"de\": \"Engineering\",\n      \"frequency\": 50,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Produktionsprozess\",\n      \"frequency\": 50,\n      \"variants\": [\n        \"Produktionsprozesses\"\n      ]\n    },\n    {\n      \"de\": \"System\",\n      \"frequency\": 47,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Produkt\",\n      \"frequency\": 46,\n      \"variants\": [\n        \"Produkts\",\n        \"Produkte\",\n        \"Produktion\"\n      ]\n    },\n    {\n      \"de\": \"Prozedur\",\n      \"frequency\": 43,\n      \"variants\": [\n        \"Prozeduren\"\n      ]\n    },\n    {\n      \"de\": \"Konfigurationsstruktur\",\n      \"frequency\": 36,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Planungskonfigurationsstruktur\",\n      \"frequency\": 36,\n      \"variants\": [\n        \"Planungskonfigurationsstrukturen\"\n      ]\n    },\n    {\n      \"de\": \"Planungsverfahren\",\n      \"frequency\": 34,\n      \"variants\": [\n        \"Planungsverfahrens\"\n      ]\n    },\n    {\n      \"de\": \"Auswahlsubstrukturen\",\n      \"frequency\": 34,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Konfiguration\",\n      \"frequency\": 32,\n      \"variants\": [\n        \"Konfigurationen\"\n      ]\n    },\n    {\n      \"de\": \"Planungsprozedur\",\n      \"frequency\": 27,\n      \"variants\": [\n        \"Planungsprozeduren\"\n      ]\n    },\n    {\n      \"de\": \"Umsetzung\",\n      \"frequency\": 24,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Planungskomponenten\",\n      \"frequency\": 21,\n      \"variants\": [\n        \"Planungskomponente\"\n      ]\n    },\n    {\n      \"de\": \"Produktionsinformationen\",\n      \"frequency\": 21,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Konfigurationsschritt\",\n      \"frequency\": 20,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zielsubstrukturen\",\n      \"frequency\": 19,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Abstimmungsschritt\",\n      \"frequency\": 17,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Erfindung\",\n      \"frequency\": 16,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Substrukturen\",\n      \"frequency\": 16,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Auswahlschritt\",\n      \"frequency\": 15,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Bibliothekselement\",\n      \"frequency\": 15,\n      \"variants\": [\n        \"Bibliothekselemente\",\n        \"Bibliothekselementen\"\n      ]\n    },\n    {\n      \"de\": \"Simulationsbibliothek\",\n      \"frequency\": 15,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Prozedurgenerierungsschritt\",\n      \"frequency\": 15,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Auswahl\",\n      \"frequency\": 13,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Planung\",\n      \"frequency\": 12,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Schritt\",\n      \"frequency\": 12,\n      \"variants\": [\n        \"Schritte\"\n      ]\n    },\n    {\n      \"de\": \"Basis\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Modelle\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verfahren\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Computerprogramm\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Produktionszellen\",\n      \"frequency\": 10,\n      \"variants\": [\n        \"Produktionszelle\"\n      ]\n    },\n    {\n      \"de\": \"Definitionsschritt\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Produktionsverfahren\",\n      \"frequency\": 10,\n      \"variants\": [\n        \"Produktionsverfahrens\"\n      ]\n    },\n    {\n      \"de\": \"Prozedurgenerierungsbibliothek\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Planungskonfigurationsstrukturbibliothek\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Beispiel\",\n      \"frequency\": 9,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Grundlage\",\n      \"frequency\": 9,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Auswahlsubstrukturenmenge\",\n      \"frequency\": 9,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mehrzahl\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Teilmenge\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Informationen\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Simulationsmodells\u00e4tze\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Substrukturenbibliothek\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Generierung\",\n      \"frequency\": 7,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Produktbibliothek\",\n      \"frequency\": 7,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Abstimmungsbibliothek\",\n      \"frequency\": 7,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Einsatz\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Spezifische\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Auswahlstrukturenmenge\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ressourcenauswahlkomponente\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Prozedurgenerierungskomponente\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Strukturoptimierungskomponente\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ressourcen\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Gegenstand\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Optimierung\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Technologien\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Orchestrierung\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ablauf-Modelle\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Prozedurmodelle\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Prozedurschritten\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Optimierungsverfahren\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ressourcenoptimierungskomponente\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Montage\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Vorstufe\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Inferenz\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Merkmalen\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Anspruchs\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Komponenten\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Beschreibung\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Realisierung\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zustands\u00fcberg\u00e4nge\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Operation-Modelle\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Deep\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Large\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Robot\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Neural\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Models\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Entit\u00e4t\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Networks\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Language\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Learning\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Probleme\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Anordnung\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Kontrolle\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Simulation\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Trajektorie\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zykluszeiten\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zusammenhang\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Modells\u00e4tzen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verbesserung\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Durchf\u00fchrung\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"M\u00f6glichkeiten\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Reinforcement\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Weiterbildung\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Funktionsmodul\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Discrete-Event\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Montageaufgabe\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Randbedingungen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Metaheuristische\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Roboterwerkzeugen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Dynamiksimulation\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Optimierungsprozess\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Prozedurgenerierung\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Gesamtkonfiguration\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Generierungspipeline\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Starrk\u00f6rpersimulation\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Substruktureigenschaften\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Datenverarbeitungseinrichtung\",\n      \"frequency\": 3,\n      \"variants\": []\n    }\n  ]\n}"}, {"name": "glossary.tsv", "type": "binary", "mime": "text/tab-separated-values", "data_uri": "data:text/tab-separated-values;base64,UHJvZHVrdGlvbnNlaW5oZWl0CXByb2R1Y3Rpb24gdW5pdApFbmdpbmVlcmluZwllbmdpbmVlcmluZwpQcm9kdWt0aW9uc3Byb3plc3MJcHJvZHVjdGlvbiBwcm9jZXNzClN5c3RlbQlzeXN0ZW0KUHJvZHVrdAlwcm9kdWN0ClByb3plZHVyCXByb2NlZHVyZQpLb25maWd1cmF0aW9uc3N0cnVrdHVyCWNvbmZpZ3VyYXRpb24gc3RydWN0dXJlClBsYW51bmdza29uZmlndXJhdGlvbnNzdHJ1a3R1cglwbGFubmluZyBjb25maWd1cmF0aW9uIHN0cnVjdHVyZQpQbGFudW5nc3ZlcmZhaHJlbglwbGFubmluZyBtZXRob2QKQXVzd2FobHN1YnN0cnVrdHVyZW4Jc2VsZWN0aW9uIHN1YnN0cnVjdHVyZXMKS29uZmlndXJhdGlvbgljb25maWd1cmF0aW9uClBsYW51bmdzcHJvemVkdXIJcGxhbm5pbmcgcHJvY2VkdXJlClVtc2V0enVuZwlpbXBsZW1lbnRhdGlvbgpQbGFudW5nc2tvbXBvbmVudGVuCXBsYW5uaW5nIGNvbXBvbmVudHMKUHJvZHVrdGlvbnNpbmZvcm1hdGlvbmVuCXByb2R1Y3Rpb24gaW5mb3JtYXRpb24KS29uZmlndXJhdGlvbnNzY2hyaXR0CWNvbmZpZ3VyYXRpb24gc3RlcApaaWVsc3Vic3RydWt0dXJlbgl0YXJnZXQgc3Vic3RydWN0dXJlcwpBYnN0aW1tdW5nc3NjaHJpdHQJdHVuaW5nIHN0ZXAKRXJmaW5kdW5nCWludmVudGlvbgpTdWJzdHJ1a3R1cmVuCXN1YnN0cnVjdHVyZXMKQXVzd2FobHNjaHJpdHQJc2VsZWN0aW9uIHN0ZXAKQmlibGlvdGhla3NlbGVtZW50CWxpYnJhcnkgZWxlbWVudApTaW11bGF0aW9uc2JpYmxpb3RoZWsJc2ltdWxhdGlvbiBsaWJyYXJ5ClByb3plZHVyZ2VuZXJpZXJ1bmdzc2Nocml0dAlwcm9jZWR1cmUgZ2VuZXJhdGlvbiBzdGVwCkF1c3dhaGwJc2VsZWN0aW9uClBsYW51bmcJcGxhbm5pbmcKU2Nocml0dAlzdGVwCkJhc2lzCWJhc2lzCk1vZGVsbGUJbW9kZWxzClZlcmZhaHJlbgltZXRob2QKQ29tcHV0ZXJwcm9ncmFtbQljb21wdXRlciBwcm9ncmFtClByb2R1a3Rpb25zemVsbGVuCXByb2R1Y3Rpb24gY2VsbHMKRGVmaW5pdGlvbnNzY2hyaXR0CWRlZmluaXRpb24gc3RlcApQcm9kdWt0aW9uc3ZlcmZhaHJlbglwcm9kdWN0aW9uIG1ldGhvZApQcm96ZWR1cmdlbmVyaWVydW5nc2JpYmxpb3RoZWsJcHJvY2VkdXJlIGdlbmVyYXRpb24gbGlicmFyeQpQbGFudW5nc2tvbmZpZ3VyYXRpb25zc3RydWt0dXJiaWJsaW90aGVrCXBsYW5uaW5nIGNvbmZpZ3VyYXRpb24gc3RydWN0dXJlIGxpYnJhcnkKQmVpc3BpZWwJZXhhbXBsZQpHcnVuZGxhZ2UJYmFzaXMKQXVzd2FobHN1YnN0cnVrdHVyZW5tZW5nZQlzZWxlY3Rpb24gc3Vic3RydWN0dXJlIHNldApNZWhyemFobAlwbHVyYWxpdHkKVGVpbG1lbmdlCXN1YnNldApJbmZvcm1hdGlvbmVuCWluZm9ybWF0aW9uClNpbXVsYXRpb25zbW9kZWxsc8OkdHplCXNpbXVsYXRpb24gbW9kZWwgc2V0cwpTdWJzdHJ1a3R1cmVuYmlibGlvdGhlawlzdWJzdHJ1Y3R1cmUgbGlicmFyeQpHZW5lcmllcnVuZwlnZW5lcmF0aW9uClByb2R1a3RiaWJsaW90aGVrCXByb2R1Y3QgbGlicmFyeQpBYnN0aW1tdW5nc2JpYmxpb3RoZWsJdHVuaW5nIGxpYnJhcnkKRWluc2F0eglkZXBsb3ltZW50ClNwZXppZmlzY2hlCXNwZWNpZmljCkF1c3dhaGxzdHJ1a3R1cmVubWVuZ2UJc2VsZWN0aW9uIHN0cnVjdHVyZSBzZXQKUmVzc291cmNlbmF1c3dhaGxrb21wb25lbnRlCXJlc291cmNlIHNlbGVjdGlvbiBjb21wb25lbnQKUHJvemVkdXJnZW5lcmllcnVuZ3Nrb21wb25lbnRlCXByb2NlZHVyZSBnZW5lcmF0aW9uIGNvbXBvbmVudApTdHJ1a3R1cm9wdGltaWVydW5nc2tvbXBvbmVudGUJc3RydWN0dXJlIG9wdGltaXphdGlvbiBjb21wb25lbnQKUmVzc291cmNlbglyZXNvdXJjZXMKR2VnZW5zdGFuZAlzdWJqZWN0IG1hdHRlcgpPcHRpbWllcnVuZwlvcHRpbWl6YXRpb24KVGVjaG5vbG9naWVuCXRlY2hub2xvZ2llcwpPcmNoZXN0cmllcnVuZwlvcmNoZXN0cmF0aW9uCkFibGF1Zi1Nb2RlbGxlCWZsb3cgbW9kZWxzClByb3plZHVybW9kZWxsZQlwcm9jZWR1cmUgbW9kZWxzClByb3plZHVyc2Nocml0dGVuCXByb2NlZHVyZSBzdGVwcwpPcHRpbWllcnVuZ3N2ZXJmYWhyZW4Jb3B0aW1pemF0aW9uIG1ldGhvZApSZXNzb3VyY2Vub3B0aW1pZXJ1bmdza29tcG9uZW50ZQlyZXNvdXJjZSBvcHRpbWl6YXRpb24gY29tcG9uZW50Ck1vbnRhZ2UJYXNzZW1ibHkKVm9yc3R1ZmUJcHJlbGltaW5hcnkgc3RhZ2UKSW5mZXJlbnoJaW5mZXJlbmNlCk1lcmttYWxlbglmZWF0dXJlcwpLb21wb25lbnRlbgljb21wb25lbnRzCkJlc2NocmVpYnVuZwlkZXNjcmlwdGlvbgpSZWFsaXNpZXJ1bmcJcmVhbGl6YXRpb24KWnVzdGFuZHPDvGJlcmfDpG5nZQlzdGF0ZSB0cmFuc2l0aW9ucwpPcGVyYXRpb24tTW9kZWxsZQlvcGVyYXRpb24gbW9kZWxzClNpbXVsYXRpb24Jc2ltdWxhdGlvbgpUcmFqZWt0b3JpZQl0cmFqZWN0b3J5Clp5a2x1c3plaXRlbgljeWNsZSB0aW1lcwpadXNhbW1lbmhhbmcJcmVsYXRpb25zaGlwCk1vZGVsbHPDpHR6ZW4JbW9kZWwgc2V0cwpWZXJiZXNzZXJ1bmcJaW1wcm92ZW1lbnQKRHVyY2hmw7xocnVuZwlleGVjdXRpb24KTcO2Z2xpY2hrZWl0ZW4Jb3B0aW9ucwpXZWl0ZXJiaWxkdW5nCWZ1cnRoZXIgdHJhaW5pbmcKRnVua3Rpb25zbW9kdWwJZnVuY3Rpb25hbCBtb2R1bGUKTW9udGFnZWF1ZmdhYmUJYXNzZW1ibHkgdGFzawpSYW5kYmVkaW5ndW5nZW4JYm91bmRhcnkgY29uZGl0aW9ucwpNZXRhaGV1cmlzdGlzY2hlCW1ldGFoZXVyaXN0aWMKUm9ib3Rlcndlcmt6ZXVnZW4Jcm9ib3RpYyB0b29scwpEeW5hbWlrc2ltdWxhdGlvbglkeW5hbWljcyBzaW11bGF0aW9uCk9wdGltaWVydW5nc3Byb3plc3MJb3B0aW1pemF0aW9uIHByb2Nlc3MKUHJvemVkdXJnZW5lcmllcnVuZwlwcm9jZWR1cmUgZ2VuZXJhdGlvbgpHZXNhbXRrb25maWd1cmF0aW9uCW92ZXJhbGwgY29uZmlndXJhdGlvbgpHZW5lcmllcnVuZ3NwaXBlbGluZQlnZW5lcmF0aW9uIHBpcGVsaW5lClN0YXJya8O2cnBlcnNpbXVsYXRpb24JcmlnaWQgYm9keSBzaW11bGF0aW9uClN1YnN0cnVrdHVyZWlnZW5zY2hhZnRlbglzdWJzdHJ1Y3R1cmUgcHJvcGVydGllcwpEYXRlbnZlcmFyYmVpdHVuZ3NlaW5yaWNodHVuZwlkYXRhIHByb2Nlc3NpbmcgZGV2aWNlCg=="}, {"name": "term_review.md", "type": "text", "content": "# TERMINOLOGY REVIEW \u2014 test_patent.docx\n\n**Extraction Summary**\n- Found 109 recurring technical terms across 259 sentences\n- Minimum frequency threshold: 3+ occurrences\n- Extraction method: Heuristic (German capitalization rules)\n- Recommended glossary entries: 86 (filtered to noun compounds and technical terms)\n\n---\n\n## HIGH FREQUENCY TERMS (30+ occurrences)\n\nThese core domain concepts should be standardized first.\n\n| German | Frequency | Recommended | Alternatives | Notes |\n|--------|-----------|-------------|--------------|-------|\n| Produktionseinheit | 59x | **production unit** | production cell | Standard in manufacturing engineering patents |\n| Engineering | 50x | **engineering** | \u2014 | English loanword, kept as-is |\n| Produktionsprozess | 50x | **production process** | manufacturing process | Both used in patents; 'production' is slightly more common |\n| System | 47x | **system** | \u2014 | English term, kept as-is |\n| Produkt | 46x | **product** | article | Standard technical term; 'article' is formal but less common |\n| Prozedur | 43x | **procedure** | process | 'Procedure' emphasizes step-by-step structure |\n| Konfigurationsstruktur | 36x | **configuration structure** | configuration framework | Compound: maintain full translation |\n| Planungskonfigurationsstruktur | 36x | **planning configuration structure** | scheduling configuration framework | Complex compound: maintain hierarchy |\n| Planungsverfahren | 34x | **planning method** | scheduling procedure, planning procedure | Context-dependent; 'method' for algorithms, 'procedure' for steps |\n| Auswahlsubstrukturen | 34x | **selection substructures** | selection sub-components | Technical compound; 'substructures' maintains architectural hierarchy |\n| Konfiguration | 32x | **configuration** | arrangement | Standard patent terminology |\n| Planungsprozedur | 27x | **planning procedure** | scheduling procedure | Compound: emphasizes systematic steps |\n| Umsetzung | 24x | **implementation** | execution, realization | 'Implementation' most common in technical patents |\n| Planungskomponenten | 21x | **planning components** | scheduling components | System architecture term; straightforward translation |\n| Produktionsinformationen | 21x | **production information** | manufacturing information | Straightforward; 'production' is standard in patents |\n| Konfigurationsschritt | 20x | **configuration step** | configuration stage | Step-by-step process terminology |\n| Zielsubstrukturen | 19x | **target substructures** | goal sub-components | 'Target' is technical standard |\n| Abstimmungsschritt | 17x | **tuning step** | calibration step, adjustment step | Technical term; 'tuning' emphasizes optimization |\n| Erfindung | 16x | **invention** | disclosure | Patent standard: 'invention' in abstract/claims |\n| Substrukturen | 16x | **substructures** | sub-components | Maintains architectural metaphor; technical standard |\n| Auswahlschritt | 15x | **selection step** | choice step | Technical standard for process phases |\n| Bibliothekselement | 15x | **library element** | library component | Database/software terminology |\n| Simulationsbibliothek | 15x | **simulation library** | simulation component library | Software/database standard |\n| Prozedurgenerierungsschritt | 15x | **procedure generation step** | procedure synthesis step | Technical: 'generation' more common than 'synthesis' |\n| Auswahl | 13x | **selection** | choice | 'Selection' is more technical/formal |\n| Planung | 12x | **planning** | scheduling | Context-dependent; 'planning' for design, 'scheduling' for temporal ordering |\n| Schritt | 12x | **step** | stage | 'Step' emphasizes process; 'stage' emphasizes phases |\n| Basis | 10x | **basis** | foundation, base | Technical standard terminology |\n| Modelle | 10x | **models** | \u2014 | English term, kept as-is |\n| Verfahren | 10x | **method** | procedure, process | Patent standard; 'method' for title/abstract, 'procedure' for steps |\n\n---\n\n## MEDIUM-HIGH FREQUENCY TERMS (10-29 occurrences)\n\nSystem architecture and process components.\n\n| German | Frequency | Recommended | Alternatives | Notes |\n|--------|-----------|-------------|--------------|-------|\n| Computerprogramm | 10x | **computer program** | software program | Patent standard: avoid 'software' in formal context |\n| Produktionszellen | 10x | **production cells** | production units | 'Cells' if modular/autonomous; 'units' for aggregates |\n| Definitionsschritt | 10x | **definition step** | specification step | 'Definition' for setup; 'specification' for formal parameters |\n| Produktionsverfahren | 10x | **production method** | manufacturing method, production process | 'Production method' emphasizes systematic approach |\n| Prozedurgenerierungsbibliothek | 10x | **procedure generation library** | \u2014 | Complex compound; maintain full translation |\n| Planungskonfigurationsstrukturbibliothek | 10x | **planning configuration structure library** | \u2014 | Unwieldy but necessary for precision in architecture |\n| Beispiel | 9x | **example** | embodiment | 'Example' in description; 'embodiment' if variant is intended |\n| Grundlage | 9x | **basis** | foundation, ground | Technical standard |\n| Auswahlsubstrukturenmenge | 9x | **selection substructure set** | set of selection substructures | Mathematical collection terminology |\n| Mehrzahl | 8x | **plurality** | multiple | 'Plurality' is formal patent language |\n| Teilmenge | 8x | **subset** | \u2014 | Mathematics/computer science standard |\n| Informationen | 8x | **information** | \u2014 | English term, kept as-is |\n| Simulationsmodells\u00e4tze | 8x | **simulation model sets** | sets of simulation models | Mathematical organization implied |\n| Substrukturenbibliothek | 8x | **substructure library** | library of substructures | Software/database terminology |\n| Generierung | 7x | **generation** | synthesis | Most common in engineering patents |\n| Produktbibliothek | 7x | **product library** | product database | 'Library' is standard for catalogs |\n| Abstimmungsbibliothek | 7x | **tuning library** | calibration library | Parallel to 'Abstimmungsschritt' |\n| Einsatz | 6x | **deployment** | use, application | 'Deployment' for system context |\n| Spezifische | 6x | **specific** | \u2014 | English term, kept as-is |\n| Auswahlstrukturenmenge | 6x | **selection structure set** | set of selection structures | Mathematical terminology |\n| Ressourcenauswahlkomponente | 6x | **resource selection component** | \u2014 | System architecture; straightforward |\n| Prozedurgenerierungskomponente | 6x | **procedure generation component** | procedure synthesis component | System module; maintain compound |\n| Strukturoptimierungskomponente | 6x | **structure optimization component** | \u2014 | System module; straightforward |\n| Ressourcen | 5x | **resources** | \u2014 | English term, kept as-is |\n| Gegenstand | 5x | **subject matter** | object | Patent standard terminology |\n| Optimierung | 5x | **optimization** | \u2014 | English term, kept as-is |\n| Technologien | 5x | **technologies** | \u2014 | English term, kept as-is |\n| Orchestrierung | 5x | **orchestration** | \u2014 | Software/systems term |\n| Ablauf-Modelle | 5x | **flow models** | process flow models | 'Flow' emphasizes sequential behavior |\n| Prozedurmodelle | 5x | **procedure models** | procedural models | Straightforward compound |\n| Prozedurschritten | 5x | **procedure steps** | \u2014 | Process terminology (plural) |\n| Optimierungsverfahren | 5x | **optimization method** | optimization procedure | Algorithmic context |\n| Ressourcenoptimierungskomponente | 5x | **resource optimization component** | \u2014 | System module; straightforward |\n\n---\n\n## MEDIUM FREQUENCY TERMS (5-9 occurrences)\n\nManufacturing and process-specific vocabulary.\n\n| German | Frequency | Recommended | Alternatives | Notes |\n|--------|-----------|-------------|--------------|-------|\n| Montage | 4x | **assembly** | assembly operation | Manufacturing standard |\n| Vorstufe | 4x | **preliminary stage** | pre-stage | Process phase terminology |\n| Inferenz | 4x | **inference** | \u2014 | AI/ML standard term |\n| Merkmalen | 4x | **features** | characteristics | Technical standard (plural form) |\n| Komponenten | 4x | **components** | modules | Patent standard; 'modules' if reusable units |\n| Beschreibung | 4x | **description** | specification | 'Description' for narrative, 'specification' for detail |\n| Realisierung | 4x | **realization** | implementation | 'Realization' more formal; 'implementation' more common |\n| Zustands\u00fcberg\u00e4nge | 4x | **state transitions** | \u2014 | Computer science standard |\n| Operation-Modelle | 4x | **operation models** | operational models | Straightforward compound |\n| Simulation | 3x | **simulation** | \u2014 | English term, kept as-is |\n| Trajektorie | 3x | **trajectory** | \u2014 | Robotics/kinematics standard |\n| Zykluszeiten | 3x | **cycle times** | \u2014 | Manufacturing standard (plural) |\n| Zusammenhang | 3x | **relationship** | context, correlation | 'Relationship' for structural; context/correlation context-dependent |\n| Modells\u00e4tzen | 3x | **model sets** | sets of models | Collection terminology (plural) |\n| Verbesserung | 3x | **improvement** | \u2014 | Common in patent claims |\n| Durchf\u00fchrung | 3x | **execution** | implementation, conduct | 'Execution' for operational context |\n| M\u00f6glichkeiten | 3x | **options** | possibilities | 'Options' more technical (plural) |\n| Weiterbildung | 3x | **further training** | continued training | AI/learning context |\n| Funktionsmodul | 3x | **functional module** | function module | System architecture; 'functional' more formal |\n| Montageaufgabe | 3x | **assembly task** | \u2014 | Manufacturing/robotics compound |\n| Randbedingungen | 3x | **boundary conditions** | constraints | Mathematical/technical standard |\n| Metaheuristische | 3x | **metaheuristic** | \u2014 | Algorithm terminology |\n| Roboterwerkzeugen | 3x | **robotic tools** | robot tools | Robotics context |\n| Dynamiksimulation | 3x | **dynamics simulation** | dynamic simulation | Physics/robotics; 'dynamics' more technical |\n| Optimierungsprozess | 3x | **optimization process** | \u2014 | Straightforward compound |\n| Prozedurgenerierung | 3x | **procedure generation** | procedure synthesis | Core technical term |\n| Gesamtkonfiguration | 3x | **overall configuration** | total configuration | System-wide setting |\n| Generierungspipeline | 3x | **generation pipeline** | generation workflow | Software architecture standard |\n| Starrk\u00f6rpersimulation | 3x | **rigid body simulation** | \u2014 | Physics/simulation standard |\n| Substruktureigenschaften | 3x | **substructure properties** | substructure characteristics | 'Properties' is technical standard |\n| Datenverarbeitungseinrichtung | 3x | **data processing device** | data processing apparatus | Patent standard for hardware |\n\n---\n\n## TERMINOLOGY PATTERNS & RECOMMENDATIONS\n\n### Recurring Patterns in This Patent\n\n1. **Compound nouns with system architecture**: `*-komponenten`, `*-bibliothek`, `*-struktur`, `*-schritt`\n   - Recommended strategy: Always maintain compound translation; decomposing loses technical precision\n   - Examples: \"Planungskomponenten\" \u2192 \"planning components\", \"Simulationsbibliothek\" \u2192 \"simulation library\"\n\n2. **Process terminology**: `Schritt`, `Verfahren`, `Prozedur`, `Prozess`\n   - Context matters: 'step' for process sequence, 'procedure' for formal methodology, 'process' for general flow, 'method' for algorithm\n   - Recommendation: Use sparingly synonymized; pick one and stick throughout\n\n3. **Manufacturing/assembly domain**: `Montage`, `Produktionszellen`, `Zykluszeiten`, `Roboterwerkzeugen`\n   - These are domain-specific; use standard manufacturing English equivalents consistently\n\n4. **Substructure/configuration hierarchy**: `Substrukturen`, `Auswahlsubstrukturen`, `Zielsubstrukturen`\n   - Recommendation: Use \"substructures\" consistently; treat as architectural term, not literal decomposition\n\n5. **Library/database terminology**: `*-bibliothek` compounds\n   - All translate to \"[noun] library\"; maintain parallel structure\n\n6. **Optimization/AI terminology**: `Optimierung`, `Inferenz`, `Weiterbildung`, `Metaheuristische`\n   - These are technical/algorithmic; keep as standard English terms\n\n### Quality Assurance Notes\n\n- **Watch out for**: Compound nouns that appear only in variants (singular/plural/genitive) \u2014 ensure stem form translation is consistent\n- **Flag verbs** that may appear frequently (e.g., \"bestimmen\", \"umfassen\") \u2014 these may need context-dependent translation and should NOT be added to the glossary\n- **Loanwords**: \"Engineering\", \"System\", \"Modelle\", \"Informationen\", \"Technologien\" are already English; keep as-is\n- **Patent formality**: Prefer formal patent terminology (\"plurality\" over \"multiple\", \"subject matter\" over \"object\") where established conventions exist\n\n---\n\n## NEXT STEPS FOR TRANSLATOR\n\n1. **Review the Recommended column** \u2014 the first option is the suggested default for glossary\n2. **Choose alternatives** where your context or client preferences differ\n3. **Add custom terms** if domain requirements demand different renderings\n4. **Save final selections** as `glossary.tsv` (tab-separated: German | English)\n5. **Note synonyms** \u2014 if multiple terms map to the same English word (e.g., Prozedur, Verfahren \u2192 \"procedure\"), mark for consistency review\n\n---\n\n## GLOSSARY STATISTICS\n\n- **Total candidates extracted**: 109 terms\n- **High frequency (10+x)**: 30 terms\n- **Medium-high frequency (5-9x)**: 32 terms\n- **Lower frequency (3-4x)**: 47 terms\n\nAll 109 terms are included in the translation file for your review. Select which to include in your final working glossary based on domain scope and translation priorities.\n"}, {"name": "translations.json", "type": "text", "content": "[\n  {\"de\": \"Produktionseinheit\", \"en\": [\"production unit\", \"production cell\"], \"note\": \"In manufacturing engineering, 'production unit' is more standard than 'cell' in formal patents\"},\n  {\"de\": \"Engineering\", \"en\": [\"engineering\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Produktionsprozess\", \"en\": [\"production process\", \"manufacturing process\"], \"note\": \"Both used in patents; 'production process' is slightly more common in patent literature\"},\n  {\"de\": \"System\", \"en\": [\"system\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Produkt\", \"en\": [\"product\", \"article\"], \"note\": \"'Product' is standard; 'article' is used in formal patent language but less common\"},\n  {\"de\": \"Prozedur\", \"en\": [\"procedure\", \"process\"], \"note\": \"'Procedure' emphasizes step-by-step; 'process' is more general\"},\n  {\"de\": \"Konfigurationsstruktur\", \"en\": [\"configuration structure\", \"configuration framework\"], \"note\": \"Compound: configuration + structure; 'configuration structure' is standard in engineering\"},\n  {\"de\": \"Planungskonfigurationsstruktur\", \"en\": [\"planning configuration structure\", \"scheduling configuration framework\"], \"note\": \"Compound: planning + configuration + structure; maintain full compound translation\"},\n  {\"de\": \"Planungsverfahren\", \"en\": [\"planning method\", \"scheduling procedure\", \"planning procedure\"], \"note\": \"Context-dependent: 'planning method' for algorithmic, 'planning procedure' for step-by-step\"},\n  {\"de\": \"Auswahlsubstrukturen\", \"en\": [\"selection substructures\", \"selection sub-components\"], \"note\": \"Technical compound; 'substructures' maintains hierarchy metaphor\"},\n  {\"de\": \"Konfiguration\", \"en\": [\"configuration\", \"arrangement\"], \"note\": \"'Configuration' is standard patent terminology\"},\n  {\"de\": \"Planungsprozedur\", \"en\": [\"planning procedure\", \"scheduling procedure\"], \"note\": \"Compound: planning + procedure; 'planning procedure' emphasizes systematic steps\"},\n  {\"de\": \"Umsetzung\", \"en\": [\"implementation\", \"execution\", \"realization\"], \"note\": \"'Implementation' is most common in technical patents; 'execution' for operational context\"},\n  {\"de\": \"Planungskomponenten\", \"en\": [\"planning components\", \"scheduling components\"], \"note\": \"System architecture term; straightforward translation\"},\n  {\"de\": \"Produktionsinformationen\", \"en\": [\"production information\", \"manufacturing information\"], \"note\": \"Straightforward; 'production information' is more standard in patents\"},\n  {\"de\": \"Konfigurationsschritt\", \"en\": [\"configuration step\", \"configuration stage\"], \"note\": \"Step-by-step process terminology; 'configuration step' is standard\"},\n  {\"de\": \"Zielsubstrukturen\", \"en\": [\"target substructures\", \"goal sub-components\"], \"note\": \"'Target' is technical standard; 'goal' is more generic\"},\n  {\"de\": \"Abstimmungsschritt\", \"en\": [\"tuning step\", \"calibration step\", \"adjustment step\"], \"note\": \"'Tuning' is technical; 'calibration' is more formal; context determines choice\"},\n  {\"de\": \"Erfindung\", \"en\": [\"invention\", \"disclosure\"], \"note\": \"Patent standard: 'invention' in abstract/claims, 'disclosure' in specification\"},\n  {\"de\": \"Substrukturen\", \"en\": [\"substructures\", \"sub-components\"], \"note\": \"Maintains architectural hierarchy; 'substructures' is more technical\"},\n  {\"de\": \"Auswahlschritt\", \"en\": [\"selection step\", \"choice step\"], \"note\": \"'Selection step' is technical standard\"},\n  {\"de\": \"Bibliothekselement\", \"en\": [\"library element\", \"library component\"], \"note\": \"Software/database term; 'library element' is standard\"},\n  {\"de\": \"Simulationsbibliothek\", \"en\": [\"simulation library\", \"simulation component library\"], \"note\": \"Database/software term; straightforward\"},\n  {\"de\": \"Prozedurgenerierungsschritt\", \"en\": [\"procedure generation step\", \"procedure synthesis step\"], \"note\": \"Technical: 'generation' or 'synthesis' both used; 'generation' is more common\"},\n  {\"de\": \"Auswahl\", \"en\": [\"selection\", \"choice\"], \"note\": \"'Selection' is more technical/formal\"},\n  {\"de\": \"Planung\", \"en\": [\"planning\", \"scheduling\"], \"note\": \"Context-dependent: 'planning' for design/algorithm, 'scheduling' for temporal ordering\"},\n  {\"de\": \"Schritt\", \"en\": [\"step\", \"stage\"], \"note\": \"'Step' emphasizes process; 'stage' emphasizes phases\"},\n  {\"de\": \"Basis\", \"en\": [\"basis\", \"foundation\", \"base\"], \"note\": \"'Basis' is technical standard\"},\n  {\"de\": \"Modelle\", \"en\": [\"models\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Verfahren\", \"en\": [\"method\", \"procedure\", \"process\"], \"note\": \"Patent standard; 'method' for Title/abstract; 'procedure' for steps; 'process' for general\"},\n  {\"de\": \"Computerprogramm\", \"en\": [\"computer program\", \"software program\"], \"note\": \"Patent standard: 'computer program'; avoid 'software' in formal context\"},\n  {\"de\": \"Produktionszellen\", \"en\": [\"production cells\", \"production units\"], \"note\": \"'Cells' if modular/autonomous; 'units' for general aggregates\"},\n  {\"de\": \"Definitionsschritt\", \"en\": [\"definition step\", \"specification step\"], \"note\": \"'Definition step' for process setup; 'specification' for formal parameters\"},\n  {\"de\": \"Produktionsverfahren\", \"en\": [\"production method\", \"manufacturing method\", \"production process\"], \"note\": \"'Production method' emphasizes systematic approach\"},\n  {\"de\": \"Prozedurgenerierungsbibliothek\", \"en\": [\"procedure generation library\", \"procedure synthesis library\"], \"note\": \"Compound: maintain full translation for clarity\"},\n  {\"de\": \"Planungskonfigurationsstrukturbibliothek\", \"en\": [\"planning configuration structure library\"], \"note\": \"Complex compound; maintain full translation; unwieldy but necessary for precision\"},\n  {\"de\": \"Beispiel\", \"en\": [\"example\", \"embodiment\"], \"note\": \"'Example' in description; 'embodiment' if specific variant is intended\"},\n  {\"de\": \"Grundlage\", \"en\": [\"basis\", \"foundation\", \"ground\"], \"note\": \"'Basis' is most technical\"},\n  {\"de\": \"Auswahlsubstrukturenmenge\", \"en\": [\"selection substructure set\", \"set of selection substructures\"], \"note\": \"Technical: 'set' terminology in mathematics/computer science\"},\n  {\"de\": \"Mehrzahl\", \"en\": [\"plurality\", \"multiple\"], \"note\": \"'Plurality' is formal patent language; 'multiple' is more colloquial\"},\n  {\"de\": \"Teilmenge\", \"en\": [\"subset\"], \"note\": \"Mathematics/computer science standard\"},\n  {\"de\": \"Informationen\", \"en\": [\"information\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Simulationsmodells\u00e4tze\", \"en\": [\"simulation model sets\", \"sets of simulation models\"], \"note\": \"Compound: 'sets' suggests mathematical organization\"},\n  {\"de\": \"Substrukturenbibliothek\", \"en\": [\"substructure library\", \"library of substructures\"], \"note\": \"Software/database terminology\"},\n  {\"de\": \"Generierung\", \"en\": [\"generation\", \"synthesis\"], \"note\": \"'Generation' is most common in engineering patents\"},\n  {\"de\": \"Produktbibliothek\", \"en\": [\"product library\", \"product database\"], \"note\": \"Software term; 'library' is standard for catalog of items\"},\n  {\"de\": \"Abstimmungsbibliothek\", \"en\": [\"tuning library\", \"calibration library\"], \"note\": \"Parallel to 'Abstimmungsschritt'\"},\n  {\"de\": \"Einsatz\", \"en\": [\"use\", \"deployment\", \"application\"], \"note\": \"'Deployment' for system context; 'application' for functional use\"},\n  {\"de\": \"Spezifische\", \"en\": [\"specific\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Auswahlstrukturenmenge\", \"en\": [\"selection structure set\", \"set of selection structures\"], \"note\": \"Mathematical collection terminology\"},\n  {\"de\": \"Ressourcenauswahlkomponente\", \"en\": [\"resource selection component\"], \"note\": \"System architecture; straightforward compound\"},\n  {\"de\": \"Prozedurgenerierungskomponente\", \"en\": [\"procedure generation component\", \"procedure synthesis component\"], \"note\": \"System module; maintain compound translation\"},\n  {\"de\": \"Strukturoptimierungskomponente\", \"en\": [\"structure optimization component\"], \"note\": \"System module; straightforward\"},\n  {\"de\": \"Ressourcen\", \"en\": [\"resources\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Gegenstand\", \"en\": [\"subject matter\", \"object\"], \"note\": \"'Subject matter' is patent standard terminology\"},\n  {\"de\": \"Optimierung\", \"en\": [\"optimization\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Technologien\", \"en\": [\"technologies\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Orchestrierung\", \"en\": [\"orchestration\"], \"note\": \"Software/systems term; kept as transliteration\"},\n  {\"de\": \"Ablauf-Modelle\", \"en\": [\"flow models\", \"process flow models\"], \"note\": \"'Flow models' emphasizes sequential/continuous behavior\"},\n  {\"de\": \"Prozedurmodelle\", \"en\": [\"procedure models\", \"procedural models\"], \"note\": \"Straightforward compound\"},\n  {\"de\": \"Prozedurschritten\", \"en\": [\"procedure steps\"], \"note\": \"Process terminology; plural form in context\"},\n  {\"de\": \"Optimierungsverfahren\", \"en\": [\"optimization method\", \"optimization procedure\"], \"note\": \"Algorithmic context; 'method' is standard\"},\n  {\"de\": \"Ressourcenoptimierungskomponente\", \"en\": [\"resource optimization component\"], \"note\": \"System module; straightforward\"},\n  {\"de\": \"Montage\", \"en\": [\"assembly\", \"assembly operation\"], \"note\": \"Manufacturing standard; 'assembly' is concise\"},\n  {\"de\": \"Vorstufe\", \"en\": [\"pre-stage\", \"preliminary stage\"], \"note\": \"Process phase; 'preliminary stage' is clearer\"},\n  {\"de\": \"Inferenz\", \"en\": [\"inference\"], \"note\": \"AI/ML term, kept as-is\"},\n  {\"de\": \"Merkmalen\", \"en\": [\"features\", \"characteristics\"], \"note\": \"'Features' is technical standard; plural form in context\"},\n  {\"de\": \"Komponenten\", \"en\": [\"components\", \"modules\"], \"note\": \"'Components' is patent standard; 'modules' if reusable units\"},\n  {\"de\": \"Beschreibung\", \"en\": [\"description\", \"specification\"], \"note\": \"'Description' for narrative; 'specification' for technical detail\"},\n  {\"de\": \"Realisierung\", \"en\": [\"realization\", \"implementation\"], \"note\": \"'Realization' is more formal; 'implementation' more common\"},\n  {\"de\": \"Zustands\u00fcberg\u00e4nge\", \"en\": [\"state transitions\"], \"note\": \"Computer science/control theory standard\"},\n  {\"de\": \"Operation-Modelle\", \"en\": [\"operation models\", \"operational models\"], \"note\": \"Straightforward compound\"},\n  {\"de\": \"Simulation\", \"en\": [\"simulation\"], \"note\": \"English term, kept as-is\"},\n  {\"de\": \"Trajektorie\", \"en\": [\"trajectory\"], \"note\": \"Robotics/kinematics standard; kept as-is\"},\n  {\"de\": \"Zykluszeiten\", \"en\": [\"cycle times\"], \"note\": \"Manufacturing standard; plural form in context\"},\n  {\"de\": \"Zusammenhang\", \"en\": [\"relationship\", \"context\", \"correlation\"], \"note\": \"'Relationship' for structural; 'context' for usage; 'correlation' for quantitative\"},\n  {\"de\": \"Modells\u00e4tzen\", \"en\": [\"model sets\", \"sets of models\"], \"note\": \"Collection terminology; plural in context\"},\n  {\"de\": \"Verbesserung\", \"en\": [\"improvement\"], \"note\": \"Straightforward; common in patent claims\"},\n  {\"de\": \"Durchf\u00fchrung\", \"en\": [\"execution\", \"implementation\", \"conduct\"], \"note\": \"'Execution' for operational; 'implementation' for realization\"},\n  {\"de\": \"M\u00f6glichkeiten\", \"en\": [\"possibilities\", \"options\"], \"note\": \"'Options' is more technical; plural in context\"},\n  {\"de\": \"Weiterbildung\", \"en\": [\"further training\", \"continued training\"], \"note\": \"AI/learning context; 'further training' is standard\"},\n  {\"de\": \"Funktionsmodul\", \"en\": [\"functional module\", \"function module\"], \"note\": \"System architecture; 'functional module' is slightly more formal\"},\n  {\"de\": \"Montageaufgabe\", \"en\": [\"assembly task\"], \"note\": \"Manufacturing/robotics; straightforward compound\"},\n  {\"de\": \"Randbedingungen\", \"en\": [\"boundary conditions\", \"constraints\"], \"note\": \"'Boundary conditions' is mathematical/technical; 'constraints' is more general\"},\n  {\"de\": \"Metaheuristische\", \"en\": [\"metaheuristic\"], \"note\": \"Algorithm terminology; kept as transliteration\"},\n  {\"de\": \"Roboterwerkzeugen\", \"en\": [\"robot tools\", \"robotic tools\"], \"note\": \"Robotics context; 'robotic tools' is slightly more formal\"},\n  {\"de\": \"Dynamiksimulation\", \"en\": [\"dynamics simulation\", \"dynamic simulation\"], \"note\": \"Physics/robotics; both used; 'dynamics simulation' is more technical\"},\n  {\"de\": \"Optimierungsprozess\", \"en\": [\"optimization process\"], \"note\": \"Straightforward compound\"},\n  {\"de\": \"Prozedurgenerierung\", \"en\": [\"procedure generation\", \"procedure synthesis\"], \"note\": \"Core technical term; 'generation' is most common\"},\n  {\"de\": \"Gesamtkonfiguration\", \"en\": [\"overall configuration\", \"total configuration\"], \"note\": \"System-wide setting; 'overall' emphasizes completeness\"},\n  {\"de\": \"Generierungspipeline\", \"en\": [\"generation pipeline\", \"generation workflow\"], \"note\": \"Software architecture; 'pipeline' is technical standard\"},\n  {\"de\": \"Starrk\u00f6rpersimulation\", \"en\": [\"rigid body simulation\"], \"note\": \"Physics/simulation standard; technical term\"},\n  {\"de\": \"Substruktureigenschaften\", \"en\": [\"substructure properties\", \"substructure characteristics\"], \"note\": \"'Properties' is technical standard\"},\n  {\"de\": \"Datenverarbeitungseinrichtung\", \"en\": [\"data processing device\", \"data processing apparatus\"], \"note\": \"Patent standard for hardware; 'apparatus' is more formal\"}\n]\n"}], "grading": {"run_id": "eval-2-engineering-patent-with_skill", "expectations": [{"text": "extracted_80plus_terms", "passed": true, "evidence": "term_review.md extraction summary states 'Found 109 recurring technical terms across 259 sentences' with 86 recommended glossary entries, well exceeding 80-term threshold"}, {"text": "handles_long_compounds", "passed": true, "evidence": "Correctly handles 'Planungskonfigurationsstruktur' (36x) \u2192 'planning configuration structure' and even longer compound 'Planungskonfigurationsstrukturbibliothek' (10x) \u2192 'planning configuration structure library'"}, {"text": "multiple_translation_options", "passed": true, "evidence": "Multiple options provided for terms (e.g., Produktionseinheit: 'production unit' vs 'production cell'; Planungsverfahren: 'planning method' vs 'scheduling procedure'; Umsetzung: 'implementation' vs 'execution, realization')"}, {"text": "glossary_tsv_produced", "passed": true, "evidence": "glossary.tsv exists with 94 lines containing tab-separated de\u2192en pairs covering all major technical terms"}, {"text": "domain_recognition", "passed": true, "evidence": "Output explicitly recognizes this as a production planning/manufacturing/engineering patent. Includes manufacturing and process-specific vocabulary, system architecture terminology, and technical compound handling."}]}}, {"id": "eval-2-engineering-patent-without_skill", "prompt": "I need to build a glossary for this engineering patent before translating it. The German document is test_patent.docx. Pull out the key terms and suggest English equivalents.", "eval_id": "eval-2-engineering-patent", "outputs": [{"name": "glossary.tsv", "type": "binary", "mime": "text/tab-separated-values", "data_uri": "data:text/tab-separated-values;base64,R2VybWFuIFRlcm0JRW5nbGlzaCBUZXJtCUZyZXF1ZW5jeQlDb250ZXh0IE5vdGVzClByb2R1a3Rpb25zZWluaGVpdAlQcm9kdWN0aW9uIHVuaXQJNTMJQ29yZSBtYW51ZmFjdHVyaW5nIHN5c3RlbSBjb21wb25lbnQKRW5naW5lZXJpbmcJRW5naW5lZXJpbmcJNTAJQWxyZWFkeSBFbmdsaXNoIGxvYW53b3JkIGluIEdlcm1hbiB0ZXh0ClN5c3RlbQlTeXN0ZW0JNDcJQWxyZWFkeSBFbmdsaXNoIGxvYW53b3JkIGluIEdlcm1hbiB0ZXh0ClByb3plZHVyCVByb2NlZHVyZQk0MAlFeGVjdXRpb24gaW5zdHJ1Y3Rpb25zL3dvcmtmbG93IHN0ZXBzCktvbmZpZ3VyYXRpb25zc3RydWt0dXIJQ29uZmlndXJhdGlvbiBzdHJ1Y3R1cmUJMzYJQXJyYW5nZW1lbnQgb2YgY29tcG9uZW50cwpQcm9kdWt0CVByb2R1Y3QJMzYJSXRlbSBiZWluZyBtYW51ZmFjdHVyZWQKQXVzd2FobHN1YnN0cnVrdHVyZW4JU2VsZWN0aW9uIHN1YnN0cnVjdHVyZXMJMzQJQXZhaWxhYmxlIGNvbXBvbmVudCBvcHRpb25zClBsYW51bmdza29uZmlndXJhdGlvbnNzdHJ1a3R1cglQbGFubmluZyBjb25maWd1cmF0aW9uIHN0cnVjdHVyZQkzMAlEZXNpZ25lZCBhcnJhbmdlbWVudCBvZiBjb21wb25lbnRzClBsYW51bmdzdmVyZmFocmVuCVBsYW5uaW5nIG1ldGhvZC9wcm9jZWR1cmUJMjYJT3ZlcmFsbCBwbGFubmluZyBhcHByb2FjaApQcm9kdWt0aW9uc3Byb3plc3MJUHJvZHVjdGlvbiBwcm9jZXNzCTI2CU1hbnVmYWN0dXJpbmcgd29ya2Zsb3cKVW1zZXR6dW5nCUltcGxlbWVudGF0aW9uCTI0CUV4ZWN1dGlvbi9yZWFsaXphdGlvbiBvZiBwbGFuClBsYW51bmdzcHJvemVkdXIJUGxhbm5pbmcgcHJvY2VkdXJlCTI0CVN0ZXAtYnktc3RlcCBwbGFubmluZyBpbnN0cnVjdGlvbnMKUHJvZHVrdGlvbnNpbmZvcm1hdGlvbmVuCVByb2R1Y3Rpb24gaW5mb3JtYXRpb24JMjEJRGF0YSBhYm91dCBtYW51ZmFjdHVyaW5nCktvbmZpZ3VyYXRpb25zc2Nocml0dAlDb25maWd1cmF0aW9uIHN0ZXAJMjAJU3RlcCAzMDAgb2YgdGhlIHByb2Nlc3MKWmllbHN1YnN0cnVrdHVyZW4JVGFyZ2V0IHN1YnN0cnVjdHVyZXMJMTkJRmluYWwgc2VsZWN0ZWQgY29tcG9uZW50cwpBYnN0aW1tdW5nc3NjaHJpdHQJQ29vcmRpbmF0aW9uIHN0ZXAJMTcJU3RlcCA1MDAgLSBhbGlnbm1lbnQgYW5kIGZpbmFsaXphdGlvbgpLb25maWd1cmF0aW9uCUNvbmZpZ3VyYXRpb24JMTcJQXJyYW5nZW1lbnQvc2V0dXAKUGxhbnVuZ3Nrb21wb25lbnRlbglQbGFubmluZyBjb21wb25lbnRzCTE3CUVsZW1lbnRzIHVzZWQgaW4gcGxhbm5pbmcKRXJmaW5kdW5nCUludmVudGlvbgkxNglUaGUgcGF0ZW50ZWQgaW52ZW50aW9uIGl0c2VsZgpTdWJzdHJ1a3R1cmVuCVN1YnN0cnVjdHVyZXMJMTYJQ29tcG9uZW50IGFycmFuZ2VtZW50cwpBdXN3YWhsc2Nocml0dAlTZWxlY3Rpb24gc3RlcAkxNQlTdGVwIDIwMCAtIGNob29zaW5nIGNvbXBvbmVudHMKUHJvemVkdXJnZW5lcmllcnVuZ3NzY2hyaXR0CVByb2NlZHVyZSBnZW5lcmF0aW9uIHN0ZXAJMTUJU3RlcCA0MDAgLSBjcmVhdGluZyBleGVjdXRpb24gaW5zdHJ1Y3Rpb25zCktvbmZpZ3VyYXRpb25lbglDb25maWd1cmF0aW9ucwkxNQlNdWx0aXBsZSBhcnJhbmdlbWVudCBvcHRpb25zClNpbXVsYXRpb25zYmlibGlvdGhlawlTaW11bGF0aW9uIGxpYnJhcnkJMTUJRGF0YWJhc2Ugb2Ygc2ltdWxhdGlvbiBtb2RlbHMKQXVzd2FobAlTZWxlY3Rpb24JMTMJQ2hvaWNlL2Nob29zaW5nIHByb2Nlc3MKUGxhbnVuZwlQbGFubmluZwkxMglEZXNpZ24vcGxhbm5pbmcgcHJvY2VzcwpDb21wdXRlcnByb2dyYW1tCUNvbXB1dGVyIHByb2dyYW0JMTAJU29mdHdhcmUgaW1wbGVtZW50YXRpb24KRGVmaW5pdGlvbnNzY2hyaXR0CURlZmluaXRpb24gc3RlcAkxMAlTdGVwIDEwMCAtIHByb2R1Y3QgZGVmaW5pdGlvbgpCYXNpcwlCYXNpcwkxMAlGb3VuZGF0aW9uL2Jhc2UKVmVyZmFocmVuCU1ldGhvZC9Qcm9jZWR1cmUJMTAJQXBwcm9hY2gvcHJvY2VzcyAodXNlIGNvbnRleHQgdG8gZGlzdGluZ3Vpc2gpCk1vZGVsbGUJTW9kZWxzCTEwCVNpbXVsYXRpb24gb3Igc3RydWN0dXJhbCBtb2RlbHMKUGxhbnVuZ3Nrb25maWd1cmF0aW9uc3N0cnVrdHVyYmlibGlvdGhlawlQbGFubmluZyBjb25maWd1cmF0aW9uIHN0cnVjdHVyZSBsaWJyYXJ5CTEwCURhdGFiYXNlIG9mIHBsYW5uaW5nIGNvbmZpZ3VyYXRpb25zClByb3plZHVyZ2VuZXJpZXJ1bmdzYmlibGlvdGhlawlQcm9jZWR1cmUgZ2VuZXJhdGlvbiBsaWJyYXJ5CTEwCURhdGFiYXNlIGZvciBnZW5lcmF0aW5nIHByb2NlZHVyZXMK"}, {"name": "term_review.md", "type": "text", "content": "# Engineering Patent Glossary Review\n## German-to-English Technical Terminology\n\n**Document:** test_patent.docx\n**Patent Type:** Production Planning System\n**Original Language:** German\n**Date:** 2026-03-22\n\n---\n\n## Key Findings\n\nThis engineering patent from Robert Bosch GmbH covers a planning method and engineering system for production processes. The document contains 34 identified recurring technical terms organized by frequency and importance.\n\n### Core Technical Terms (High Frequency)\n\nThe following terms appear most frequently and form the conceptual backbone of the patent:\n\n| German Term | Frequency | Suggested English | Context |\n|---|---|---|---|\n| **Produktionseinheit** | 53 | Production unit | Core component - the factory/manufacturing system |\n| **Engineering** | 50 | Engineering | English loanword already used in German text |\n| **System** | 47 | System | English loanword already used in German text |\n| **Prozedur** | 40 | Procedure | Step-by-step execution instructions |\n| **Konfigurationsstruktur** | 36 | Configuration structure | Arrangement/setup of components |\n| **Produkt** | 36 | Product | Item being manufactured |\n| **Auswahlsubstrukturen** | 34 | Selection substructures | Available component options |\n| **Planungskonfigurationsstruktur** | 30 | Planning configuration structure | Designed arrangement of components |\n\n### Process Steps (Procedural Terms)\n\nThe patent describes a process with distinct steps, each with German terminology:\n\n| German Term | Frequency | Suggested English | Notes |\n|---|---|---|---|\n| **Definitionsschritt** | 10 | Definition step | Step 100 - Product definition phase |\n| **Auswahlschritt** | 15 | Selection step | Step 200 - Choose from available options |\n| **Konfigurationsschritt** | 20 | Configuration step | Step 300 - Arrange selected components |\n| **Prozedurgenerierungsschritt** | 15 | Procedure generation step | Step 400 - Create execution instructions |\n| **Abstimmungsschritt** | 17 | Coordination/Harmonization step | Step 500 - Align and finalize |\n\n### Compound Terms and Variants\n\nSeveral long compound words appear in the document:\n\n| German Term | Frequency | Suggested English |\n|---|---|---|\n| **Planungskonfigurationsstrukturbibliothek** | 10 | Planning configuration structure library |\n| **Prozedurgenerierungsbibliothek** | 10 | Procedure generation library |\n| **Produktionsinformationen** | 21 | Production information |\n| **Planungskomponenten** | 17 | Planning components |\n\n### Related/Variant Terms\n\nThe following terms are variants or related concepts:\n\n| Base German Term | Variants | Suggested English |\n|---|---|---|\n| Konfiguration | Konfigurationen, Konfigurationsstruktur, Konfigurationsschritt | Configuration, Configurations, Configuration structure, Configuration step |\n| Substrukturen | Auswahlsubstrukturen, Zielsubstrukturen | Substructures, Selection substructures, Target substructures |\n| Planung | Planungsverfahren, Planungskonfigurationsstruktur, Planungsprozedur, Planungskomponenten | Planning, Planning method/procedure, Planning configuration structure, Planning procedure, Planning components |\n\n---\n\n## Translation Considerations\n\n### 1. **Terminology Consistency**\n- **\"Verfahren\"** can mean either \"method,\" \"procedure,\" or \"process.\" For consistency in this patent, suggest using **\"method\"** when referring to the overall planning approach and **\"procedure\"** when describing execution steps.\n- **\"Prozedur\"** should consistently translate to **\"procedure\"** to maintain distinction from \"Verfahren.\"\n\n### 2. **English Loanwords**\n- The original German text already contains \"Engineering\" and \"System\" as English words. These should remain unchanged in translation.\n\n### 3. **Compound Words**\n- German allows extensive compounding. Many English translations will necessarily be longer (e.g., \"Planungskonfigurationsstrukturbibliothek\" \u2192 \"Planning configuration structure library\"). Consider hyphenation for readability: \"Planning-configuration-structure library\" if needed.\n\n### 4. **Grammatical Forms**\n- Terms like \"ausgebildet\" (formed/configured), \"gebildet\" (formed), and \"definiert\" (defined) appear frequently as past participles used adjectivally. Ensure consistent translation of these forms in context.\n\n---\n\n## Recommended Translation Strategy\n\n1. **Prioritize consistency** across all variants and related forms\n2. **Create a master glossary** with all variants listed together\n3. **Maintain the hierarchical structure** implied by the German compounds (e.g., \"Configuration structure\" is part of \"Planning configuration structure\")\n4. **Review context** for \"Verfahren\" vs. \"Prozedur\" distinctions before final translation\n5. **Test compound translations** in context for readability and clarity\n\n---\n\n## Notes for Translator\n\n- This patent uses precise technical language with carefully constructed compound words that may not have perfect one-word English equivalents\n- The process flow (Steps 100-500) should maintain clear nomenclature in English\n- Library/database terms appear multiple times and should follow consistent naming conventions\n- Consider whether hyphenation or other formatting aids clarity in compound terms\n"}], "grading": {"run_id": "eval-2-engineering-patent-without_skill", "expectations": [{"text": "extracted_80plus_terms", "passed": false, "evidence": "term_review.md identifies only 34 unique recurring technical terms. This falls significantly short of the 80-term threshold. Glossary has only 35 lines of translated terms."}, {"text": "handles_long_compounds", "passed": true, "evidence": "Does handle 'Planungskonfigurationsstrukturbibliothek' (10x) \u2192 'Planning configuration structure library' correctly, showing proper compound translation"}, {"text": "multiple_translation_options", "passed": true, "evidence": "Multiple translation options provided for key terms (e.g., Produktionseinheit: 'Production unit' with note; Planungsverfahren: 'Planning method/procedure')"}, {"text": "glossary_tsv_produced", "passed": true, "evidence": "glossary.tsv exists with 34 lines containing properly formatted tab-separated de\u2192en pairs"}, {"text": "domain_recognition", "passed": true, "evidence": "Output recognizes this as a production planning system/engineering patent from Robert Bosch GmbH. Identifies core manufacturing terminology and system architecture."}]}}, {"id": "eval-3-preselected-terms-with_skill", "prompt": "I already have some preferred terms: Stent should always be 'stent', Kartusche should be 'cartridge', and Herzklappe should be 'heart valve'. Scan for the rest and give me options.", "eval_id": "eval-3-preselected-terms", "outputs": [{"name": "SUMMARY.txt", "type": "text", "content": "GLOSSWERK TERM SCANNER - EXECUTION SUMMARY\n==========================================\n\nDocument: mitralvalvestent.docx (German medical device patent)\nExecution Date: 2026-03-22\n\nEXTRACTION RESULTS\n------------------\nTotal sentences analyzed: 137\nUnique nouns extracted: 314\nCandidate terms (frequency >= 3): 54\n\nPRE-SELECTED TERMS (LOCKED)\n---------------------------\n1. Stent (58x) \u2192 \"stent\"\n2. Kartusche (14x) \u2192 \"cartridge\"  \n3. Herzklappe (10x) \u2192 \"heart valve\"\n\nThese three terms were pre-selected and are NOT re-proposed in the terminology review.\nThey appear locked in the final glossary.\n\nTERMINOLOGY ANALYSIS\n--------------------\nRemaining terms analyzed and translated: 51\n\nDistribution by frequency:\n- HIGH FREQUENCY (10+ occurrences): 10 terms\n  Top: Stentb\u00fcgel (29x), Mitralklappenstent (23x), Abschnitt (18x)\n\n- MEDIUM FREQUENCY (5-9 occurrences): 15 terms\n  Including: Annulus (8x), Implantation (8x), Positionierung (8x)\n\n- LOWER FREQUENCY (3-4 occurrences): 26 terms\n  Includes drawing reference terms and anatomical components\n\nDOMAIN NOTES\n-----------\nDocument specialty: Cardiac medical device (mitral valve stent delivery system)\n\nKey compound nouns identified:\n- Mitralklappenstent (mitral valve stent)\n- Mitralklappensegel (mitral valve leaflet)\n- Herzklappenprothese (cardiac valve prosthesis)\n- Formged\u00e4chtnislegierung (shape memory alloy)\n\nMedical terminology preserved:\n- Anatomical terms: Vorhof (atrium), Ventrikel (ventricle), Annulus\n- Device components: Stentb\u00fcgel (stent strut), \u00d6sen (eyelets)\n- Procedural terms: Implantation, Positionierung, Verankerung (anchoring)\n\nOUTPUT FILES\n------------\n1. candidates.json (4.8 KB)\n   - Raw extraction with all 54 terms and frequencies\n   - Used for validation and audit trail\n\n2. term_review.md (3.5 KB)\n   - Formatted for translator review\n   - Shows pre-selected terms as locked\n   - Presents alternatives for remaining 51 terms\n   - Grouped by frequency for prioritization\n\n3. glossary.tsv (1.3 KB)\n   - Final glossary ready for translation workflow\n   - Tab-separated: German term | English translation\n   - Includes all 54 terms with recommended first-choice translations\n   - Pre-selected terms honored with user's preferred translations\n\nAll files saved to:\n/sessions/admiring-relaxed-mccarthy/mnt/glosswerk/skills/glosswerk-term-scanner-workspace/iteration-1/eval-3-preselected-terms/with_skill/outputs/\n\nSTATUS: COMPLETE \u2713\n"}, {"name": "candidates.json", "type": "text", "content": "{\n  \"source_file\": \"mitralvalvestent.docx\",\n  \"total_sentences\": 137,\n  \"total_candidates\": 54,\n  \"min_frequency\": 3,\n  \"extraction_method\": \"heuristic\",\n  \"terms\": [\n    {\n      \"de\": \"Stent\",\n      \"frequency\": 58,\n      \"variants\": [\n        \"Stents\"\n      ]\n    },\n    {\n      \"de\": \"Stentb\u00fcgel\",\n      \"frequency\": 29,\n      \"variants\": [\n        \"Stentb\u00fcgels\",\n        \"Stentb\u00fcgeln\"\n      ]\n    },\n    {\n      \"de\": \"Mitralklappenstent\",\n      \"frequency\": 23,\n      \"variants\": [\n        \"Mitralklappenstents\"\n      ]\n    },\n    {\n      \"de\": \"Abschnitt\",\n      \"frequency\": 18,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mitralklappensegel\",\n      \"frequency\": 17,\n      \"variants\": [\n        \"Mitralklappensegels\"\n      ]\n    },\n    {\n      \"de\": \"Klappe\",\n      \"frequency\": 16,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Klappenstent\",\n      \"frequency\": 15,\n      \"variants\": [\n        \"Klappenstents\"\n      ]\n    },\n    {\n      \"de\": \"Kartusche\",\n      \"frequency\": 14,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zustand\",\n      \"frequency\": 13,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzklappenprothese\",\n      \"frequency\": 12,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Erfindung\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzklappe\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mitralklappe\",\n      \"frequency\": 10,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Annulus\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Implantation\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Positionierung\",\n      \"frequency\": 8,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Darstellung\",\n      \"frequency\": 7,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzen\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Vorhof\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Mehrzahl\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Funktion\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ventrikel\",\n      \"frequency\": 6,\n      \"variants\": [\n        \"Ventrikels\"\n      ]\n    },\n    {\n      \"de\": \"M\u00f6glichkeit\",\n      \"frequency\": 6,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Au\u00dfen\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Befestigung\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verankerung\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Aortenklappe\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verankerungselementen\",\n      \"frequency\": 5,\n      \"variants\": []\n    },\n    {\n      \"de\": \"\u00d6sen\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Bereich\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Ansicht\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Katheter\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"St\u00fctzb\u00fcgel\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Formged\u00e4chtnislegierung\",\n      \"frequency\": 4,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Seite\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Platz\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Anteil\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Winkel\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Chordae\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Fixation\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Vielzahl\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Schlaufen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Draufsicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Herzkammer\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Sehnenf\u00e4den\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Zeichnungen\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Verh\u00e4ltnisse\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Klappensegel\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Seitenansicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Detailansicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Federelemente\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Kathetersystem\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Lateral-Ansicht\",\n      \"frequency\": 3,\n      \"variants\": []\n    },\n    {\n      \"de\": \"Abdichtungsmembran\",\n      \"frequency\": 3,\n      \"variants\": []\n    }\n  ]\n}"}, {"name": "glossary.tsv", "type": "binary", "mime": "text/tab-separated-values", "data_uri": "data:text/tab-separated-values;base64,ZGVfdGVybQllbl90ZXJtClN0ZW50CXN0ZW50ClN0ZW50YsO8Z2VsCXN0ZW50IHN0cnV0Ck1pdHJhbGtsYXBwZW5zdGVudAltaXRyYWwgdmFsdmUgc3RlbnQKQWJzY2huaXR0CXNlY3Rpb24KTWl0cmFsa2xhcHBlbnNlZ2VsCW1pdHJhbCB2YWx2ZSBsZWFmbGV0CktsYXBwZQl2YWx2ZQpLbGFwcGVuc3RlbnQJdmFsdmUgc3RlbnQKS2FydHVzY2hlCWNhcnRyaWRnZQpadXN0YW5kCXN0YXRlCkhlcnprbGFwcGVucHJvdGhlc2UJY2FyZGlhYyB2YWx2ZSBwcm9zdGhlc2lzCkVyZmluZHVuZwlpbnZlbnRpb24KSGVyemtsYXBwZQloZWFydCB2YWx2ZQpNaXRyYWxrbGFwcGUJbWl0cmFsIHZhbHZlCkFubnVsdXMJYW5udWx1cwpJbXBsYW50YXRpb24JaW1wbGFudGF0aW9uClBvc2l0aW9uaWVydW5nCXBvc2l0aW9uaW5nCkRhcnN0ZWxsdW5nCXJlcHJlc2VudGF0aW9uCkhlcnplbgloZWFydHMKVm9yaG9mCWF0cml1bQpNZWhyemFobAlwbHVyYWxpdHkKRnVua3Rpb24JZnVuY3Rpb24KVmVudHJpa2VsCXZlbnRyaWNsZQpNw7ZnbGljaGtlaXQJcG9zc2liaWxpdHkKQXXDn2VuCWV4dGVyaW9yCkJlZmVzdGlndW5nCWF0dGFjaG1lbnQKVmVyYW5rZXJ1bmcJYW5jaG9yaW5nCkFvcnRlbmtsYXBwZQlhb3J0aWMgdmFsdmUKVmVyYW5rZXJ1bmdzZWxlbWVudGVuCWFuY2hvcmluZyBlbGVtZW50cwrDlnNlbglleWVsZXRzCkJlcmVpY2gJcmVnaW9uCkFuc2ljaHQJdmlldwpLYXRoZXRlcgljYXRoZXRlcgpTdMO8dHpiw7xnZWwJc3VwcG9ydCBzdHJ1dApGb3JtZ2Vkw6RjaHRuaXNsZWdpZXJ1bmcJc2hhcGUgbWVtb3J5IGFsbG95ClNlaXRlCXNpZGUKUGxhdHoJc3BhY2UKQW50ZWlsCXBvcnRpb24KV2lua2VsCWFuZ2xlCkNob3JkYWUJY2hvcmRhZQpGaXhhdGlvbglmaXhhdGlvbgpWaWVsemFobAlwbHVyYWxpdHkKU2NobGF1ZmVuCWxvb3BzCkRyYXVmc2ljaHQJdG9wIHZpZXcKSGVyemthbW1lcgljYXJkaWFjIGNoYW1iZXIKU2VobmVuZsOkZGVuCWNob3JkYWwgdGhyZWFkcwpaZWljaG51bmdlbglkcmF3aW5ncwpWZXJow6RsdG5pc3NlCXJhdGlvcwpLbGFwcGVuc2VnZWwJdmFsdmUgbGVhZmxldApTZWl0ZW5hbnNpY2h0CXNpZGUgdmlldwpEZXRhaWxhbnNpY2h0CWRldGFpbCB2aWV3CkZlZGVyZWxlbWVudGUJc3ByaW5nIGVsZW1lbnRzCkthdGhldGVyc3lzdGVtCWNhdGhldGVyIHN5c3RlbQpMYXRlcmFsLUFuc2ljaHQJbGF0ZXJhbCB2aWV3CkFiZGljaHR1bmdzbWVtYnJhbglzZWFsaW5nIG1lbWJyYW5lCg=="}, {"name": "term_review.md", "type": "text", "content": "# Terminology Review \u2014 mitralvalvestent.docx\n\nFound 54 recurring terms across 137 sentences.\n\n## Pre-Selected Terms (Locked)\n\nThese terms have been pre-selected and will not be re-proposed:\n\n| German | English | Frequency |\n|--------|---------|-----------|\n| Stent | **stent** | 58x |\n| Kartusche | **cartridge** | 14x |\n| Herzklappe | **heart valve** | 10x |\n\n---\n\n## HIGH FREQUENCY (10+ occurrences)\n\n### Stentb\u00fcgel (29x)\n**Options:** stent strut | stent frame\n\n### Mitralklappenstent (23x)\n**Options:** mitral valve stent\n\n### Abschnitt (18x)\n**Options:** section | segment | portion\n\n### Mitralklappensegel (17x)\n**Options:** mitral valve leaflet | mitral leaflet\n\n### Klappe (16x)\n**Options:** valve\n\n### Klappenstent (15x)\n**Options:** valve stent\n\n### Zustand (13x)\n**Options:** state | condition\n\n### Herzklappenprothese (12x)\n**Options:** cardiac valve prosthesis | heart valve prosthesis\n\n### Erfindung (10x)\n**Options:** invention\n\n### Mitralklappe (10x)\n**Options:** mitral valve\n\n---\n\n## MEDIUM FREQUENCY (5-9 occurrences)\n\n### Annulus (8x)\n**Options:** annulus\n\n### Implantation (8x)\n**Options:** implantation\n\n### Positionierung (8x)\n**Options:** positioning\n\n### Darstellung (7x)\n**Options:** representation | depiction | illustration\n\n### Herzen (6x)\n**Options:** hearts\n\n### Vorhof (6x)\n**Options:** atrium\n\n### Mehrzahl (6x)\n**Options:** plurality | multiple\n\n### Funktion (6x)\n**Options:** function\n\n### Ventrikel (6x)\n**Options:** ventricle\n\n### M\u00f6glichkeit (6x)\n**Options:** possibility | capability\n\n### Au\u00dfen (5x)\n**Options:** exterior | outside | outer\n\n### Befestigung (5x)\n**Options:** attachment | fastening | securing\n\n### Verankerung (5x)\n**Options:** anchoring | anchoring mechanism\n\n### Aortenklappe (5x)\n**Options:** aortic valve\n\n### Verankerungselementen (5x)\n**Options:** anchoring elements\n\n---\n\n## LOWER FREQUENCY (3-4 occurrences)\n\n### \u00d6sen (4x)\n**Options:** eyelets | loops\n\n### Bereich (4x)\n**Options:** region | area | zone\n\n### Ansicht (4x)\n**Options:** view\n\n### Katheter (4x)\n**Options:** catheter\n\n### St\u00fctzb\u00fcgel (4x)\n**Options:** support strut | support frame\n\n### Formged\u00e4chtnislegierung (4x)\n**Options:** shape memory alloy\n\n### Seite (3x)\n**Options:** side\n\n### Platz (3x)\n**Options:** space | location\n\n### Anteil (3x)\n**Options:** portion | part | share\n\n### Winkel (3x)\n**Options:** angle\n\n### Chordae (3x)\n**Options:** chordae | chordae tendinae\n\n### Fixation (3x)\n**Options:** fixation\n\n### Vielzahl (3x)\n**Options:** plurality | multitude\n\n### Schlaufen (3x)\n**Options:** loops | eyelets\n\n### Draufsicht (3x)\n**Options:** top view\n\n### Herzkammer (3x)\n**Options:** cardiac chamber | heart chamber\n\n### Sehnenf\u00e4den (3x)\n**Options:** chordal threads | tendon threads\n\n### Zeichnungen (3x)\n**Options:** drawings\n\n### Verh\u00e4ltnisse (3x)\n**Options:** ratios | proportions\n\n### Klappensegel (3x)\n**Options:** valve leaflet\n\n### Seitenansicht (3x)\n**Options:** side view\n\n### Detailansicht (3x)\n**Options:** detail view\n\n### Federelemente (3x)\n**Options:** spring elements\n\n### Kathetersystem (3x)\n**Options:** catheter system\n\n### Lateral-Ansicht (3x)\n**Options:** lateral view\n\n### Abdichtungsmembran (3x)\n**Options:** sealing membrane\n\n---\n\n## Translation Guide\n\nFor each term above, **the first option is the recommended default** for patent conventions. Select alternatives only if domain-specific context requires it. Pre-selected terms (Stent, Kartusche, Herzklappe) are already locked and will remain consistent throughout translation.\n"}], "grading": {"run_id": "eval-3-preselected-terms-with_skill", "expectations": [{"text": "respects_preselected", "passed": true, "evidence": "term_review.md explicitly shows 'Pre-Selected Terms (Locked)' section with Stent\u2192stent, Kartusche\u2192cartridge, Herzklappe\u2192heart valve marked with frequency. These are presented without alternatives."}, {"text": "scans_remaining", "passed": true, "evidence": "Output provides translation options for 51 other terms beyond the 3 pre-selected ones. HIGH FREQUENCY section shows Stentb\u00fcgel (29x), Mitralklappenstent (23x), etc. with multiple options."}, {"text": "glossary_includes_preselected", "passed": true, "evidence": "glossary.tsv includes all three preselected terms (Stent\u2192stent, Kartusche\u2192cartridge, Herzklappe\u2192heart valve) plus 52 additional terms for a total of 55 entries"}, {"text": "no_overriding_preselected", "passed": true, "evidence": "The three preselected terms maintain their specified translations: Stent=stent, Kartusche=cartridge, Herzklappe=heart valve. No alternative suggestions are provided for these locked terms."}]}}, {"id": "eval-3-preselected-terms-without_skill", "prompt": "I already have some preferred terms: Stent should always be 'stent', Kartusche should be 'cartridge', and Herzklappe should be 'heart valve'. Scan for the rest and give me options.", "eval_id": "eval-3-preselected-terms", "outputs": [{"name": "glossary.tsv", "type": "binary", "mime": "text/tab-separated-values", "data_uri": "data:text/tab-separated-values;base64,Z2VybWFuX3Rlcm0JZW5nbGlzaF90ZXJtCW9jY3VycmVuY2VzCWZyZXF1ZW5jeV9jYXRlZ29yeQlub3RlcwpTdGVudAlzdGVudAkzMAlwcmUtc2VsZWN0ZWQJQ29yZSBkZXZpY2UgY29tcG9uZW50IC0gdmVyaWZpZWQgcHJlLXNlbGVjdGVkIHRlcm0KS2FydHVzY2hlCWNhcnRyaWRnZQkxNAlwcmUtc2VsZWN0ZWQJRGVwbG95bWVudCBkZWxpdmVyeSBzeXN0ZW0gLSB2ZXJpZmllZCBwcmUtc2VsZWN0ZWQgdGVybQpIZXJ6a2xhcHBlCWhlYXJ0IHZhbHZlCTEwCXByZS1zZWxlY3RlZAlHZW5lcmljIHZhbHZlIHJlZmVyZW5jZSAtIHZlcmlmaWVkIHByZS1zZWxlY3RlZCB0ZXJtCk1pdHJhbGtsYXBwZW5zdGVudAltaXRyYWwgdmFsdmUgc3RlbnQJMjEJaGlnaAlDb21wb3VuZCBwcmltYXJ5IGRldmljZSB0ZXJtClN0ZW50YsO8Z2VsCXN0ZW50IHN0cnV0CTE2CWhpZ2gJU3RydWN0dXJhbCBzdHJ1dCBlbGVtZW50IChwcmVmZXJyZWQgb3ZlciAnYXJtJykKSGVyemtsYXBwZW5wcm90aGVzZQloZWFydCB2YWx2ZSBwcm9zdGhlc2lzCTEyCWhpZ2gJQXJ0aWZpY2lhbCByZXBsYWNlbWVudCB2YWx2ZQpLbGFwcGVuc3RlbnQJdmFsdmUgc3RlbnQJMTAJaGlnaAlJbnRlZ3JhdGVkIHZhbHZlLXN0ZW50IGFzc2VtYmx5Ck1pdHJhbGtsYXBwZQltaXRyYWwgdmFsdmUJMTAJaGlnaAlOYXRpdmUgdmFsdmUgYmVpbmcgcmVwbGFjZWQKTWl0cmFsa2xhcHBlbnNlZ2VsCW1pdHJhbCB2YWx2ZSBsZWFmbGV0CTEwCWhpZ2gJSW5kaXZpZHVhbCB2YWx2ZSBmbGFwcwpBbm51bHVzCWFubnVsdXMJMTAJaGlnaAlBbmF0b21pY2FsIHJpbmcgc3RydWN0dXJlIChwcmVzZXJ2ZSBMYXRpbikKS2F0aGV0ZXIJY2F0aGV0ZXIJNQltZWRpdW0JRGVsaXZlcnkgZGV2aWNlIGZvciBwcm9jZWR1cmUKQW9ydGVua2xhcHBlCWFvcnRpYyB2YWx2ZQk1CW1lZGl1bQlBZGphY2VudCBjYXJkaWFjIHZhbHZlClN0w7x0emLDvGdlbAlzdXBwb3J0IHN0cnV0CTQJbWVkaXVtCUFuY2hvcmluZyBzdHJ1Y3R1cmFsIGVsZW1lbnQKw5ZzZW4JZXllbGV0cwk0CW1lZGl1bQlTbWFsbCBmYXN0ZW5pbmcgZmVhdHVyZXMKRm9ybWdlZMOkY2h0bmlzbGVnaWVydW5nCXNoYXBlLW1lbW9yeSBhbGxveQk0CW1lZGl1bQlOaWNrZWwtdGl0YW5pdW0gYmFzZWQgbWF0ZXJpYWwKYXRyaWFsCWF0cmlhbAk0CW1lZGl1bQlBbmF0b21pY2FsIGRpcmVjdGlvbiAodXBwZXIgY2hhbWJlcikKU2NobGF1ZmVuCWxvb3BzCTMJbWVkaXVtCVNwcmluZy1saWtlIGNvbm5lY3Rpb24gZWxlbWVudHMKQ2hvcmRhZSB0ZW5kaW5lYWUJY2hvcmRhZSB0ZW5kaW5lYWUJMwltZWRpdW0JUHJlc2VydmUgTGF0aW4gYW5hdG9taWNhbCB0ZXJtClNlaG5lbmbDpGRlbgljaG9yZGFsIGZpbGFtZW50cwkzCW1lZGl1bQlDb25uZWN0aXZlIHRpc3N1ZSAodmFsdmUtdG8tdmVudHJpY2xlKQpWZW50cmlrZWwJdmVudHJpY2xlCTMJbWVkaXVtCUxvd2VyIGhlYXJ0IGNoYW1iZXIKQWJkaWNodHVuZ3NtZW1icmFuCXNlYWxpbmcgbWVtYnJhbmUJMwltZWRpdW0JUHJldmVudHMgcGFyYXZhbHZ1bGFyIGxlYWthZ2UKV2lua2VsCWFuZ2xlCTMJbWVkaXVtCUFuZ3VsYXIgbWVhc3VyZW1lbnQKRmVkZXJlbGVtZW50CXNwcmluZyBlbGVtZW50CTIJbG93CVByb3ZpZGVzIGVsYXN0aWNpdHkgYW5kIHNlbGYtZXhwYW5zaW9uClNlZ2VsCWxlYWZsZXQJMglsb3cJR2VuZXJpYyB2YWx2ZSBmbGFwIHJlZmVyZW5jZQpOaVRpTm9sCU5pVGlOb2wJMglsb3cJUHJlc2VydmUgcHJvcHJpZXRhcnkgbWF0ZXJpYWwgbmFtZQpkaXN0YWxlCWRpc3RhbAkyCWxvdwlBbmF0b21pY2FsIGRpcmVjdGlvbmFsIHRlcm0KQmx1dGZsdXNzCWJsb29kIGZsb3cJMglsb3cJSGVtb2R5bmFtaWMgcGFyYW1ldGVyCsOWZmZudW5nCW9wZW5pbmcJMglsb3cJQ2F0aGV0ZXIgbHVtZW4gb3IgYWNjZXNzIHBvaW50CkVudGZhbHR1bmcJZGVwbG95bWVudAkyCWxvdwlEZXZpY2UgZXhwYW5zaW9uIHByb2Nlc3MKRWxhc3Rpeml0w6R0CWVsYXN0aWNpdHkJMglsb3cJTWVjaGFuaWNhbCBtYXRlcmlhbCBwcm9wZXJ0eQpWZXJhbmtlcnVuZ3NlbGVtZW50CWFuY2hvcmluZyBlbGVtZW50CTEJbG93CURldmljZSBwb3NpdGlvbmluZyBlbGVtZW50CkJlZmVzdGlndW5nc2VsZW1lbnQJYXR0YWNobWVudCBlbGVtZW50CTEJbG93CUNvbXBvbmVudCBmYXN0ZW5pbmcgZmVhdHVyZQpwcm94aW1hbGUJcHJveGltYWwJMQlsb3cJQW5hdG9taWNhbCBkaXJlY3Rpb25hbCB0ZXJtCnZlbnRyaWt1bMOkcgl2ZW50cmljdWxhcgkxCWxvdwlSZWxhdGluZyB0byB2ZW50cmljbGUKUGFwaWxsYXJtdXNrZWwJcGFwaWxsYXJ5IG11c2NsZQkxCWxvdwlDYXJkaWFjIG11c2NsZSBzdHJ1Y3R1cmUKU2VsYnN0ZXhwYW5zaW9uCXNlbGYtZXhwYW5zaW9uCTEJbG93CURlcGxveW1lbnQgbWVjaGFuaXNtIHR5cGUKVm9yc3Bhbm51bmcJcHJlLXRlbnNpb24JMQlsb3cJSW5pdGlhbCBtZWNoYW5pY2FsIHN0YXRlCkJpZWdzYW1rZWl0CWZsZXhpYmlsaXR5CTEJbG93CUNhdGhldGVyIHN5c3RlbSBwcm9wZXJ0eQpLYXRoZXRlcsO2ZmZudW5nCWNhdGhldGVyIG9wZW5pbmcJMQlsb3cJQ2F0aGV0ZXIgbHVtZW4gYWNjZXNzCkJsdXRnZWbDpHNzCWJsb29kIHZlc3NlbAkxCWxvdwlWYXNjdWxhciBzdHJ1Y3R1cmUKR2Vmw6Rzcwl2ZXNzZWwJMQlsb3cJR2VuZXJpYyB2YXNjdWxhciB0ZXJtClZlbnRyaWtlbGdlb21ldHJpZQl2ZW50cmljdWxhciBnZW9tZXRyeQkxCWxvdwlBbmF0b21pY2FsIHNoYXBlIHBhcmFtZXRlcgo="}, {"name": "term_review.md", "type": "text", "content": "# Medical Device Patent Terminology Review\n## German-to-English Translation Analysis\n\n**Patent:** Mitralklappenstent (Mitral Valve Stent)\n**Document Source:** DE 10 2006 052 564 B3 (2007.12.13)\n\n---\n\n## Pre-Selected Terms (Verified)\n\nThe following terms have been pre-selected and verified throughout the document:\n\n| German Term | English Translation | Occurrences | Context |\n|------------|-------------------|------------|---------|\n| **Stent** | stent | 30 | Appears throughout as core device component |\n| **Kartusche** | cartridge | 14 | Deployment delivery system for catheter |\n| **Herzklappe** | heart valve | 10 | Generic reference to cardiac valve |\n\n---\n\n## Recommended Translations for Recurring Terms\n\n### High Frequency Terms (10+ occurrences)\n\n| German Term | Recommended Translation | Occurrences | Notes |\n|------------|----------------------|------------|-------|\n| Mitralklappenstent | mitral valve stent | 21 | Compound term combining three elements |\n| Stentb\u00fcgel | stent strut / stent arm | 16 | Structural component of stent design |\n| Herzklappenprothese | heart valve prosthesis | 12 | Artificial replacement valve |\n| Klappenstent | valve stent | 10 | Integrated valve and stent assembly |\n| Mitralklappe | mitral valve | 10 | Native valve subject to replacement |\n| Mitralklappensegel | mitral valve leaflet | 10 | Individual flaps of the mitral valve |\n| Annulus | annulus | 10 | Anatomical ring structure (Latin cognate) |\n\n### Medium Frequency Terms (3-9 occurrences)\n\n| German Term | Recommended Translation | Occurrences | Notes |\n|------------|----------------------|------------|-------|\n| Katheter | catheter | 5 | Delivery device for minimally invasive procedure |\n| Aortenklappe | aortic valve | 5 | Adjacent valve structure |\n| St\u00fctzb\u00fcgel | support strut / support arm | 4 | Anchoring structural element |\n| \u00d6sen | eyelets / loops | 4 | Small fastening features |\n| Formged\u00e4chtnislegierung | shape-memory alloy | 4 | Material with thermal shape-recovery properties |\n| atrial | atrial | 4 | Anatomical direction (upper chamber) |\n| Schlaufen | loops / lugs | 3 | Spring-like connection elements |\n| Chordae tendineae | chordae tendineae | 3 | Latin anatomical term (preserve as is) |\n| Sehnenf\u00e4den | chordal filaments / chord tendons | 3 | Connective tissue between valve and ventricle |\n| Ventrikel | ventricle | 3 | Lower chamber of heart |\n| Abdichtungsmembran | sealing membrane / sealing seal | 3 | Prevents blood leakage around device |\n| Winkel | angle | 3 | Angular measurement between components |\n\n### Lower Frequency Terms (1-2 occurrences)\n\n| German Term | Recommended Translation | Occurrences | Notes |\n|------------|----------------------|------------|-------|\n| Federelement | spring element / elastic element | 2 | Provides elasticity and expansion |\n| Segel | leaflet / flap | 2 | Generic reference to valve flaps |\n| NiTiNol | NiTiNol | 2 | Proprietary nickel-titanium alloy (preserve brand name) |\n| distale | distal | 2 | Directional term (away from origin) |\n| Blutfluss | blood flow | 2 | Flow of blood through valve |\n| \u00d6ffnung | opening | 2 | Catheter lumen or access point |\n| Entfaltung | deployment / expansion | 2 | Process of stent self-expansion |\n| Elastizit\u00e4t | elasticity | 2 | Mechanical property |\n| Verankerungselement | anchoring element / anchor | 1 | Secures device in position |\n| Befestigungselement | attachment element / fastener | 1 | Secures components together |\n| proximale | proximal | 1 | Directional term (toward origin) |\n| ventrikul\u00e4r | ventricular | 1 | Relating to ventricle |\n| Papillarmuskel | papillary muscle | 1 | Heart muscle structure |\n| Selbstexpansion | self-expansion | 1 | Device deployment mechanism |\n| Vorspannung | pre-tension / pre-load | 1 | Initial mechanical tension |\n| Biegsamkeit | flexibility | 1 | Mechanical property of catheter system |\n| Katheter\u00f6ffnung | catheter opening / catheter lumen | 1 | Access point in catheter |\n| Blutgef\u00e4ss | blood vessel | 1 | Vascular structure |\n| Gef\u00e4\u00df | vessel | 1 | Generic vascular reference |\n| Ventrikelgeometrie | ventricular geometry | 1 | Shape/structure of ventricle |\n\n---\n\n## Translation Strategy Notes\n\n### Cognates & Latin Terms\n- **Annulus**: Use as-is (Latin cognate, standard in English medical literature)\n- **Chordae tendineae**: Preserve as Latin anatomical term (standard English medical usage)\n- **NiTiNol**: Preserve as proprietary brand/material designation\n\n### Compound Term Analysis\n- **Mitralklappenstent**: Break into components for clarity: \"mitral valve stent\" (not \"mitral stent\" alone, which loses specificity)\n- **Stentb\u00fcgel**: \"Stent strut\" is preferred in cardiac device terminology (more precise than \"arm\")\n- **Herzklappenprothese**: \"Heart valve prosthesis\" maintains distinction from native \"herzklappe\"\n\n### Directional/Anatomical Terms\n- **proximal/distal, atrial/ventrikul\u00e4r**: Use standard English anatomical directional terminology\n- **Segel/Mitralklappensegel**: \"Leaflet\" is standard English cardiology terminology for valve flaps\n\n### Material & Mechanism Terms\n- **Formged\u00e4chtnislegierung**: \"Shape-memory alloy\" (standard technical English)\n- **Selbstexpansion**: \"Self-expansion\" or \"self-expanding\" depending on context\n- **Entfaltung**: \"Deployment\" preferred in device context over \"unfolding\"\n\n---\n\n## Consistency Recommendations\n\n1. **Maintain the three pre-selected terms** as specified (stent, cartridge, heart valve)\n2. **Use compound form** for \"mitral valve stent\" rather than abbreviations\n3. **Distinguish** between structural elements using \"strut\" (stent) vs. \"leaflet\" (valve)\n4. **Preserve Latin/anatomical terms** where standard in English medical literature\n5. **Technical translation** of material and mechanism terms using established English terminology\n\n---\n\n## Document Statistics\n\n- **Total identified German medical terms**: 41 unique terms\n- **Occurrences analyzed**: 268 instances\n- **High-frequency core terms** (10+): 7 terms\n- **Medium-frequency terms** (3-9): 7 terms\n- **Lower-frequency terms** (1-2): 27 terms\n\n"}], "grading": {"run_id": "eval-3-preselected-terms-without_skill", "expectations": [{"text": "respects_preselected", "passed": true, "evidence": "term_review.md explicitly lists 'Pre-Selected Terms (Verified)' section with Stent\u2192stent, Kartusche\u2192cartridge, Herzklappe\u2192heart valve. These appear in the glossary with their specified translations."}, {"text": "scans_remaining", "passed": true, "evidence": "Output proposes translations for 38 additional terms beyond the 3 pre-selected ones (Mitralklappenstent, Stentb\u00fcgel, Herzklappenprothese, etc.). Provides recommendations and notes for each."}, {"text": "glossary_includes_preselected", "passed": true, "evidence": "glossary.tsv (43 lines) includes the three preselected terms with their specified translations plus 40 additional rows with German-English pairs, frequency categories, and notes"}, {"text": "no_overriding_preselected", "passed": true, "evidence": "The three preselected terms maintain exactly their specified translations: Stent=stent, Kartusche=cartridge, Herzklappe=heart valve. No alternative options suggested."}]}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "glosswerk-term-scanner", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-03-22T23:16:27Z", "evals_run": [], "runs_per_configuration": 3}, "runs": [], "run_summary": {"delta": {"pass_rate": "+0.00", "time_seconds": "+0.0", "tokens": "+0"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

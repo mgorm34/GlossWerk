@@ -1,0 +1,89 @@
+================================================================================
+GLOSSARY EXTRACTION SUMMARY — test_patent.docx
+================================================================================
+
+EXTRACTION COMPLETED SUCCESSFULLY
+
+Source: /sessions/admiring-relaxed-mccarthy/mnt/glosswerk/test_patent.docx
+Extraction Method: Heuristic (German noun capitalization patterns)
+Total Sentences: 259
+Total Unique Nouns Found: 487
+Terms with Frequency >= 3: 109
+Final Glossary Entries: 94
+
+================================================================================
+OUTPUT FILES GENERATED
+================================================================================
+
+1. candidates.json (10 KB)
+   → Raw extraction output from extract_terms.py script
+   → Contains all 109 terms with frequency counts and variants
+   → Format: JSON array with {"de": "...", "frequency": N, "variants": [...]}
+
+2. translations.json (13 KB)
+   → Patent terminology expert review with 2-3 translation options per term
+   → Format: JSON array with {"de": "...", "en": [...], "note": "..."}
+   → All 94 primary terms covered
+   → Explanatory notes for translation decisions
+
+3. term_review.md (14 KB)
+   → Formatted markdown review organized by frequency bands
+   → High Frequency (30+x): 30 terms
+   → Medium-High Frequency (10-29x): 32 terms
+   → Medium Frequency (5-9x): 32 terms
+   → Includes terminology patterns, domain notes, and QA guidelines
+
+4. glossary.tsv (3.1 KB)
+   → Final glossary in TSV format (tab-separated, no header)
+   → Format: German_term\tEnglish_term
+   → Recommended primary translations only
+   → Ready to use with translation workflow
+
+================================================================================
+TOP 20 TERMS BY FREQUENCY
+================================================================================
+
+Produktionseinheit (59x)          → production unit
+Engineering (50x)                → engineering
+Produktionsprozess (50x)          → production process
+System (47x)                      → system
+Produkt (46x)                     → product
+Prozedur (43x)                    → procedure
+Konfigurationsstruktur (36x)      → configuration structure
+Planungskonfigurationsstruktur (36x) → planning configuration structure
+Planungsverfahren (34x)           → planning method
+Auswahlsubstrukturen (34x)        → selection substructures
+
+================================================================================
+DOMAIN CHARACTERISTICS
+================================================================================
+
+Engineering Domain: Manufacturing Planning & Production Systems
+Key Patterns:
+  • Complex compound nouns with system architecture terminology
+  • Process/procedural workflow language (Schritt, Verfahren, Prozedur)
+  • Software/database library terminology (*-bibliothek)
+  • Optimization and AI/ML concepts (Optimierung, Inferenz, Weiterbildung)
+  • Robotics and assembly terminology (Montage, Trajektorie, Dynamiksimulation)
+
+Terminology Consistency Notes:
+  • 15 compound nouns with "Schritt" (step) suffix — ensure consistent rendering
+  • 8 compound nouns with "Bibliothek" (library) suffix — all translate to "[noun] library"
+  • 7 variants of Substrukturen family — treat as architectural term, not literal decomposition
+  • Multiple process terms (Prozedur/Verfahren/Prozess/Methode) — use context-dependent translations
+
+================================================================================
+TRANSLATOR REVIEW CHECKLIST
+================================================================================
+
+□ Review HIGH FREQUENCY terms (30+x) in term_review.md
+□ Confirm or modify translation options in translations.json
+□ Address any domain-specific terminology conflicts
+□ Review "note" fields for translation decision justifications
+□ Finalize glossary.tsv selections (first-option recommendations provided)
+□ Flag any verbs appearing frequently for context-dependent translation
+□ Note any client-specific term preferences that override standard conventions
+
+Ready to proceed to translation with glossary.tsv as reference.
+
+================================================================================

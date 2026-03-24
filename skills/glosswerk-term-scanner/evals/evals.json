@@ -1,0 +1,23 @@
+{
+  "skill_name": "glosswerk-term-scanner",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a German patent about a mitral valve stent that I need to translate. Before I start, I want to scan it for terminology and decide on consistent English translations. The file is at mitralvalvestent.docx. Extract the terms and give me translation options.",
+      "expected_output": "Extracts 40+ recurring German nouns from the patent, proposes 2-3 English translations per term ranked by patent convention, presents them grouped by frequency for translator review, and offers to export as glossary TSV.",
+      "files": ["mitralvalvestent.docx"]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to build a glossary for this engineering patent before translating it. The German document is test_patent.docx. Pull out the key terms and suggest English equivalents — I want to review them before we translate.",
+      "expected_output": "Extracts 80+ recurring terms from the longer engineering patent, handles complex German compounds like 'Planungskonfigurationsstruktur', proposes appropriate English translations, and flags that this is a production/engineering domain patent.",
+      "files": ["test_patent.docx"]
+    },
+    {
+      "id": 3,
+      "prompt": "Upload a German medical device patent and I want to check what terminology is in there. I already have some preferred terms: Stent should always be 'stent', Katheter should be 'catheter', and Hohlraum should be 'lumen'. Scan for the rest and give me options. File: mitralvalvestent.docx",
+      "expected_output": "Respects the pre-selected terms, does not re-propose alternatives for them, scans the remaining terms and proposes translations, incorporates the user's selections into the final glossary.",
+      "files": ["mitralvalvestent.docx"]
+    }
+  ]
+}

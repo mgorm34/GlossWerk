@@ -1,0 +1,30 @@
+{
+  "run_id": "eval-2-engineering-patent-without_skill",
+  "expectations": [
+    {
+      "text": "extracted_80plus_terms",
+      "passed": false,
+      "evidence": "term_review.md identifies only 34 unique recurring technical terms. This falls significantly short of the 80-term threshold. Glossary has only 35 lines of translated terms."
+    },
+    {
+      "text": "handles_long_compounds",
+      "passed": true,
+      "evidence": "Does handle 'Planungskonfigurationsstrukturbibliothek' (10x) → 'Planning configuration structure library' correctly, showing proper compound translation"
+    },
+    {
+      "text": "multiple_translation_options",
+      "passed": true,
+      "evidence": "Multiple translation options provided for key terms (e.g., Produktionseinheit: 'Production unit' with note; Planungsverfahren: 'Planning method/procedure')"
+    },
+    {
+      "text": "glossary_tsv_produced",
+      "passed": true,
+      "evidence": "glossary.tsv exists with 34 lines containing properly formatted tab-separated de→en pairs"
+    },
+    {
+      "text": "domain_recognition",
+      "passed": true,
+      "evidence": "Output recognizes this as a production planning system/engineering patent from Robert Bosch GmbH. Identifies core manufacturing terminology and system architecture."
+    }
+  ]
+}

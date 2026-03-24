@@ -1,0 +1,292 @@
+{
+  "source_file": "mitralvalvestent.docx",
+  "total_sentences": 137,
+  "total_candidates": 54,
+  "min_frequency": 3,
+  "extraction_method": "heuristic",
+  "terms": [
+    {
+      "de": "Stent",
+      "frequency": 58,
+      "variants": [
+        "Stents"
+      ]
+    },
+    {
+      "de": "Stentbügel",
+      "frequency": 29,
+      "variants": [
+        "Stentbügels",
+        "Stentbügeln"
+      ]
+    },
+    {
+      "de": "Mitralklappenstent",
+      "frequency": 23,
+      "variants": [
+        "Mitralklappenstents"
+      ]
+    },
+    {
+      "de": "Abschnitt",
+      "frequency": 18,
+      "variants": []
+    },
+    {
+      "de": "Mitralklappensegel",
+      "frequency": 17,
+      "variants": [
+        "Mitralklappensegels"
+      ]
+    },
+    {
+      "de": "Klappe",
+      "frequency": 16,
+      "variants": []
+    },
+    {
+      "de": "Klappenstent",
+      "frequency": 15,
+      "variants": [
+        "Klappenstents"
+      ]
+    },
+    {
+      "de": "Kartusche",
+      "frequency": 14,
+      "variants": []
+    },
+    {
+      "de": "Zustand",
+      "frequency": 13,
+      "variants": []
+    },
+    {
+      "de": "Herzklappenprothese",
+      "frequency": 12,
+      "variants": []
+    },
+    {
+      "de": "Erfindung",
+      "frequency": 10,
+      "variants": []
+    },
+    {
+      "de": "Herzklappe",
+      "frequency": 10,
+      "variants": []
+    },
+    {
+      "de": "Mitralklappe",
+      "frequency": 10,
+      "variants": []
+    },
+    {
+      "de": "Annulus",
+      "frequency": 8,
+      "variants": []
+    },
+    {
+      "de": "Implantation",
+      "frequency": 8,
+      "variants": []
+    },
+    {
+      "de": "Positionierung",
+      "frequency": 8,
+      "variants": []
+    },
+    {
+      "de": "Darstellung",
+      "frequency": 7,
+      "variants": []
+    },
+    {
+      "de": "Herzen",
+      "frequency": 6,
+      "variants": []
+    },
+    {
+      "de": "Vorhof",
+      "frequency": 6,
+      "variants": []
+    },
+    {
+      "de": "Mehrzahl",
+      "frequency": 6,
+      "variants": []
+    },
+    {
+      "de": "Funktion",
+      "frequency": 6,
+      "variants": []
+    },
+    {
+      "de": "Ventrikel",
+      "frequency": 6,
+      "variants": [
+        "Ventrikels"
+      ]
+    },
+    {
+      "de": "Möglichkeit",
+      "frequency": 6,
+      "variants": []
+    },
+    {
+      "de": "Außen",
+      "frequency": 5,
+      "variants": []
+    },
+    {
+      "de": "Befestigung",
+      "frequency": 5,
+      "variants": []
+    },
+    {
+      "de": "Verankerung",
+      "frequency": 5,
+      "variants": []
+    },
+    {
+      "de": "Aortenklappe",
+      "frequency": 5,
+      "variants": []
+    },
+    {
+      "de": "Verankerungselementen",
+      "frequency": 5,
+      "variants": []
+    },
+    {
+      "de": "Ösen",
+      "frequency": 4,
+      "variants": []
+    },
+    {
+      "de": "Bereich",
+      "frequency": 4,
+      "variants": []
+    },
+    {
+      "de": "Ansicht",
+      "frequency": 4,
+      "variants": []
+    },
+    {
+      "de": "Katheter",
+      "frequency": 4,
+      "variants": []
+    },
+    {
+      "de": "Stützbügel",
+      "frequency": 4,
+      "variants": []
+    },
+    {
+      "de": "Formgedächtnislegierung",
+      "frequency": 4,
+      "variants": []
+    },
+    {
+      "de": "Seite",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Platz",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Anteil",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Winkel",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Chordae",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Fixation",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Vielzahl",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Schlaufen",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Draufsicht",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Herzkammer",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Sehnenfäden",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Zeichnungen",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Verhältnisse",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Klappensegel",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Seitenansicht",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Detailansicht",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Federelemente",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Kathetersystem",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Lateral-Ansicht",
+      "frequency": 3,
+      "variants": []
+    },
+    {
+      "de": "Abdichtungsmembran",
+      "frequency": 3,
+      "variants": []
+    }
+  ]
+}

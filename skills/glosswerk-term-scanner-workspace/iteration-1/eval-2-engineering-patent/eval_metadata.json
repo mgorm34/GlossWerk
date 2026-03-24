@@ -1,0 +1,26 @@
+{
+  "eval_id": "eval-2-engineering-patent",
+  "prompt": "I need to build a glossary for this engineering patent before translating it. The German document is test_patent.docx. Pull out the key terms and suggest English equivalents.",
+  "assertions": [
+    {
+      "id": "extracted_80plus_terms",
+      "description": "Output identifies at least 80 recurring German terms"
+    },
+    {
+      "id": "handles_long_compounds",
+      "description": "Correctly handles long German compounds like 'Planungskonfigurationsstruktur'"
+    },
+    {
+      "id": "multiple_translation_options",
+      "description": "Terms have 2-3 English translation options"
+    },
+    {
+      "id": "glossary_tsv_produced",
+      "description": "A glossary.tsv file exists with tab-separated de→en pairs"
+    },
+    {
+      "id": "domain_recognition",
+      "description": "Output recognizes this is a production/manufacturing/engineering patent"
+    }
+  ]
+}

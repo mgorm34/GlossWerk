@@ -1,0 +1,102 @@
+German Term	English Translation	Context	Notes
+Mitralklappenstent	Mitral valve stent	Device	Primary device term; appears 40+ times
+Stentbügel	Stent strut	Device structure	Use "strut" for technical; "arm" for anatomical
+Verankerungselemente	Anchoring elements	Device structure	Proximal fixation structures
+Klappenstent	Valve stent	Device	Integrated stent-valve unit
+Stützbügel	Support strut	Device structure	Variant of Stentbügel for supportive function
+Mitralklappe	Mitral valve	Anatomy	Standard term
+anteriores Mitralklappensegel	Anterior mitral leaflet	Anatomy	AML; standard anatomical term
+posteriores Mitralklappensegel	Posterior mitral leaflet	Anatomy	PML; standard anatomical term
+Mitralklappenannulus	Mitral annulus	Anatomy	Or "mitral valve annulus"
+Sehnenfäden	Chordae tendineae	Anatomy	Also "chordal structures" for clinical contexts
+Chordae tendineae	Chordae tendineae	Anatomy	Latin/English standard
+Papillarmuskel	Papillary muscle	Anatomy	Standard anatomical term
+linker Vorhof	Left atrium	Anatomy	Abbreviation: LA
+linke Herzkammer	Left ventricle	Anatomy	Abbreviation: LV
+linker Ventrikel	Left ventricle	Anatomy	Alternative to linke Herzkammer
+Aortenklappe	Aortic valve	Anatomy	Standard term
+Ausflusstrakt	Outflow tract	Anatomy	Left ventricular outflow tract (LVOT) when contextualized
+Herzklappensklerose	Valve sclerosis	Pathology	Also "valve calcification" when more specific
+Klappersklerose	Valve sclerosis	Pathology	Variant terminology
+Klappverkalkung	Valve calcification	Pathology	More specific than sclerosis
+Sam-Phänomen	Systolic Anterior Movement	Pathology	Official: SAM; German: SAM-Phänomen
+Systolic Anterior Movement	Systolic Anterior Movement	Pathology	Already in English; SAM acronym
+Linksherz-Dekompensation	Left heart decompensation	Pathology	Or "left ventricular decompensation"
+Blutfluss	Blood flow	Hemodynamics	Standard term
+Durchfluss	Flow / Throughput	Hemodynamics	Context-dependent usage
+Vorwärts-Drängen	Forward displacement	Mechanics	In context of valve leaflet motion
+perkutane Implantation	Percutaneous implantation	Procedure	Standard medical term
+perkutan	Percutaneously	Procedure	Adverbial form
+minimal-invasiv	Minimally invasive	Procedure	Standard medical term
+Minimal-invasive Operation	Minimally invasive procedure	Procedure	Surgical context
+endovaskulär	Endovascular	Procedure	Interventional/vascular context
+Katheter	Catheter	Device	Standard medical term
+Kathetersystem	Catheter system	Device	Integrated delivery system
+Kartusche	Delivery cartridge	Device	Device-specific term for loading cartridge
+Implantation	Implantation	Procedure	Standard term (no translation)
+Entfaltung	Deployment / Expansion	Procedure	Use "deployment" (mechanical); "expansion" (physiological)
+entfalten	To deploy / To expand	Procedure	Verb form of Entfaltung
+Zusammenfalten	To fold / To collapse	Procedure	Device delivery context
+Faltung	Folding / Collapsing	Procedure	Noun form; use "collapse" in delivery systems
+Einrollen	To curl / To roll up	Procedure	Valve leaflet action; describe spiraling motion
+Einrollung	Curling / Rolling motion	Procedure	Noun form of Einrollen
+Einpacken	To tuck / To fold under	Procedure	Describes valve leaflet displacement
+einklappen	To fold / To tuck	Procedure	Similar meaning to Einpacken
+Verankerung	Anchoring / Fixation	Procedure	Recommend "anchoring" for mechanism
+verankern	To anchor / To fix	Procedure	Verb form
+Verdrängen	To displace	Procedure	Pushing old valve out of the way
+Zurückdrängen	To push back / To retract	Procedure	More specific than Verdrängen
+Anheften	To suture / To affix	Procedure	Surgical context; attaching to annulus
+Herausziehen	To retract / To withdraw	Procedure	Device deployment
+Formgedächtnislegierung	Shape memory alloy	Material	Technical standard; often abbreviated SMA
+NiTiNol	NiTiNol	Material	Nickel-Titanium alloy; keep as-is
+Elastizität	Elasticity	Material property	Standard term
+elastisch	Elastic	Material property	Adjectival form
+Federelemente	Spring elements	Component	Mechanical components for flexibility
+Ösen	Eyelets / Eye-loops	Component	Small attachment points
+Schlaufen	Loops / Loop elements	Component	Larger attachment structures than Ösen
+ösenförmige Schlaufen	Eyelet-forming loops	Component	Combined structure
+Selbstexpansion	Self-expansion	Mechanism	Standard medical device term
+selbstexpandierbar	Self-expanding	Mechanism	Adjectival form
+Vorspannung	Radial preload / Prestressing force	Mechanism	Context of compressed delivery state
+spiralartig	Spiraling / Helical	Mechanism	Describes rolling motion
+spiralförmig	Spiral / Helical	Mechanism	Variant of spiralartig
+Mozartlocke	Mozart curl	Mechanism	Idiomatic; descriptive of coiled leaflet appearance
+Befestigungselemente	Attachment elements / Fixation elements	Component	General term for attachment structures
+Abdichtungsmembran	Sealing membrane / Skirt	Component	Device component between valve and stent
+Visualisierungs-Kontrolle	Visual guidance / Image guidance	Procedure	Clinical monitoring context
+Echo	Echocardiography	Imaging	Standard English abbreviation
+NMR	NMR / MRI	Imaging	Nuclear Magnetic Resonance
+Fluoroskopie	Fluoroscopy	Imaging	Standard term
+Computertomographie	Computed tomography / CT	Imaging	Standard term
+Bowdenzüge	Bowden cables	Mechanism	Mechanical control element; keep as technical term
+Betätigungselemente	Actuation elements / Control elements	Component	Mechanisms for moving parts
+annulär	Annular	Position	Relating to the annulus
+supravalvulär	Supravalvular	Position	Above the valve plane
+atrial	Atrial	Position	Related to atrium
+atriale Anteil	Atrial component	Position	Positioning descriptor
+ventrikulär	Ventricular	Position	Related to ventricle
+ventrikular	Ventricular	Position	Variant spelling
+ventrikuläre Anteil	Ventricular component	Position	Positioning descriptor
+medial	Medial	Position	Anatomical direction (no translation)
+lateral	Lateral	Position	Anatomical direction (no translation)
+basal	Basal	Position	Anatomical direction (no translation)
+distal	Distal	Position	Anatomical direction (no translation)
+proximal	Proximal	Position	Anatomical direction (no translation)
+antegrad	Anterograde	Position	Direction of device insertion
+retrograd	Retrograde	Position	Direction of device insertion; reverse flow
+Neo-Annulus	Neo-annulus	Anatomy	Altered annulus created by valve interaction
+Vorhof-Ventrikel-Funktion	Atrial-ventricular function	Anatomy	Functional relationship
+Ventrikelgeometrie	Ventricular geometry	Anatomy	Geometric configuration
+Ventrikelfunktion	Ventricular function	Anatomy	Functional capability
+Klappenanteile	Valve components / Valve segments	Anatomy	Structural divisions
+Klappensegel	Valve leaflet / Valve cusp	Anatomy	Use "leaflet" for mitral valve
+Klapperfunktion	Valve function	Anatomy	Functional performance
+Herzmuskelgewebe	Cardiac muscle tissue / Myocardial tissue	Anatomy	Heart muscle
+sliding technique	Sliding technique	Procedure	Already in English; ability to advance/retract
+goldener Standard	Gold standard	Procedure	Standard practice reference
+Fehlfunktion	Malfunction / Dysfunction	Pathology	Device or anatomical failure
+Fehlimplantation	Misplacement / Malpositioning	Pathology	Incorrect device placement
+angulare Ausrichtung	Angular alignment / Angular orientation	Position	Rotational positioning
+exakte Positionierung	Precise positioning / Accurate positioning	Procedure	Device placement accuracy
+definierte Entfernung	Defined distance / Specified distance	Measurement	Measured spacing

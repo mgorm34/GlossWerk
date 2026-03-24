@@ -1,4 +1,34 @@
+# Data & models
 data/
 models/
+
+# Python
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
+*.egg-info/
+venv/
+.venv/
+
+# Temp & output files
+temp_docx/
+*.lock
+.~lock.*
+experiments.csv
+candidates.json
+
+# Test outputs (keep test patents, exclude generated outputs)
+*_glosswerk.docx
+*_glosswerk.json
+*_structural.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env

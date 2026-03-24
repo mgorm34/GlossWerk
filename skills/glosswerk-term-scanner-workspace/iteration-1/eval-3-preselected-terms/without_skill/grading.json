@@ -1,0 +1,25 @@
+{
+  "run_id": "eval-3-preselected-terms-without_skill",
+  "expectations": [
+    {
+      "text": "respects_preselected",
+      "passed": true,
+      "evidence": "term_review.md explicitly lists 'Pre-Selected Terms (Verified)' section with Stent→stent, Kartusche→cartridge, Herzklappe→heart valve. These appear in the glossary with their specified translations."
+    },
+    {
+      "text": "scans_remaining",
+      "passed": true,
+      "evidence": "Output proposes translations for 38 additional terms beyond the 3 pre-selected ones (Mitralklappenstent, Stentbügel, Herzklappenprothese, etc.). Provides recommendations and notes for each."
+    },
+    {
+      "text": "glossary_includes_preselected",
+      "passed": true,
+      "evidence": "glossary.tsv (43 lines) includes the three preselected terms with their specified translations plus 40 additional rows with German-English pairs, frequency categories, and notes"
+    },
+    {
+      "text": "no_overriding_preselected",
+      "passed": true,
+      "evidence": "The three preselected terms maintain exactly their specified translations: Stent=stent, Kartusche=cartridge, Herzklappe=heart valve. No alternative options suggested."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "run_id": "eval-1-mitral-valve-with_skill",
+  "expectations": [
+    {
+      "text": "extracted_40plus_terms",
+      "passed": true,
+      "evidence": "term_review.md identifies 54 recurring terms across 137 sentences, well exceeding the 40-term threshold"
+    },
+    {
+      "text": "multiple_translation_options",
+      "passed": true,
+      "evidence": "term_review.md provides 2-3 translation options for most terms (e.g., Stentbügel: 'stent frame | stent strut'; Klappe: 'valve | leaflet'; Kartusche: 'cartridge | catheter housing | delivery cartridge')"
+    },
+    {
+      "text": "frequency_grouping",
+      "passed": true,
+      "evidence": "term_review.md organizes terms by frequency: HIGH FREQUENCY (18+ occurrences), MEDIUM-HIGH (15-17), MEDIUM (10-14), MEDIUM-LOW (6-9), LOWER (4-5), LOWEST (3)"
+    },
+    {
+      "text": "glossary_tsv_produced",
+      "passed": true,
+      "evidence": "glossary.tsv exists with 54 lines of tab-separated de→en pairs in format: German_term[TAB]English_translation"
+    },
+    {
+      "text": "domain_recognition",
+      "passed": true,
+      "evidence": "Output explicitly recognizes this as a cardiac/medical device patent with notes about mitral valve stent anatomy, anatomical terms, and medical device terminology"
+    }
+  ]
+}

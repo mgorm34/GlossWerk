@@ -1,0 +1,72 @@
+GLOSSWERK TERM SCANNER - EXECUTION SUMMARY
+==========================================
+
+Document: mitralvalvestent.docx (German medical device patent)
+Execution Date: 2026-03-22
+
+EXTRACTION RESULTS
+------------------
+Total sentences analyzed: 137
+Unique nouns extracted: 314
+Candidate terms (frequency >= 3): 54
+
+PRE-SELECTED TERMS (LOCKED)
+---------------------------
+1. Stent (58x) → "stent"
+2. Kartusche (14x) → "cartridge"  
+3. Herzklappe (10x) → "heart valve"
+
+These three terms were pre-selected and are NOT re-proposed in the terminology review.
+They appear locked in the final glossary.
+
+TERMINOLOGY ANALYSIS
+--------------------
+Remaining terms analyzed and translated: 51
+
+Distribution by frequency:
+- HIGH FREQUENCY (10+ occurrences): 10 terms
+  Top: Stentbügel (29x), Mitralklappenstent (23x), Abschnitt (18x)
+
+- MEDIUM FREQUENCY (5-9 occurrences): 15 terms
+  Including: Annulus (8x), Implantation (8x), Positionierung (8x)
+
+- LOWER FREQUENCY (3-4 occurrences): 26 terms
+  Includes drawing reference terms and anatomical components
+
+DOMAIN NOTES
+-----------
+Document specialty: Cardiac medical device (mitral valve stent delivery system)
+
+Key compound nouns identified:
+- Mitralklappenstent (mitral valve stent)
+- Mitralklappensegel (mitral valve leaflet)
+- Herzklappenprothese (cardiac valve prosthesis)
+- Formgedächtnislegierung (shape memory alloy)
+
+Medical terminology preserved:
+- Anatomical terms: Vorhof (atrium), Ventrikel (ventricle), Annulus
+- Device components: Stentbügel (stent strut), Ösen (eyelets)
+- Procedural terms: Implantation, Positionierung, Verankerung (anchoring)
+
+OUTPUT FILES
+------------
+1. candidates.json (4.8 KB)
+   - Raw extraction with all 54 terms and frequencies
+   - Used for validation and audit trail
+
+2. term_review.md (3.5 KB)
+   - Formatted for translator review
+   - Shows pre-selected terms as locked
+   - Presents alternatives for remaining 51 terms
+   - Grouped by frequency for prioritization
+
+3. glossary.tsv (1.3 KB)
+   - Final glossary ready for translation workflow
+   - Tab-separated: German term | English translation
+   - Includes all 54 terms with recommended first-choice translations
+   - Pre-selected terms honored with user's preferred translations
+
+All files saved to:
+/sessions/admiring-relaxed-mccarthy/mnt/glosswerk/skills/glosswerk-term-scanner-workspace/iteration-1/eval-3-preselected-terms/with_skill/outputs/
+
+STATUS: COMPLETE ✓

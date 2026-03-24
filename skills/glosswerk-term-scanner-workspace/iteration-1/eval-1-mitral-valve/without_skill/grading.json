@@ -1,0 +1,30 @@
+{
+  "run_id": "eval-1-mitral-valve-without_skill",
+  "expectations": [
+    {
+      "text": "extracted_40plus_terms",
+      "passed": true,
+      "evidence": "term_review.md identifies 41 unique terms with analysis by frequency, meeting the 40-term threshold"
+    },
+    {
+      "text": "multiple_translation_options",
+      "passed": true,
+      "evidence": "Multiple translation options provided throughout (e.g., Stentbügel: 'Stent strut' OR 'Stent arm'; Verankerungselemente: 'Anchoring elements' OR 'Anchor hooks'; provides extensive explanation of alternatives)"
+    },
+    {
+      "text": "frequency_grouping",
+      "passed": true,
+      "evidence": "Terms organized by category: Primary Device and Component Terms, Anatomical Components, Pathophysiological and Clinical Concepts, Surgical and Procedural Terms, Material and Engineering Terms, with frequency counts"
+    },
+    {
+      "text": "glossary_tsv_produced",
+      "passed": true,
+      "evidence": "glossary.tsv exists with 102 lines including 103 tab-separated entries with German terms and English translations"
+    },
+    {
+      "text": "domain_recognition",
+      "passed": true,
+      "evidence": "Output extensively recognizes medical device context, includes anatomical terminology guidance, patent translation conventions, and clinical terminology. Notes on FDA/international regulatory terminology."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "eval_id": "eval-3-preselected-terms",
+  "prompt": "I already have some preferred terms: Stent should always be 'stent', Kartusche should be 'cartridge', and Herzklappe should be 'heart valve'. Scan for the rest and give me options.",
+  "assertions": [
+    {
+      "id": "respects_preselected",
+      "description": "Pre-selected terms (Stent, Kartusche, Herzklappe) are included as-is without alternatives"
+    },
+    {
+      "id": "scans_remaining",
+      "description": "Still proposes translations for terms NOT in the pre-selected list"
+    },
+    {
+      "id": "glossary_includes_preselected",
+      "description": "The glossary.tsv includes both pre-selected and new terms"
+    },
+    {
+      "id": "no_overriding_preselected",
+      "description": "Does not suggest different translations for the 3 pre-selected terms"
+    }
+  ]
+}

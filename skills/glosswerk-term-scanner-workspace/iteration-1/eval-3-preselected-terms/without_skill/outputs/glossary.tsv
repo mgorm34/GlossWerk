@@ -1,0 +1,43 @@
+german_term	english_term	occurrences	frequency_category	notes
+Stent	stent	30	pre-selected	Core device component - verified pre-selected term
+Kartusche	cartridge	14	pre-selected	Deployment delivery system - verified pre-selected term
+Herzklappe	heart valve	10	pre-selected	Generic valve reference - verified pre-selected term
+Mitralklappenstent	mitral valve stent	21	high	Compound primary device term
+Stentbügel	stent strut	16	high	Structural strut element (preferred over 'arm')
+Herzklappenprothese	heart valve prosthesis	12	high	Artificial replacement valve
+Klappenstent	valve stent	10	high	Integrated valve-stent assembly
+Mitralklappe	mitral valve	10	high	Native valve being replaced
+Mitralklappensegel	mitral valve leaflet	10	high	Individual valve flaps
+Annulus	annulus	10	high	Anatomical ring structure (preserve Latin)
+Katheter	catheter	5	medium	Delivery device for procedure
+Aortenklappe	aortic valve	5	medium	Adjacent cardiac valve
+Stützbügel	support strut	4	medium	Anchoring structural element
+Ösen	eyelets	4	medium	Small fastening features
+Formgedächtnislegierung	shape-memory alloy	4	medium	Nickel-titanium based material
+atrial	atrial	4	medium	Anatomical direction (upper chamber)
+Schlaufen	loops	3	medium	Spring-like connection elements
+Chordae tendineae	chordae tendineae	3	medium	Preserve Latin anatomical term
+Sehnenfäden	chordal filaments	3	medium	Connective tissue (valve-to-ventricle)
+Ventrikel	ventricle	3	medium	Lower heart chamber
+Abdichtungsmembran	sealing membrane	3	medium	Prevents paravalvular leakage
+Winkel	angle	3	medium	Angular measurement
+Federelement	spring element	2	low	Provides elasticity and self-expansion
+Segel	leaflet	2	low	Generic valve flap reference
+NiTiNol	NiTiNol	2	low	Preserve proprietary material name
+distale	distal	2	low	Anatomical directional term
+Blutfluss	blood flow	2	low	Hemodynamic parameter
+Öffnung	opening	2	low	Catheter lumen or access point
+Entfaltung	deployment	2	low	Device expansion process
+Elastizität	elasticity	2	low	Mechanical material property
+Verankerungselement	anchoring element	1	low	Device positioning element
+Befestigungselement	attachment element	1	low	Component fastening feature
+proximale	proximal	1	low	Anatomical directional term
+ventrikulär	ventricular	1	low	Relating to ventricle
+Papillarmuskel	papillary muscle	1	low	Cardiac muscle structure
+Selbstexpansion	self-expansion	1	low	Deployment mechanism type
+Vorspannung	pre-tension	1	low	Initial mechanical state
+Biegsamkeit	flexibility	1	low	Catheter system property
+Katheteröffnung	catheter opening	1	low	Catheter lumen access
+Blutgefäss	blood vessel	1	low	Vascular structure
+Gefäss	vessel	1	low	Generic vascular term
+Ventrikelgeometrie	ventricular geometry	1	low	Anatomical shape parameter

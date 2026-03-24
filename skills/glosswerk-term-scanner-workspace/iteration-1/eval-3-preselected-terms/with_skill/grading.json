@@ -1,0 +1,25 @@
+{
+  "run_id": "eval-3-preselected-terms-with_skill",
+  "expectations": [
+    {
+      "text": "respects_preselected",
+      "passed": true,
+      "evidence": "term_review.md explicitly shows 'Pre-Selected Terms (Locked)' section with Stent→stent, Kartusche→cartridge, Herzklappe→heart valve marked with frequency. These are presented without alternatives."
+    },
+    {
+      "text": "scans_remaining",
+      "passed": true,
+      "evidence": "Output provides translation options for 51 other terms beyond the 3 pre-selected ones. HIGH FREQUENCY section shows Stentbügel (29x), Mitralklappenstent (23x), etc. with multiple options."
+    },
+    {
+      "text": "glossary_includes_preselected",
+      "passed": true,
+      "evidence": "glossary.tsv includes all three preselected terms (Stent→stent, Kartusche→cartridge, Herzklappe→heart valve) plus 52 additional terms for a total of 55 entries"
+    },
+    {
+      "text": "no_overriding_preselected",
+      "passed": true,
+      "evidence": "The three preselected terms maintain their specified translations: Stent=stent, Kartusche=cartridge, Herzklappe=heart valve. No alternative suggestions are provided for these locked terms."
+    }
+  ]
+}

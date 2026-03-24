@@ -1,0 +1,30 @@
+{
+  "run_id": "eval-2-engineering-patent-with_skill",
+  "expectations": [
+    {
+      "text": "extracted_80plus_terms",
+      "passed": true,
+      "evidence": "term_review.md extraction summary states 'Found 109 recurring technical terms across 259 sentences' with 86 recommended glossary entries, well exceeding 80-term threshold"
+    },
+    {
+      "text": "handles_long_compounds",
+      "passed": true,
+      "evidence": "Correctly handles 'Planungskonfigurationsstruktur' (36x) → 'planning configuration structure' and even longer compound 'Planungskonfigurationsstrukturbibliothek' (10x) → 'planning configuration structure library'"
+    },
+    {
+      "text": "multiple_translation_options",
+      "passed": true,
+      "evidence": "Multiple options provided for terms (e.g., Produktionseinheit: 'production unit' vs 'production cell'; Planungsverfahren: 'planning method' vs 'scheduling procedure'; Umsetzung: 'implementation' vs 'execution, realization')"
+    },
+    {
+      "text": "glossary_tsv_produced",
+      "passed": true,
+      "evidence": "glossary.tsv exists with 94 lines containing tab-separated de→en pairs covering all major technical terms"
+    },
+    {
+      "text": "domain_recognition",
+      "passed": true,
+      "evidence": "Output explicitly recognizes this as a production planning/manufacturing/engineering patent. Includes manufacturing and process-specific vocabulary, system architecture terminology, and technical compound handling."
+    }
+  ]
+}

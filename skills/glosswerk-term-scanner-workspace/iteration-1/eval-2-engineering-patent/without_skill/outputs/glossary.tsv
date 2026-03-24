@@ -1,0 +1,34 @@
+German Term	English Term	Frequency	Context Notes
+Produktionseinheit	Production unit	53	Core manufacturing system component
+Engineering	Engineering	50	Already English loanword in German text
+System	System	47	Already English loanword in German text
+Prozedur	Procedure	40	Execution instructions/workflow steps
+Konfigurationsstruktur	Configuration structure	36	Arrangement of components
+Produkt	Product	36	Item being manufactured
+Auswahlsubstrukturen	Selection substructures	34	Available component options
+Planungskonfigurationsstruktur	Planning configuration structure	30	Designed arrangement of components
+Planungsverfahren	Planning method/procedure	26	Overall planning approach
+Produktionsprozess	Production process	26	Manufacturing workflow
+Umsetzung	Implementation	24	Execution/realization of plan
+Planungsprozedur	Planning procedure	24	Step-by-step planning instructions
+Produktionsinformationen	Production information	21	Data about manufacturing
+Konfigurationsschritt	Configuration step	20	Step 300 of the process
+Zielsubstrukturen	Target substructures	19	Final selected components
+Abstimmungsschritt	Coordination step	17	Step 500 - alignment and finalization
+Konfiguration	Configuration	17	Arrangement/setup
+Planungskomponenten	Planning components	17	Elements used in planning
+Erfindung	Invention	16	The patented invention itself
+Substrukturen	Substructures	16	Component arrangements
+Auswahlschritt	Selection step	15	Step 200 - choosing components
+Prozedurgenerierungsschritt	Procedure generation step	15	Step 400 - creating execution instructions
+Konfigurationen	Configurations	15	Multiple arrangement options
+Simulationsbibliothek	Simulation library	15	Database of simulation models
+Auswahl	Selection	13	Choice/choosing process
+Planung	Planning	12	Design/planning process
+Computerprogramm	Computer program	10	Software implementation
+Definitionsschritt	Definition step	10	Step 100 - product definition
+Basis	Basis	10	Foundation/base
+Verfahren	Method/Procedure	10	Approach/process (use context to distinguish)
+Modelle	Models	10	Simulation or structural models
+Planungskonfigurationsstrukturbibliothek	Planning configuration structure library	10	Database of planning configurations
+Prozedurgenerierungsbibliothek	Procedure generation library	10	Database for generating procedures
