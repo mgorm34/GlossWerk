@@ -344,12 +344,12 @@ tab_terms, tab_translate, tab_review, tab_export = st.tabs([
 with tab_terms:
 
     # Pre-compute sentence count for the frequency slider
-    if "doc_sentence_count" not in st.session_state:
+    if not st.session_state.get("doc_sentence_count"):
         _raw = extract_text_from_docx_terms(docx_path)
         _sents = extract_sentences(_raw)
-        st.session_state.doc_sentence_count = len(_sents)
+        st.session_state["doc_sentence_count"] = len(_sents)
 
-    n_sents = st.session_state.doc_sentence_count
+    n_sents = st.session_state["doc_sentence_count"]
     auto_default = max(2, min(8, round(n_sents / 20)))
     slider_max = max(auto_default + 3, 10)
 
