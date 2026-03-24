@@ -234,15 +234,19 @@ for de, en in pre_glossary.items():
     if de not in st.session_state.glossary:
         st.session_state.glossary[de] = en
 
-if uploaded_file is None:
+if uploaded_file is not None:
+    # New file uploaded — save to temp and persist path in session state
+    uploaded_file.seek(0)
+    with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmp:
+        tmp.write(uploaded_file.read())
+        st.session_state["docx_path"] = tmp.name
+        st.session_state["docx_name"] = uploaded_file.name
+
+if "docx_path" not in st.session_state or not os.path.exists(st.session_state.get("docx_path", "")):
     st.info("Upload a German .docx patent in the sidebar to get started.")
     st.stop()
 
-# Ensure file buffer is at start before reading (Streamlit reruns re-use the object)
-uploaded_file.seek(0)
-with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmp:
-    tmp.write(uploaded_file.read())
-    docx_path = tmp.name
+docx_path = st.session_state["docx_path"]
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -660,7 +664,7 @@ with tab_translate:
             if not recheck["valid"]:
                 st.error(recheck["message"])
                 st.stop()
-            record_patent_use(st.session_state.demo_code, uploaded_file.name)
+            record_patent_use(st.session_state.demo_code, st.session_state.get("docx_name", "patent.docx"))
 
         progress = st.progress(0, text="Starting pipeline...")
         status = st.empty()
@@ -693,7 +697,7 @@ with tab_translate:
 
         st.session_state.translations = {
             "metadata": {
-                "source_file": uploaded_file.name, "model": model,
+                "source_file": st.session_state.get("docx_name", "patent.docx"), "model": model,
                 "n_sentences": len(sentences),
                 "n_structural_hints": sum(1 for r in results if r["had_structural_hint"]),
                 "glossary_terms": len(st.session_state.glossary),
@@ -936,7 +940,7 @@ with tab_export:
             with open(output_path, "rb") as f:
                 st.download_button(
                     "Download QE Review Document", data=f.read(),
-                    file_name=f"glosswerk_qe_{uploaded_file.name}",
+                    file_name=f"glosswerk_qe_{st.session_state.get('docx_name', 'patent.docx')}",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True,
                 )
@@ -977,7 +981,7 @@ with tab_export:
             with open(out_path, "rb") as f:
                 st.download_button(
                     "Download Translation", data=f.read(),
-                    file_name=f"translation_{uploaded_file.name}",
+                    file_name=f"translation_{st.session_state.get('docx_name', 'patent.docx')}",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True,
                 )
