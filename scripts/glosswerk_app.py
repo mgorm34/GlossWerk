@@ -87,7 +87,12 @@ def load_nlp():
 # PAGE CONFIG & STYLING
 # ══════════════════════════════════════════════════════════════════════════════
 
-st.set_page_config(page_title="GlossWerk", page_icon="G", layout="wide")
+# Load logo for favicon
+_favicon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "logo.svg")
+if os.path.exists(_favicon_path):
+    st.set_page_config(page_title="GlossWerk", page_icon=_favicon_path, layout="wide")
+else:
+    st.set_page_config(page_title="GlossWerk", page_icon="G", layout="wide")
 
 st.markdown("""
 <style>
@@ -101,7 +106,8 @@ st.markdown("""
         display: flex; align-items: center; gap: 1rem;
     }
     .main-header img { width: 44px; height: 44px; border-radius: 8px; }
-    .main-header h1 { color: white; margin: 0; font-size: 1.8rem; }
+    .main-header h1 { color: white; margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; }
+    .main-header h1 span { color: #10b981; }
     .main-header p { color: #94a3b8; margin: 0.3rem 0 0 0; font-size: 0.95rem; }
 
     .triage-card { padding: 1rem 1.2rem; border-radius: 10px; text-align: center; font-weight: 600; }
@@ -154,7 +160,7 @@ st.markdown(f"""
 <div class="main-header">
     {_logo_img}
     <div>
-        <h1>GlossWerk</h1>
+        <h1>Gloss<span>Werk</span></h1>
         <p>DE &rarr; EN Patent Translation Pipeline</p>
     </div>
 </div>
