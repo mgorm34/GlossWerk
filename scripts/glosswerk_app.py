@@ -98,7 +98,9 @@ st.markdown("""
     .main-header {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; color: white;
+        display: flex; align-items: center; gap: 1rem;
     }
+    .main-header img { width: 44px; height: 44px; border-radius: 8px; }
     .main-header h1 { color: white; margin: 0; font-size: 1.8rem; }
     .main-header p { color: #94a3b8; margin: 0.3rem 0 0 0; font-size: 0.95rem; }
 
@@ -138,10 +140,23 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
+# Load logo as base64 for inline embedding
+import base64 as _b64
+_logo_path = os.path.join(PROJECT_ROOT, "assets", "logo.svg")
+_logo_b64 = ""
+if os.path.exists(_logo_path):
+    with open(_logo_path, "rb") as _lf:
+        _logo_b64 = _b64.b64encode(_lf.read()).decode()
+
+_logo_img = f'<img src="data:image/svg+xml;base64,{_logo_b64}" alt="GlossWerk">' if _logo_b64 else ""
+
+st.markdown(f"""
 <div class="main-header">
-    <h1>GlossWerk</h1>
-    <p>DE → EN Patent Translation Pipeline</p>
+    {_logo_img}
+    <div>
+        <h1>GlossWerk</h1>
+        <p>DE &rarr; EN Patent Translation Pipeline</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -184,7 +199,7 @@ with st.sidebar:
 
     # Hardcoded pipeline defaults (no user-facing batch controls)
     batch_size_trans = 50
-    batch_size_qe = 10
+    batch_size_qe = 15
     n_few_shot = 30
     training_pairs_path = os.path.join(PROJECT_ROOT, "data", "hter_training", "training_pairs.jsonl")
     min_adj_freq = 2  # default, overridden in terminology tab
@@ -251,6 +266,22 @@ _tmp = tempfile.NamedTemporaryFile(suffix=".docx", delete=False)
 _tmp.write(st.session_state["docx_bytes"])
 _tmp.close()
 docx_path = _tmp.name
+
+# ══════════════════════════════════════════════════════════════════════════════
+# REFRESH WARNING — warn user before losing translation progress
+# ══════════════════════════════════════════════════════════════════════════════
+
+if st.session_state.get("translations") is not None:
+    import streamlit.components.v1 as components
+    components.html("""
+    <script>
+    window.addEventListener('beforeunload', function(e) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved translation progress. Are you sure you want to leave?';
+        return e.returnValue;
+    });
+    </script>
+    """, height=0)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
