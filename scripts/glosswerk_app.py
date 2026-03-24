@@ -235,18 +235,33 @@ for de, en in pre_glossary.items():
         st.session_state.glossary[de] = en
 
 if uploaded_file is not None:
-    # New file uploaded — save to temp and persist path in session state
+    # Save uploaded file bytes to session state (survives reruns even if widget resets)
     uploaded_file.seek(0)
-    with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmp:
-        tmp.write(uploaded_file.read())
-        st.session_state["docx_path"] = tmp.name
+    file_bytes = uploaded_file.read()
+    # Only re-save if it's a different file (avoid rewriting on every rerun)
+    if "docx_bytes" not in st.session_state or st.session_state.get("docx_name") != uploaded_file.name:
+        st.session_state["docx_bytes"] = file_bytes
         st.session_state["docx_name"] = uploaded_file.name
+        # Clear previous results when a new file is uploaded
+        for key in ["raw_text", "sentences", "noun_counts", "adj_counts", "adj_variants",
+                     "verb_info", "lemma_map", "noun_proposals", "adj_proposals",
+                     "translations", "qe_results", "triage", "confirmed",
+                     "structural_analysis", "doc_sentence_count"]:
+            if key in st.session_state:
+                del st.session_state[key]
+        # Re-init defaults that need to be dicts
+        st.session_state["glossary"] = dict(st.session_state.get("glossary", {}))
+        st.session_state["confirmed"] = {}
 
-if "docx_path" not in st.session_state or not os.path.exists(st.session_state.get("docx_path", "")):
+# Reconstruct temp file from stored bytes on every run
+if "docx_bytes" not in st.session_state:
     st.info("Upload a German .docx patent in the sidebar to get started.")
     st.stop()
 
-docx_path = st.session_state["docx_path"]
+_tmp = tempfile.NamedTemporaryFile(suffix=".docx", delete=False)
+_tmp.write(st.session_state["docx_bytes"])
+_tmp.close()
+docx_path = _tmp.name
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -354,6 +369,7 @@ with tab_terms:
         )
 
     if st.button("Scan & Translate Terminology", type="primary", use_container_width=True):
+      try:
         progress = st.progress(0, text="Extracting terms...")
 
         raw_text = extract_text_from_docx_terms(docx_path)
@@ -416,6 +432,10 @@ with tab_terms:
 
         progress.progress(1.0, text="Done!")
         st.success(f"{len(noun_counts)} nouns · {len(adj_freq)} adjectives · {len(verb_info)} verbs")
+      except Exception as e:
+        st.error(f"Scan failed: {e}")
+        import traceback
+        st.code(traceback.format_exc())
 
     # --- Results in sub-tabs ---
     if st.session_state.noun_counts is not None:
