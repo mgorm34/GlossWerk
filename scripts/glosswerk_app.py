@@ -182,29 +182,17 @@ with st.sidebar:
         model = st.selectbox("Model", ["claude-sonnet-4-6", "claude-opus-4-6",
                                         "claude-haiku-4-5-20251001"], index=0)
 
-    with st.expander("Advanced", expanded=False):
-        st.caption("**Translation batching** — how many sentences to send to the API at once. "
-                   "Larger = faster but uses more memory per call.")
-        batch_size_trans = st.slider("Translation batch size", 10, 100, 50,
-                                     help="Sentences per API call during translation")
-        st.caption("**QE batching** — segments evaluated per API call. "
-                   "Smaller = more granular feedback but slower.")
-        batch_size_qe = st.slider("QE batch size", 5, 40, 15,
-                                   help="Segments per API call during quality estimation")
-        n_few_shot = st.slider("Few-shot QE examples", 0, 50, 30,
-                               help="Number of reference examples for QE calibration")
-        training_pairs_path = st.text_input(
-            "Training pairs",
-            value=os.path.join(PROJECT_ROOT, "data", "hter_training", "training_pairs.jsonl"),
-        )
-    # Adjective frequency moved to terminology tab
+    # Hardcoded pipeline defaults (no user-facing batch controls)
+    batch_size_trans = 50
+    batch_size_qe = 10
+    n_few_shot = 30
+    training_pairs_path = os.path.join(PROJECT_ROOT, "data", "hter_training", "training_pairs.jsonl")
     min_adj_freq = 2  # default, overridden in terminology tab
 
     st.divider()
     st.markdown("### Document")
     uploaded_file = st.file_uploader("German patent (.docx)", type=["docx"])
     glossary_upload = st.file_uploader("Glossary TSV (optional)", type=["tsv", "txt"])
-    pre_selected = st.text_area("Existing glossary (DE\\tEN per line)", height=80)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -223,14 +211,8 @@ for k, v in _defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v if not isinstance(v, dict) else dict(v)
 
-# Parse pre-selected / uploaded glossary
+# Parse uploaded glossary
 pre_glossary = {}
-if pre_selected and pre_selected.strip():
-    for line in pre_selected.strip().split("\n"):
-        parts = line.strip().split("\t")
-        if len(parts) >= 2:
-            pre_glossary[parts[0].strip()] = parts[1].strip()
-
 if glossary_upload:
     content = glossary_upload.read().decode("utf-8")
     for line in content.strip().split("\n"):
@@ -362,8 +344,20 @@ with tab_terms:
     slider_max = max(auto_default + 3, 10)
 
     st.markdown(f"**Frequency thresholds** — {n_sents} sentences detected")
-    st.caption("Control how many times a term must appear to be included in the scan. "
-               "Lower = more terms (noisier). Higher = only high-frequency core terms.")
+
+    with st.popover("ℹ️ What is the terminology scan?"):
+        st.markdown(
+            "**Terminology Scan** extracts German technical terms (nouns, adjectives, verbs) "
+            "from your patent and proposes English translations for each one. These translations "
+            "are then passed to the translator as a glossary so terminology stays consistent "
+            "across the entire document.\n\n"
+            "**Frequency thresholds** control the minimum number of times a term must appear "
+            "in the document to be included. A higher threshold filters out rare or one-off words "
+            "and keeps only the core terminology that repeats across claims and description. "
+            "A lower threshold captures more terms but may include noise (proper nouns, "
+            "one-off compounds, etc.).\n\n"
+            "The default is auto-calculated based on document length."
+        )
 
     freq_c1, freq_c2, freq_c3 = st.columns(3)
     with freq_c1:
@@ -792,6 +786,15 @@ with tab_translate:
         triage = compute_triage(qe_results)
         st.session_state.qe_results = qe_results
         st.session_state.triage = triage
+
+        # Check for QE failures and warn user
+        n_failed = sum(1 for r in qe_results if "[QE FAILED" in r.get("explanation", ""))
+        if n_failed > 0:
+            st.warning(
+                f"⚠️ QE could not evaluate {n_failed}/{len(qe_results)} segments. "
+                f"These are marked as 'review' — check the Streamlit terminal for error details. "
+                f"Common causes: API rate limits, model unavailability, or very long segments."
+            )
 
         progress.progress(1.0, text="Complete!")
         status.empty()

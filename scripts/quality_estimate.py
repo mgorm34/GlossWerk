@@ -334,16 +334,29 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
     try:
         message = client.messages.create(
             model=model,
-            max_tokens=32768,
+            max_tokens=16384,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )
 
         if not message.content:
+            print(f"QE batch: empty response (stop_reason={message.stop_reason})", file=sys.stderr)
             return _fallback_results(batch, global_offset)
 
         raw = message.content[0].text.strip()
+        stop_reason = getattr(message, "stop_reason", "unknown")
+
+        # If truncated, try to repair the JSON before parsing
+        if stop_reason == "max_tokens":
+            print(f"QE batch: response truncated (max_tokens). Attempting JSON repair.", file=sys.stderr)
+            raw = _repair_truncated_json(raw)
+
         parsed = _parse_qe_response(raw, len(batch))
+
+        # Check if parsing actually worked — if we got all defaults, log the raw response
+        if parsed and all(p.get("explanation", "").startswith("[QE FAILED") for p in parsed):
+            print(f"QE batch: parse produced all-default results. stop_reason={stop_reason}", file=sys.stderr)
+            print(f"QE batch: raw response (first 500 chars): {raw[:500]}", file=sys.stderr)
 
         # Attach risk info from input
         results = []
@@ -368,15 +381,41 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
         return results
 
     except Exception as e:
-        print(f"ERROR in QE batch: {e}", file=sys.stderr)
+        print(f"ERROR in QE batch (offset={global_offset}, size={len(batch)}): {type(e).__name__}: {e}", file=sys.stderr)
         # Retry with smaller batches before giving up
-        if len(batch) > 5:
-            print(f"Retrying with smaller batches...", file=sys.stderr)
+        if len(batch) > 3:
+            print(f"Retrying with smaller batches (split {len(batch)} → {len(batch)//2} + {len(batch) - len(batch)//2})...", file=sys.stderr)
             mid = len(batch) // 2
             results_a = _evaluate_batch(batch[:mid], global_offset, api_key, model, system_prompt)
             results_b = _evaluate_batch(batch[mid:], global_offset + mid, api_key, model, system_prompt)
             return results_a + results_b
         return _fallback_results(batch, global_offset)
+
+
+def _repair_truncated_json(raw_text):
+    """Attempt to repair JSON that was truncated mid-stream (max_tokens hit)."""
+    # Strip trailing incomplete tokens
+    text = raw_text.rstrip()
+
+    # If inside a code block, extract what we have
+    code_match = re.search(r'```(?:json)?\s*\n?(.*)', text, re.DOTALL)
+    if code_match:
+        text = code_match.group(1).rstrip().rstrip('`').rstrip()
+
+    # Find the last complete JSON object (ends with })
+    last_brace = text.rfind('}')
+    if last_brace >= 0:
+        text = text[:last_brace + 1]
+
+    # Ensure array is closed
+    bracket_start = text.find('[')
+    if bracket_start >= 0:
+        # Remove any trailing comma after last }
+        text = text.rstrip().rstrip(',').rstrip()
+        if not text.endswith(']'):
+            text += ']'
+
+    return text
 
 
 def _parse_qe_response(raw_text, expected_count):
@@ -396,10 +435,18 @@ def _parse_qe_response(raw_text, expected_count):
         json_str = raw_text[bracket_start:bracket_end + 1]
         try:
             parsed = json.loads(json_str)
-            if isinstance(parsed, list) and len(parsed) >= expected_count * 0.5:
+            if isinstance(parsed, list) and len(parsed) >= 1:
                 return parsed
         except json.JSONDecodeError:
-            pass
+            # Try repairing: truncate to last complete object
+            repaired = _repair_truncated_json(json_str)
+            try:
+                parsed = json.loads(repaired)
+                if isinstance(parsed, list) and len(parsed) >= 1:
+                    print(f"QE parse: repaired truncated JSON, got {len(parsed)}/{expected_count} segments", file=sys.stderr)
+                    return parsed
+            except json.JSONDecodeError:
+                pass
 
     # Try raw parse
     try:
@@ -409,21 +456,47 @@ def _parse_qe_response(raw_text, expected_count):
     except json.JSONDecodeError:
         pass
 
-    # Fallback: extract individual JSON objects from truncated response
-    # This handles when the array is cut off mid-way
+    # Fallback: extract individual JSON objects using a more robust approach
+    # Match balanced braces (handles nested quotes with escaped chars)
     objects = []
-    for match in re.finditer(r'\{[^{}]*\}', raw_text):
-        try:
-            obj = json.loads(match.group())
-            if "rating" in obj:
-                objects.append(obj)
-        except json.JSONDecodeError:
-            continue
+    depth = 0
+    start = -1
+    in_string = False
+    escape_next = False
 
-    if len(objects) >= expected_count * 0.5:
+    for i, ch in enumerate(raw_text):
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == '\\' and in_string:
+            escape_next = True
+            continue
+        if ch == '"' and not escape_next:
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if ch == '{':
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0 and start >= 0:
+                try:
+                    obj = json.loads(raw_text[start:i + 1])
+                    if "rating" in obj:
+                        objects.append(obj)
+                except json.JSONDecodeError:
+                    pass
+                start = -1
+
+    if objects:
+        print(f"QE parse: extracted {len(objects)}/{expected_count} individual objects", file=sys.stderr)
         return objects
 
     # Last resort: return defaults
+    print(f"QE parse: FAILED all strategies. Raw length={len(raw_text)}, first 300 chars: {raw_text[:300]}", file=sys.stderr)
     return [{"rating": "minor", "error_category": "other",
              "explanation": "[QE FAILED — review manually]",
              "suggestion": "",
