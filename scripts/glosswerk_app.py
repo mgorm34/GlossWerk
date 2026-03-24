@@ -242,15 +242,14 @@ if uploaded_file is not None:
     if "docx_bytes" not in st.session_state or st.session_state.get("docx_name") != uploaded_file.name:
         st.session_state["docx_bytes"] = file_bytes
         st.session_state["docx_name"] = uploaded_file.name
-        # Clear previous results when a new file is uploaded
+        # Clear previous results when a new file is uploaded (reset to defaults)
         for key in ["raw_text", "sentences", "noun_counts", "adj_counts", "adj_variants",
-                     "verb_info", "lemma_map", "noun_proposals", "adj_proposals",
-                     "translations", "qe_results", "triage", "confirmed",
+                     "verb_info", "lemma_map", "translations", "qe_results", "triage",
                      "structural_analysis", "doc_sentence_count"]:
-            if key in st.session_state:
-                del st.session_state[key]
-        # Re-init defaults that need to be dicts
-        st.session_state["glossary"] = dict(st.session_state.get("glossary", {}))
+            st.session_state[key] = None
+        for key in ["noun_proposals", "adj_proposals"]:
+            st.session_state[key] = {}
+        st.session_state["glossary"] = {}
         st.session_state["confirmed"] = {}
 
 # Reconstruct temp file from stored bytes on every run
