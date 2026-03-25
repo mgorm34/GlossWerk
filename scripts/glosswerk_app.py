@@ -1080,124 +1080,129 @@ with tab_export:
         st.info("Run Translate & QE first.")
         st.stop()
 
-    st.markdown("### QE Review Document")
-    st.caption("Color-coded .docx with triage summary, source text, and QE annotations")
+    @st.fragment
+    def _export_section():
+        """Fragment-wrapped export section — reruns only this section on button clicks."""
+        st.markdown("### QE Review Document")
+        st.caption("Color-coded .docx with triage summary, source text, and QE annotations")
 
-    col_opt1, col_opt2 = st.columns(2)
-    with col_opt1:
-        include_source = st.checkbox("Include German source", value=True)
-    with col_opt2:
-        include_annotations = st.checkbox("Include QE notes", value=True)
+        col_opt1, col_opt2 = st.columns(2)
+        with col_opt1:
+            include_source = st.checkbox("Include German source", value=True)
+        with col_opt2:
+            include_annotations = st.checkbox("Include QE notes", value=True)
 
-    if st.button("Generate QE Document", type="primary"):
-        with st.spinner("Building document..."):
-            qe_data = {
-                "qe_results": st.session_state.qe_results,
-                "triage": st.session_state.triage,
-            }
-            output_path = os.path.join(tempfile.gettempdir(), "glosswerk_qe_review.docx")
-            assemble_document(
-                translations_data=st.session_state.translations,
-                qe_data=qe_data, output_path=output_path,
-                include_source=include_source,
-                include_annotations=include_annotations,
-            )
-            with open(output_path, "rb") as f:
-                st.download_button(
-                    "Download QE Review Document", data=f.read(),
-                    file_name=f"glosswerk_qe_{st.session_state.get('docx_name', 'patent.docx')}",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
+        if st.button("Generate QE Document", type="primary"):
+            with st.spinner("Building document..."):
+                qe_data = {
+                    "qe_results": st.session_state.qe_results,
+                    "triage": st.session_state.triage,
+                }
+                output_path = os.path.join(tempfile.gettempdir(), "glosswerk_qe_review.docx")
+                assemble_document(
+                    translations_data=st.session_state.translations,
+                    qe_data=qe_data, output_path=output_path,
+                    include_source=include_source,
+                    include_annotations=include_annotations,
                 )
+                with open(output_path, "rb") as f:
+                    st.download_button(
+                        "Download QE Review Document", data=f.read(),
+                        file_name=f"glosswerk_qe_{st.session_state.get('docx_name', 'patent.docx')}",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        use_container_width=True,
+                    )
 
-    st.divider()
-
-    st.markdown("### Translation Only")
-    st.caption("Clean English document — uses confirmed edits where available")
-
-    if st.button("Generate Translation Document"):
-        with st.spinner("Building document..."):
-            from docx import Document as DocxDoc
-
-            doc = DocxDoc()
-            style = doc.styles['Normal']
-            style.font.name = 'Calibri'
-            style.font.size = Pt(10)
-
-            for trans in st.session_state.translations["translations"]:
-                idx = trans["index"]
-                text = st.session_state.confirmed.get(idx, trans.get("translation", ""))
-                if text:
-                    doc.add_paragraph(text)
-
-            # Demo watermark
-            if DEMO_MODE:
-                from docx.shared import RGBColor
-                wp = doc.add_paragraph()
-                wp.alignment = 1  # center
-                run = wp.add_run(WATERMARK_TEXT)
-                run.font.size = Pt(8)
-                run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
-                run.font.italic = True
-
-            out_path = os.path.join(tempfile.gettempdir(), "glosswerk_translation.docx")
-            doc.save(out_path)
-
-            with open(out_path, "rb") as f:
-                st.download_button(
-                    "Download Translation", data=f.read(),
-                    file_name=f"translation_{st.session_state.get('docx_name', 'patent.docx')}",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
-                )
-
-    st.divider()
-
-    st.markdown("### Data Exports")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.download_button(
-            "Translations (JSON)",
-            data=json.dumps(st.session_state.translations, ensure_ascii=False, indent=2),
-            file_name="translations.json", mime="application/json",
-        )
-    with col2:
-        qe_export = {"qe_results": st.session_state.qe_results, "triage": st.session_state.triage}
-        st.download_button(
-            "QE Results (JSON)",
-            data=json.dumps(qe_export, ensure_ascii=False, indent=2),
-            file_name="qe_results.json", mime="application/json",
-        )
-
-    # Merge scan glossary + review-time additions for export
-    combined_glossary = dict(st.session_state.glossary) if st.session_state.glossary else {}
-    review_additions = st.session_state.get("user_glossary_additions", {})
-    if review_additions:
-        # Review additions use English find→replace, store as-is for reference
-        combined_glossary.update({f"[review] {k}": v for k, v in review_additions.items()})
-
-    if combined_glossary:
         st.divider()
-        st.markdown("### Glossary Export")
-        n_scan = len(st.session_state.glossary) if st.session_state.glossary else 0
-        n_review = len(review_additions)
-        st.caption(f"{n_scan} terms from scan · {n_review} terms added during review")
 
-        glossary_tsv_lines = []
-        # Scan terms (DE → EN)
-        if st.session_state.glossary:
-            glossary_tsv_lines.append("# Terms from terminology scan (DE → EN)")
-            for de, en in sorted(st.session_state.glossary.items()):
-                glossary_tsv_lines.append(f"{de}\t{en}")
-        # Review additions (EN find → EN replace)
+        st.markdown("### Translation Only")
+        st.caption("Clean English document — uses confirmed edits where available")
+
+        if st.button("Generate Translation Document"):
+            with st.spinner("Building document..."):
+                from docx import Document as DocxDoc
+
+                doc = DocxDoc()
+                style = doc.styles['Normal']
+                style.font.name = 'Calibri'
+                style.font.size = Pt(10)
+
+                for trans in st.session_state.translations["translations"]:
+                    idx = trans["index"]
+                    text = st.session_state.confirmed.get(idx, trans.get("translation", ""))
+                    if text:
+                        doc.add_paragraph(text)
+
+                # Demo watermark
+                if DEMO_MODE:
+                    from docx.shared import RGBColor
+                    wp = doc.add_paragraph()
+                    wp.alignment = 1  # center
+                    run = wp.add_run(WATERMARK_TEXT)
+                    run.font.size = Pt(8)
+                    run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+                    run.font.italic = True
+
+                out_path = os.path.join(tempfile.gettempdir(), "glosswerk_translation.docx")
+                doc.save(out_path)
+
+                with open(out_path, "rb") as f:
+                    st.download_button(
+                        "Download Translation", data=f.read(),
+                        file_name=f"translation_{st.session_state.get('docx_name', 'patent.docx')}",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        use_container_width=True,
+                    )
+
+        st.divider()
+
+        st.markdown("### Data Exports")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.download_button(
+                "Translations (JSON)",
+                data=json.dumps(st.session_state.translations, ensure_ascii=False, indent=2),
+                file_name="translations.json", mime="application/json",
+            )
+        with col2:
+            qe_export = {"qe_results": st.session_state.qe_results, "triage": st.session_state.triage}
+            st.download_button(
+                "QE Results (JSON)",
+                data=json.dumps(qe_export, ensure_ascii=False, indent=2),
+                file_name="qe_results.json", mime="application/json",
+            )
+
+        # Merge scan glossary + review-time additions for export
+        combined_glossary = dict(st.session_state.glossary) if st.session_state.glossary else {}
+        review_additions = st.session_state.get("user_glossary_additions", {})
         if review_additions:
-            glossary_tsv_lines.append("")
-            glossary_tsv_lines.append("# Terms added during review (find → replace)")
-            for find_t, replace_t in sorted(review_additions.items()):
-                glossary_tsv_lines.append(f"{find_t}\t{replace_t}")
+            # Review additions use English find→replace, store as-is for reference
+            combined_glossary.update({f"[review] {k}": v for k, v in review_additions.items()})
 
-        glossary_tsv = "\n".join(glossary_tsv_lines)
-        st.download_button(
-            "Glossary (TSV)", data=glossary_tsv,
-            file_name="glossary.tsv", mime="text/tab-separated-values",
-        )
+        if combined_glossary:
+            st.divider()
+            st.markdown("### Glossary Export")
+            n_scan = len(st.session_state.glossary) if st.session_state.glossary else 0
+            n_review = len(review_additions)
+            st.caption(f"{n_scan} terms from scan · {n_review} terms added during review")
+
+            glossary_tsv_lines = []
+            # Scan terms (DE → EN)
+            if st.session_state.glossary:
+                glossary_tsv_lines.append("# Terms from terminology scan (DE → EN)")
+                for de, en in sorted(st.session_state.glossary.items()):
+                    glossary_tsv_lines.append(f"{de}\t{en}")
+            # Review additions (EN find → EN replace)
+            if review_additions:
+                glossary_tsv_lines.append("")
+                glossary_tsv_lines.append("# Terms added during review (find → replace)")
+                for find_t, replace_t in sorted(review_additions.items()):
+                    glossary_tsv_lines.append(f"{find_t}\t{replace_t}")
+
+            glossary_tsv = "\n".join(glossary_tsv_lines)
+            st.download_button(
+                "Glossary (TSV)", data=glossary_tsv,
+                file_name="glossary.tsv", mime="text/tab-separated-values",
+            )
+
+    _export_section()
