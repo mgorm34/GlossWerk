@@ -925,104 +925,114 @@ with tab_review:
 
     st.divider()
 
-    for trans in translations:
-        idx = trans["index"]
-        qe = qe_by_idx.get(idx, {})
-        rating = qe.get("rating", "unknown")
-        is_green = idx in green_set
-        is_confirmed = idx in confirmed
-        suggestion = qe.get("suggestion", "")
-        explanation = qe.get("explanation", "")
-        error_cat = qe.get("error_category", "")
+    @st.fragment
+    def _review_segments():
+        """Fragment-wrapped segment list — reruns only this section on button clicks."""
+        _translations = st.session_state.translations["translations"]
+        _qe_by_idx = {r["index"]: r for r in st.session_state.qe_results}
+        _green_set = set(st.session_state.triage["green"]) if st.session_state.triage else set()
+        _confirmed = st.session_state.confirmed
 
-        # Filter logic
-        if view_mode == "Needs review" and (is_green or is_confirmed):
-            continue
-        elif view_mode == "Red only" and rating not in ("major", "critical"):
-            continue
-        elif view_mode == "Confirmed" and not is_confirmed:
-            continue
+        for trans in _translations:
+            idx = trans["index"]
+            qe = _qe_by_idx.get(idx, {})
+            rating = qe.get("rating", "unknown")
+            is_green = idx in _green_set
+            is_confirmed = idx in _confirmed
+            suggestion = qe.get("suggestion", "")
+            explanation = qe.get("explanation", "")
+            error_cat = qe.get("error_category", "")
 
-        badge = {"good": "🟢", "minor": "🟡", "major": "🔴", "critical": "⛔"}.get(rating, "⚪")
+            # Filter logic
+            if view_mode == "Needs review" and (is_green or is_confirmed):
+                continue
+            elif view_mode == "Red only" and rating not in ("major", "critical"):
+                continue
+            elif view_mode == "Confirmed" and not is_confirmed:
+                continue
 
-        # --- Segment header ---
-        header_col, action_col = st.columns([5, 2])
-        with header_col:
-            st.markdown(f"{badge} **Segment {idx}** — _{rating}_")
-        with action_col:
-            btn_cols = st.columns(2)
-            if is_confirmed:
-                with btn_cols[0]:
-                    st.markdown("✅ Locked")
-                with btn_cols[1]:
-                    def _unlock(i=idx):
-                        del st.session_state.confirmed[i]
-                    st.button("Unlock", key=f"unlock_{idx}", type="secondary", on_click=_unlock)
-            else:
-                with btn_cols[0]:
-                    def _confirm(i=idx, t=trans):
-                        edited = st.session_state.get(f"edit_{i}", t.get("translation", ""))
-                        st.session_state.confirmed[i] = edited
-                    st.button("Confirm", key=f"confirm_{idx}", type="secondary", on_click=_confirm)
-                with btn_cols[1]:
-                    # Apply QE suggestion — puts text in editor, does NOT lock
-                    if suggestion and rating != "good":
-                        already_applied = st.session_state.get(f"applied_{idx}", False)
-                        if already_applied:
-                            st.markdown("✅ Fix applied")
-                        else:
-                            def _apply_fix(i=idx, sug=suggestion):
-                                clean_sug = re.sub(r'\*\*(.+?)\*\*', r'\1', sug)
-                                st.session_state[f"edit_{i}"] = clean_sug
-                                st.session_state[f"applied_{i}"] = True
-                            st.button("Apply fix", key=f"apply_{idx}", type="primary", on_click=_apply_fix)
+            badge = {"good": "🟢", "minor": "🟡", "major": "🔴", "critical": "⛔"}.get(rating, "⚪")
 
-        # --- Side by side ---
-        col_de, col_en = st.columns(2)
+            # --- Segment header ---
+            header_col, action_col = st.columns([5, 2])
+            with header_col:
+                st.markdown(f"{badge} **Segment {idx}** — _{rating}_")
+            with action_col:
+                btn_cols = st.columns(2)
+                if is_confirmed:
+                    with btn_cols[0]:
+                        st.markdown("✅ Locked")
+                    with btn_cols[1]:
+                        def _unlock(i=idx):
+                            del st.session_state.confirmed[i]
+                        st.button("Unlock", key=f"unlock_{idx}", type="secondary", on_click=_unlock)
+                else:
+                    with btn_cols[0]:
+                        def _confirm(i=idx, t=trans):
+                            edited = st.session_state.get(f"edit_{i}", t.get("translation", ""))
+                            st.session_state.confirmed[i] = edited
+                        st.button("Confirm", key=f"confirm_{idx}", type="secondary", on_click=_confirm)
+                    with btn_cols[1]:
+                        # Apply QE suggestion — puts text in editor, does NOT lock
+                        if suggestion and rating != "good":
+                            already_applied = st.session_state.get(f"applied_{idx}", False)
+                            if already_applied:
+                                st.markdown("✅ Fix applied")
+                            else:
+                                def _apply_fix(i=idx, sug=suggestion):
+                                    clean_sug = re.sub(r'\*\*(.+?)\*\*', r'\1', sug)
+                                    st.session_state[f"edit_{i}"] = clean_sug
+                                    st.session_state[f"applied_{i}"] = True
+                                st.button("Apply fix", key=f"apply_{idx}", type="primary", on_click=_apply_fix)
 
-        with col_de:
-            st.caption("German source")
-            st.markdown(f"<div class='source-box'>{trans.get('source', '')}</div>",
-                        unsafe_allow_html=True)
+            # --- Side by side ---
+            col_de, col_en = st.columns(2)
 
-        with col_en:
-            st.caption("English translation")
-            if is_confirmed:
-                st.markdown(f"<div class='locked-box'>{confirmed[idx]}</div>",
+            with col_de:
+                st.caption("German source")
+                st.markdown(f"<div class='source-box'>{trans.get('source', '')}</div>",
                             unsafe_allow_html=True)
-            else:
-                current_text = trans.get("translation", "")
-                st.text_area(
-                    f"edit_{idx}", value=current_text,
-                    label_visibility="collapsed", key=f"edit_{idx}",
-                    height=100,
+
+            with col_en:
+                st.caption("English translation")
+                if is_confirmed:
+                    st.markdown(f"<div class='locked-box'>{_confirmed[idx]}</div>",
+                                unsafe_allow_html=True)
+                else:
+                    current_text = trans.get("translation", "")
+                    st.text_area(
+                        f"edit_{idx}", value=current_text,
+                        label_visibility="collapsed", key=f"edit_{idx}",
+                        height=100,
+                    )
+
+            # --- QE reasoning ---
+            if rating != "good" and explanation:
+                qe_class = {"major": "qe-major", "critical": "qe-critical"}.get(rating, "qe-minor")
+                suggestion_html = ""
+                if suggestion:
+                    # Convert **bold** markers to <strong> for HTML rendering
+                    rendered = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', suggestion)
+                    suggestion_html = (
+                        f"<div class='qe-suggestion'>"
+                        f"<strong>Suggested:</strong> {rendered}"
+                        f"</div>"
+                    )
+                st.markdown(
+                    f"<div class='qe-note {qe_class}'>"
+                    f"<strong>{error_cat}:</strong> {explanation}"
+                    f"{suggestion_html}"
+                    f"</div>", unsafe_allow_html=True
+                )
+            elif rating == "good":
+                st.markdown(
+                    f"<div class='qe-note qe-good'>No issues detected</div>",
+                    unsafe_allow_html=True
                 )
 
-        # --- QE reasoning ---
-        if rating != "good" and explanation:
-            qe_class = {"major": "qe-major", "critical": "qe-critical"}.get(rating, "qe-minor")
-            suggestion_html = ""
-            if suggestion:
-                # Convert **bold** markers to <strong> for HTML rendering
-                rendered = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', suggestion)
-                suggestion_html = (
-                    f"<div class='qe-suggestion'>"
-                    f"<strong>Suggested:</strong> {rendered}"
-                    f"</div>"
-                )
-            st.markdown(
-                f"<div class='qe-note {qe_class}'>"
-                f"<strong>{error_cat}:</strong> {explanation}"
-                f"{suggestion_html}"
-                f"</div>", unsafe_allow_html=True
-            )
-        elif rating == "good":
-            st.markdown(
-                f"<div class='qe-note qe-good'>No issues detected</div>",
-                unsafe_allow_html=True
-            )
+            st.markdown("---")
 
-        st.markdown("---")
+    _review_segments()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
