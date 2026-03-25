@@ -915,21 +915,6 @@ with tab_review:
 
     st.progress(pct_confirmed / 100, text=f"**{pct_confirmed}%** confirmed ({n_confirmed}/{total_segs})  ·  {needs_review} segments need review")
 
-    # Show glossary additions made during review
-    review_glossary = st.session_state.get("user_glossary_additions", {})
-    if review_glossary:
-        with st.expander(f"📖 Terms added during review ({len(review_glossary)})", expanded=False):
-            for find_t, replace_t in review_glossary.items():
-                gcol1, gcol2, gcol3 = st.columns([3, 3, 1])
-                with gcol1:
-                    st.text(find_t)
-                with gcol2:
-                    st.text(f"→ {replace_t}")
-                with gcol3:
-                    if st.button("✕", key=f"rm_glos_{find_t}"):
-                        del st.session_state["user_glossary_additions"][find_t]
-                        st.rerun()
-
     # Filter controls
     col_filter, _ = st.columns([4, 1])
     with col_filter:
@@ -970,15 +955,15 @@ with tab_review:
                 with btn_cols[0]:
                     st.markdown("✅ Locked")
                 with btn_cols[1]:
-                    if st.button("Unlock", key=f"unlock_{idx}", type="secondary"):
-                        del st.session_state.confirmed[idx]
-                        st.rerun()
+                    def _unlock(i=idx):
+                        del st.session_state.confirmed[i]
+                    st.button("Unlock", key=f"unlock_{idx}", type="secondary", on_click=_unlock)
             else:
                 with btn_cols[0]:
-                    if st.button("Confirm", key=f"confirm_{idx}", type="secondary"):
-                        edited = st.session_state.get(f"edit_{idx}", trans.get("translation", ""))
-                        st.session_state.confirmed[idx] = edited
-                        st.rerun()
+                    def _confirm(i=idx, t=trans):
+                        edited = st.session_state.get(f"edit_{i}", t.get("translation", ""))
+                        st.session_state.confirmed[i] = edited
+                    st.button("Confirm", key=f"confirm_{idx}", type="secondary", on_click=_confirm)
                 with btn_cols[1]:
                     # Apply QE suggestion — puts text in editor, does NOT lock
                     if suggestion and rating != "good":
@@ -986,45 +971,11 @@ with tab_review:
                         if already_applied:
                             st.markdown("✅ Fix applied")
                         else:
-                            if st.button("Apply fix", key=f"apply_{idx}", type="primary"):
-                                clean_suggestion = re.sub(r'\*\*(.+?)\*\*', r'\1', suggestion)
-                                st.session_state[f"edit_{idx}"] = clean_suggestion
-                                st.session_state[f"applied_{idx}"] = True
-                                st.rerun()
-
-        # --- Add term & apply across document ---
-        with st.expander("📝 Add term & apply to all", expanded=False):
-            tcol1, tcol2, tcol3 = st.columns([2, 2, 1])
-            with tcol1:
-                find_term = st.text_input("Find (in English)", key=f"find_term_{idx}",
-                                          placeholder="e.g. rolling board")
-            with tcol2:
-                replace_term = st.text_input("Replace with", key=f"replace_term_{idx}",
-                                             placeholder="e.g. skateboard")
-            with tcol3:
-                st.markdown("<br>", unsafe_allow_html=True)  # vertical alignment
-                if st.button("Apply all", key=f"term_apply_{idx}", type="primary"):
-                    if find_term and replace_term and find_term != replace_term:
-                        count = 0
-                        for t in translations:
-                            t_idx = t["index"]
-                            # Get current text (edited or original)
-                            current = st.session_state.get(f"edit_{t_idx}", t.get("translation", ""))
-                            if find_term in current:
-                                new_text = current.replace(find_term, replace_term)
-                                st.session_state[f"edit_{t_idx}"] = new_text
-                                # Also update the underlying translation data
-                                t["translation"] = new_text
-                                # Update confirmed segments too
-                                if t_idx in st.session_state.confirmed:
-                                    st.session_state.confirmed[t_idx] = new_text
-                                count += 1
-                        # Add to session glossary for future use
-                        if "user_glossary_additions" not in st.session_state:
-                            st.session_state["user_glossary_additions"] = {}
-                        st.session_state["user_glossary_additions"][find_term] = replace_term
-                        st.toast(f"Replaced '{find_term}' → '{replace_term}' in {count} segment(s)")
-                        st.rerun()
+                            def _apply_fix(i=idx, sug=suggestion):
+                                clean_sug = re.sub(r'\*\*(.+?)\*\*', r'\1', sug)
+                                st.session_state[f"edit_{i}"] = clean_sug
+                                st.session_state[f"applied_{i}"] = True
+                            st.button("Apply fix", key=f"apply_{idx}", type="primary", on_click=_apply_fix)
 
         # --- Side by side ---
         col_de, col_en = st.columns(2)

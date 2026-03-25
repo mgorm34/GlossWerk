@@ -246,8 +246,7 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
         "```json\n"
         "[\n"
         '  {"index": 1, '
-        '"analysis": "Think through: is there a real error here? If so, what kind and how severe? '
-        'If an apparent issue is actually standard patent English, say so and rate good.", '
+        '"analysis": "1-2 sentences MAX. Identify the specific error or say acceptable.", '
         '"rating": "good|minor|major|critical", '
         '"error_category": "terminology|reordering|omission|grammar|addition|other|none", '
         '"explanation": "Brief explanation or empty if good", '
@@ -256,7 +255,9 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
         "  ...\n"
         "]\n"
         "```\n\n"
-        "For segments rated 'good', use error_category 'none', empty explanation, empty suggestion.\n"
+        "KEEP ANALYSIS SHORT — 1-2 sentences maximum. Do not repeat the source or translation in the analysis.\n"
+        "For segments rated 'good', use error_category 'none', empty explanation, empty suggestion, "
+        "and analysis can be just 'Accurate and natural.'\n"
         "For non-good segments, ALWAYS provide a 'suggestion' field with your improved translation. "
         "This is critical — the suggestion must:\n"
         "  1. Be a COMPLETE, ready-to-use English sentence (not a fragment)\n"
@@ -277,7 +278,7 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
     try:
         message = client.messages.create(
             model=model,
-            max_tokens=16384,
+            max_tokens=24576,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )

@@ -399,12 +399,22 @@ def split_sentences(text):
     for orig, placeholder in protected.items():
         text = text.replace(orig, placeholder)
 
+    # Protect list markers: single letter/number + period (a. b. c. 1. 2. 3.)
+    # Also protect roman numerals: i. ii. iii. iv. v. vi.
+    text = re.sub(r'(?<!\w)([a-zA-Z0-9])\.\s', lambda m: m.group(1) + '__DOT__ ', text)
+    text = re.sub(r'(?<!\w)(ii|iii|iv|vi|vii|viii|ix|xi|xii)\.\s', lambda m: m.group(1) + '__DOT__ ', text, flags=re.IGNORECASE)
+
+    # Protect colon-introduced lists: "beispielsweise:" should not split
+    text = re.sub(r':\s+([a-zA-Z0-9])\.\s', lambda m: ': ' + m.group(1) + '__DOT__ ', text)
+
     parts = re.split(r'(?<=[.!?])\s+(?=[A-ZÄÖÜ\[(])', text)
 
     sentences = []
     for part in parts:
         for orig, placeholder in protected.items():
             part = part.replace(placeholder, orig)
+        # Restore list marker periods
+        part = part.replace('__DOT__', '.')
         part = part.strip()
         if len(part) > 15:
             sentences.append(part)

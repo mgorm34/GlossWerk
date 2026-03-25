@@ -111,6 +111,15 @@ LEXICAL REDUNDANCY AVOIDANCE:
   BAD: "For the emergency of an emergency tracheotomy"
   GOOD: "In the case of an emergency tracheotomy"
 
+GENDER-NEUTRAL PRONOUNS FOR GENERIC ROLES:
+- German grammatical gender does not imply natural gender. When a German text refers to a role generically (der Radiologe, der Chirurg, der Benutzer, der Anwender, der Bediener, der Fachmann) and uses the masculine pronoun "er" to refer back to that role, translate as "they/them/their" in English — NOT "he/him/his".
+- This applies whenever the role is used in a general sense describing any person who might fill that role, not a specific identified individual.
+- Examples:
+  "Der Radiologe positioniert den Patienten. Er überprüft dann..." → "The radiologist positions the patient. They then verify..."
+  "Der Benutzer kann das Gerät bedienen. Er muss dabei..." → "The user can operate the device. They must..."
+  "ein Fachmann auf dem Gebiet" → "a person skilled in the art" (NOT "a man skilled in the art")
+- Exception: if the text clearly refers to a specific named individual whose gender is stated, use the appropriate pronoun.
+
 MODAL PARTICLES:
 - Modal particles (ja, doch, mal, schon, halt, eben, wohl, eigentlich) should be rendered through tone and sentence structure rather than literal translation. In formal text, they can usually be omitted.
 
