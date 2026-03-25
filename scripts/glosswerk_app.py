@@ -61,6 +61,7 @@ from quality_estimate import (
     evaluate_translations, compute_triage,
     load_training_pairs, select_few_shot_examples,
 )
+from prompt_layers import get_available_domains
 from assemble import assemble_document
 from demo_auth import show_auth_gate, record_patent_use, validate_code, WATERMARK_TEXT
 
@@ -209,6 +210,19 @@ with st.sidebar:
     n_few_shot = 30
     training_pairs_path = os.path.join(PROJECT_ROOT, "data", "hter_training", "training_pairs.jsonl")
     min_adj_freq = 2  # default, overridden in terminology tab
+
+    st.divider()
+    st.markdown("### Domain")
+    _domains = get_available_domains()
+    _domain_keys = list(_domains.keys())
+    _domain_labels = list(_domains.values())
+    selected_domain = st.selectbox(
+        "Translation domain",
+        options=_domain_keys,
+        format_func=lambda k: _domains[k],
+        index=0,
+        help="Selects domain-specific translation and QE rules. Patent is the default."
+    )
 
     st.divider()
     st.markdown("### Document")
@@ -789,6 +803,7 @@ with tab_translate:
             sentences=sentences, api_key=api_key, model=model,
             glossary=glossary, structural_analysis=st.session_state.structural_analysis,
             batch_size=batch_size_trans, progress_callback=trans_progress,
+            domain=selected_domain,
         )
 
         st.session_state.translations = {
@@ -817,7 +832,7 @@ with tab_translate:
         qe_results = evaluate_translations(
             translations=results, api_key=api_key, model=model,
             few_shot_examples=few_shot, batch_size=batch_size_qe,
-            progress_callback=qe_progress,
+            progress_callback=qe_progress, domain=selected_domain,
         )
 
         triage = compute_triage(qe_results)
