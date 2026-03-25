@@ -278,7 +278,7 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
     try:
         message = client.messages.create(
             model=model,
-            max_tokens=24576,
+            max_tokens=16384,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )
@@ -325,7 +325,9 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
         return results
 
     except Exception as e:
+        import traceback
         print(f"ERROR in QE batch (offset={global_offset}, size={len(batch)}): {type(e).__name__}: {e}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         # Retry with smaller batches before giving up
         if len(batch) > 3:
             print(f"Retrying with smaller batches (split {len(batch)} → {len(batch)//2} + {len(batch) - len(batch)//2})...", file=sys.stderr)
@@ -456,6 +458,7 @@ def _fallback_results(batch, global_offset):
             "rating": "minor",
             "error_category": "other",
             "explanation": "[QE FAILED — review manually]",
+            "suggestion": "",
             "confidence": "low",
             "risk_level": entry.get("risk_level", "unknown"),
             "risk_score": entry.get("risk_score", 0.0),
