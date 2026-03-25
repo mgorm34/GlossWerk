@@ -206,7 +206,7 @@ with st.sidebar:
 
     # Hardcoded pipeline defaults (no user-facing batch controls)
     batch_size_trans = 50
-    batch_size_qe = 15
+    batch_size_qe = 10
     n_few_shot = 30
     training_pairs_path = os.path.join(PROJECT_ROOT, "data", "hter_training", "training_pairs.jsonl")
     min_adj_freq = 2  # default, overridden in terminology tab
