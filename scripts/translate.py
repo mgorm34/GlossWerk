@@ -23,82 +23,34 @@ import sys
 import time
 from pathlib import Path
 
+from prompt_layers import build_translation_prompt
+
 
 # ---------------------------------------------------------------------------
-# System prompt
+# System prompt (assembled from prompt_layers module)
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT_BASE = """You are an expert DE→EN patent translator with deep knowledge of European patent conventions.
-
-Rules:
-- Maintain precise technical terminology CONSISTENTLY throughout the entire document
-- If you translate a German term a certain way in sentence 1, use the SAME English term every subsequent time
-- Use "FIG." (not "Fig.") for figure references, per US patent convention
-- Preserve claim structure and legal phrasing exactly
-- Keep numbered paragraph references (e.g., [0012], [0021]) EXACTLY as they appear in the source — do NOT remove, reformat, or omit them
-- Translate noun compounds precisely — do not simplify or paraphrase
-- Produce exactly ONE English sentence per German input sentence — do NOT split a German sentence into multiple English sentences, even if it is long
-- If a German term has a standard patent translation, use it consistently
-
-Information structure and word order:
-- German builds toward informationally heavy material at the end of the sentence (end-weight, end-focus). English front-loads key information.
-- When translating long German sentences, RESTRUCTURE the English to place key information earlier rather than preserving German constituent order.
-- Do not mirror German clause order in English. Reorder so the English reads naturally, with important content appearing earlier in the sentence.
-- Pay special attention to sentences with subordinate clauses: the finite verb at the end of German subordinate clauses often means the most important information arrives last. In English, bring that information forward.
-
-Syntactic restructuring (do NOT calque German grammatical constructions):
-- German predicate adjective constructions with "sind/ist ... erforderlich/notwendig/vorgesehen/vorgeschrieben/möglich" should usually become VERBAL constructions in English. Example: "Zum Einsatz ... sind ein schlanker Hals ... sowie ein ... Ligament erforderlich" → "Use of ... requires that the patient have a slender neck ... and that a ligament ... be palpable" — NOT "a slender neck of the patient ... is required". Convert the adjective predicate into a verb (require, necessitate, provide for, mandate) and restructure the subjects into object complements.
-- German genitive chains ("Hals des Patienten", "Oberfläche des Stents", "Anwendung des Verfahrens") should NOT be mechanically translated as "X of the Y" when English has a more natural construction. Prefer possessives ("the patient's neck"), compound nouns ("the stent surface"), or restructured clauses ("the patient have a slender neck") over stacked "of" phrases. Reserve "of" genitives for abstract or institutional relationships ("scope of the invention", "field of the disclosure").
-- When "sind ... erforderlich" or similar constructions take multiple nominative subjects joined by "sowie/und", restructure into a single verbal frame: "requires X and Y" or "requires that X ... and that Y ...", rather than listing nominatives with a final "are required".
-
-Prenominal participial phrases with agents:
-- German regularly packs agent + participle into prenominal position: "ein durch den Chirurgen ertastbares Ligament", "ein vom Benutzer bedienbares Gerät", "ein mittels Katheter einführbarer Stent". Do NOT translate these as "[noun] [adjective] by [agent]" (e.g., "a ligament palpable by the surgeon") — this calques the German prenominal structure. Instead, unpack into a relative clause or active construction: "a ligament that the surgeon can palpate", "a device that the user can operate", "a stent that can be introduced via catheter". The agent should become the subject of an active verb, not be buried in a "by" phrase after an adjective.
-- This applies to all -bar adjectives with "durch/von/mittels" agents, and to extended participial attributes (erweiterte Partizipialattribute) generally. The longer the prenominal phrase in German, the more critical it is to unpack into a clause in English.
-
-German nominalizations → English verbal constructions:
-- German patents heavily use -ung nominals where English prefers verbs: "die Handhabung erleichtern" → "make it easier to handle" (NOT "facilitate the handling"), "die Positionierung des Stents ermöglichen" → "allow the stent to be positioned" (NOT "enable the positioning of the stent"), "die Befestigung erfolgt durch Klemmen" → "it is fastened by clamping" (NOT "the attachment is effected by clamping").
-- Pattern: when a German -ung nominal is the OBJECT of a light verb (erleichtern, ermöglichen, erfolgen, durchführen, vornehmen, bewirken), convert the nominal back to a verb and restructure the sentence around it. Keep nominals only when they serve as genuine noun referents ("die Erfindung", "die Vorrichtung") rather than action descriptions.
-- "was dessen [Nominalization] erleichtert/ermöglicht/verbessert" → "which makes it easier to [verb]" / "which allows [agent] to [verb]" — NOT "which facilitates its [nominalization]".
-
-Lexical redundancy avoidance:
-- German often uses morphologically related words that map to the same English root: Notfall + Nottracheotomie ("emergency" + "emergency tracheotomy"), Unfall-Set + Unfallversorgung ("accident kit" + "accident care"). When both land on the same English word within the same clause, rephrase one of them to avoid the echo. Example: "Für den Notfall einer ... Nottracheotomie" → "In the case of an emergency tracheotomy" or "When an emergency tracheotomy must be performed" — NOT "For the emergency of an emergency tracheotomy".
-- Similarly, avoid stacking the same modifier: "dagger-shaped instrument set" repeated within the same sentence should use a pronoun or short reference on the second mention.
-
-German patent claim preambles ("Bei einem/einer..."):
-- German independent claims often open with "Bei einem [Gegenstand], insbesondere einem [spezifischer Gegenstand], mit [Merkmal], wobei/bei der/bei dem [kennzeichnende Merkmale]...". The "Bei" here introduces the subject of the claim — it does NOT mean "in" or "at" in English.
-- Standard English claim translation: drop "Bei" entirely and use the indefinite article + "comprising/having": "Bei einem Rollbrett, insbesondere einem Skateboard, mit mindestens einer Grundplatte" → "A rolling board, in particular a skateboard, having at least one base plate" — NOT "In a rolling board..." or "For a rolling board..."
-- "bei der/bei dem" within the claim introduces characterizing features: translate as "wherein" or restructure into relative clauses.
-- "mit" in the preamble = "comprising" or "having" (not "with"), per standard patent claim convention.
-- For the genus-species structure ("Rollbrett, insbesondere Skateboard"): preserve the generic term as the genus ("rolling board", "wheeled board", "fastening means") and the specific term as the species ("skateboard", "screw"). Do NOT collapse both to the same English word — this destroys the patent's claim scope.
-
-Complex sentence restructuring:
-- When a German sentence has deeply nested prenominal phrases (extended participial attributes with prepositional modifiers), do NOT mirror the nesting in English. Instead, break out nested modifiers into separate clauses or front them before the main noun phrase. The English reader should not need to mentally backtrack to connect modifiers to their heads.
-- Example: "an den den Schneiden der Scherenblätter abgewandten Aussenseiten des dolchartigen Instrumentariums" → restructure so "that face away from the cutting edges" is clearly a relative clause modifying "outer sides", not buried after intervening phrases."""
-
-
-def build_system_prompt(glossary=None, custom_instructions=None):
+def build_system_prompt(glossary=None, custom_instructions=None, domain="patent"):
     """
     Build the full system prompt with optional glossary and custom instructions.
+
+    Delegates to prompt_layers.build_translation_prompt() for layered assembly:
+      Tier 1 — Core DE→EN linguistics (domain-agnostic)
+      Tier 2 — Domain overlay (patent, general, etc.)
+      Tier 3 — Glossary + custom instructions
 
     Args:
         glossary: dict of {german_term: english_translation} or None
         custom_instructions: str of additional instructions or None
+        domain: str — "patent", "general", etc.
     Returns:
         Complete system prompt string
     """
-    prompt = SYSTEM_PROMPT_BASE
-
-    if glossary:
-        glossary_lines = "\n".join(f"- {de} → {en}" for de, en in glossary.items())
-        prompt += (
-            f"\n\nMANDATORY TERMINOLOGY — always use these exact translations:\n"
-            f"{glossary_lines}"
-        )
-
-    if custom_instructions:
-        prompt += f"\n\nAdditional instructions:\n{custom_instructions}"
-
-    return prompt
+    return build_translation_prompt(
+        domain=domain,
+        glossary=glossary,
+        custom_instructions=custom_instructions,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -159,7 +111,8 @@ def get_client(api_key):
 def translate_document(sentences, api_key, model="claude-sonnet-4-6",
                        glossary=None, structural_analysis=None,
                        custom_instructions=None,
-                       batch_size=50, progress_callback=None):
+                       batch_size=50, progress_callback=None,
+                       domain="patent"):
     """
     Translate a full German patent document.
 
@@ -187,7 +140,7 @@ def translate_document(sentences, api_key, model="claude-sonnet-4-6",
             "had_structural_hint": False
         }, ...]
     """
-    system_prompt = build_system_prompt(glossary, custom_instructions)
+    system_prompt = build_system_prompt(glossary, custom_instructions, domain=domain)
     n = len(sentences)
 
     # Build structural lookup

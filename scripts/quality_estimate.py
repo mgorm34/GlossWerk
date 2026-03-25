@@ -35,6 +35,8 @@ import time
 import random
 from pathlib import Path
 
+from prompt_layers import build_qe_prompt
+
 
 # ---------------------------------------------------------------------------
 # Few-shot example selection
@@ -130,90 +132,31 @@ def format_few_shot_examples(examples):
 # QE System Prompt
 # ---------------------------------------------------------------------------
 
-QE_SYSTEM_PROMPT = """You are an expert quality evaluator for DE→EN patent translations.
-
-Your task: evaluate each translation segment and assign a rating.
-
-Rating scale:
-- **good**: Translation is accurate, natural, and publishable without changes. Terminology is correct. Information structure is appropriate for English. No reordering problems. Sentence uses natural English grammatical constructions — not calqued German syntax (e.g., no predicate adjective where English needs a verb, no stacked "of" genitives where English uses possessives or compound nouns).
-- **minor**: Translation is mostly correct but has small issues that a reviewer might want to fix. This includes: minor terminology variation (acceptable but not optimal), slightly awkward phrasing, minor style issues, OR any single syntactic calque from German (nominalization kept as nominal, genitive chain kept as "of" phrase, participial attribute kept as adjective+by, predicate adjective kept instead of verbal construction). Does not affect meaning but does not read like natural English.
-- **major**: Translation has significant errors. Incorrect terminology, missing information, wrong constituent order that changes emphasis or readability, or grammar errors that affect comprehension. Requires editing.
-- **critical**: Translation is fundamentally wrong. Major omissions, completely wrong terminology, meaning is distorted or reversed, or the sentence is incomprehensible.
-
-Error categories (pick the primary one):
-- **terminology**: Wrong technical term, inconsistent term usage, or non-standard patent phrasing
-- **reordering**: Information structure or syntactic structure problem — this includes BOTH (a) German constituent order preserved in English where restructuring was needed, AND (b) German grammatical constructions calqued into English where a different English construction would be more natural (e.g., predicate adjective kept as adjective when a verbal construction is needed, or genitive chains translated as "X of the Y" when English would use a possessive, compound noun, or restructured clause)
-- **omission**: Information present in German source is missing from translation
-- **grammar**: Grammatical error in English that wasn't in source
-- **addition**: Information added that wasn't in the German source
-- **other**: Doesn't fit above categories
-
-IMPORTANT calibration notes for patent translation:
-- Patent language is formal and precise. "aufweisen" = "comprise/have", not "exhibit"
-- "dadurch gekennzeichnet, dass" = "characterized in that" (standard patent phrasing)
-- German compound nouns must be translated precisely, not simplified
-- Information structure: German puts key info at the end; good English translations front-load it
-- Consistency matters: if "Stentbügel" is "stent bow" in one sentence, it must be "stent bow" everywhere
-- "FIG." (not "Fig.") per US patent convention
-- Paragraph references like [0012] must be preserved exactly
-
-Syntactic calque detection (CRITICAL — do not overlook these):
-
-1. Predicate adjective → verbal construction:
-   German "sind/ist ... erforderlich/notwendig/vorgesehen" translated as "X is required" / "X is necessary" instead of "requires X" / "necessitates X". Rate "minor" minimum.
-   BAD: "a slender neck of the patient is required" → GOOD: "requires that the patient have a slender neck"
-
-2. Stacked genitive "of" phrases:
-   "the neck of the patient", "the surface of the stent" instead of "the patient's neck", "the stent surface". One "of" is fine; two+ stacked in one noun phrase = reordering error.
-
-3. Prenominal participial phrases with agents:
-   German packs "durch/von/mittels + agent + -bar/-end participle" before the noun. If the translation keeps this as "[noun] [adjective] by [agent]", it's a calque. Rate "minor" minimum.
-   BAD: "a ligament palpable by the surgeon" → GOOD: "a ligament that the surgeon can palpate"
-   BAD: "a device operable by the user" → GOOD: "a device that the user can operate"
-   Check for: any "[noun] [adjective] by [agent]" pattern where the adjective ends in -able/-ible and a "by" phrase follows. This is almost always a German participial calque.
-
-4. Nominalization calques (light verb + -ung nominal):
-   German uses -ung nominals as objects of light verbs (erleichtern, ermöglichen, erfolgen, durchführen, bewirken). If the translation preserves the nominalization instead of converting to a verb, it's a calque. Rate "minor".
-   BAD: "which facilitates its handling" → GOOD: "which makes it easier to handle"
-   BAD: "enables the positioning of the stent" → GOOD: "allows the stent to be positioned"
-   BAD: "the attachment is effected by clamping" → GOOD: "it is fastened by clamping"
-   Check for: "facilitate/enable/effect/perform/carry out" + "the [nominalization]" — this pattern almost always signals a German -ung calque. Also check "which facilitates/improves/enables its [noun]" — the "its [noun]" often maps to "dessen [Nominalisierung]" in German.
-
-5. Combined calques:
-   When multiple calque types appear in one sentence (e.g., predicate adjective + genitive chain, or participial calque + nominalization), the cumulative effect makes the sentence significantly worse than any single issue. Rate "minor" for one calque type, "major" if two or more calque types combine in the same sentence.
-
-6. Readability / information overload in complex sentences:
-   German tolerates deeply nested prenominal phrases and long-distance dependencies between heads and their modifiers. Even if the English translation is technically grammatically correct, it may force the reader to hold too many open referents in working memory. Signs of this:
-   - A noun phrase is modified by a participial phrase AND a prepositional phrase AND a relative clause, all stacked
-   - The head noun is separated from its relative clause by multiple intervening phrases
-   - The reader must mentally backtrack to connect modifiers to their heads
-   If a sentence requires multiple re-reads to understand the modifier structure, rate "minor" minimum. If understanding requires expert-level parsing effort, rate "major".
-   BAD: "obliquely extending regions having cut surfaces can be formed on the outer sides of the dagger-shaped instrument set that face away from the cutting edges of the scissor blades" — the reader cannot tell what "that face away" modifies without re-reading.
-   GOOD: "on the outer sides that face away from the cutting edges of the scissor blades, obliquely extending regions with cut surfaces can be formed"
-
-7. Lexical redundancy from German morphology:
-   German often uses morphologically related words in the same sentence (Notfall + Nottracheotomie, Unfall + Unfall-Set) that both map to the same English root. If the translation preserves both as the same English word ("emergency ... emergency tracheotomy"), flag as "minor" for reordering and suggest a rephrasing that avoids the echo.
-   BAD: "For the emergency of an emergency tracheotomy" → GOOD: "In the case of an emergency tracheotomy" or "When an emergency tracheotomy must be performed"
-
-CROSS-SEGMENT CONSISTENCY (CRITICAL):
-The same error type must receive the same severity rating regardless of which segment it appears in. If a terminology error (e.g., "Rollbrett" translated as "rolling board" instead of using the glossary term) is "minor" in segment 3, it MUST be "minor" in segment 12 too — unless the second instance has ADDITIONAL errors that trigger escalation. Do not let surrounding sentence quality, sentence length, or structural complexity influence the rating of an individual error type. Rate each error on its own merits first, then apply escalation rules if multiple distinct errors co-occur.
-
-MULTI-FAILURE ESCALATION:
-When a single segment has TWO OR MORE distinct errors (not two instances of the same error type, but genuinely different problems — e.g., a terminology error AND a reordering issue, or an omission AND a calque), escalate to at least "major". If it already qualifies as "major" from any single error, the combination pushes it to "critical". List ALL errors in the explanation, separated by semicolons. When escalating, EXPLICITLY state which errors triggered the escalation (e.g., "Escalated from minor to major: terminology error + reordering calque").
-
-General principle: if a sentence is grammatically correct but reads like it was translated by preserving the German syntactic frame rather than rebuilding for English, it is NOT "good". A publishable patent translation should read as if it were originally drafted in English.
-
-When a STRUCTURAL NOTE is provided, pay extra attention to the structural issue described.
-A high-risk sentence that was correctly restructured for English should still be rated "good".
-A high-risk sentence where the translator preserved German word order OR calqued German grammatical constructions should be rated "minor" or "major" for reordering."""
+# QE_SYSTEM_PROMPT is now assembled from prompt_layers module.
+# Kept as a module-level reference for backward compatibility.
+QE_SYSTEM_PROMPT = None  # Use build_qe_system_prompt() instead
 
 
-def build_qe_system_prompt(few_shot_examples=None):
-    """Build the full QE system prompt with optional few-shot examples."""
-    prompt = QE_SYSTEM_PROMPT
+def build_qe_system_prompt(few_shot_examples=None, domain="patent"):
+    """
+    Build the full QE system prompt with optional few-shot examples.
+
+    Delegates to prompt_layers.build_qe_prompt() for layered assembly:
+      Tier 1 — Core DE→EN QE checks (domain-agnostic)
+      Tier 2 — Domain overlay (patent, general, etc.)
+      + Few-shot calibration examples
+
+    Args:
+        few_shot_examples: list of training pair dicts for calibration, or None
+        domain: str — "patent", "general", etc.
+    Returns:
+        Complete QE system prompt string
+    """
+    few_shot_text = None
     if few_shot_examples:
-        prompt += "\n\n" + format_few_shot_examples(few_shot_examples)
-    return prompt
+        few_shot_text = format_few_shot_examples(few_shot_examples)
+
+    return build_qe_prompt(domain=domain, few_shot_text=few_shot_text)
 
 
 # ---------------------------------------------------------------------------
@@ -228,7 +171,7 @@ def get_client(api_key):
 
 def evaluate_translations(translations, api_key, model="claude-sonnet-4-6",
                           few_shot_examples=None, batch_size=20,
-                          progress_callback=None):
+                          progress_callback=None, domain="patent"):
     """
     Evaluate translations using Claude as QE.
 
@@ -254,7 +197,7 @@ def evaluate_translations(translations, api_key, model="claude-sonnet-4-6",
             "risk_score": 0.0
         }, ...]
     """
-    system_prompt = build_qe_system_prompt(few_shot_examples)
+    system_prompt = build_qe_system_prompt(few_shot_examples, domain=domain)
     n = len(translations)
     all_results = []
 
