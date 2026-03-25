@@ -5,5 +5,159 @@
     "notes": "",
     "created": "2026-03-24T12:00:23.586598",
     "used": false
+  },
+  "GW-87824381": {
+    "company": "TestRun",
+    "email": "matt@test.com",
+    "notes": "",
+    "created": "2026-03-24T12:09:20.480693",
+    "used": false
+  },
+  "GW-47171A68": {
+    "company": "Translating Patents",
+    "email": "info@translatingpatents.com",
+    "notes": "Tier 1 - Boutique DE\u2192EN patent specialist",
+    "created": "2026-03-25T10:55:29.595090",
+    "used": false
+  },
+  "GW-CD2C6586": {
+    "company": "CFB Scientific Translations",
+    "email": "carola@cfbtranslations.com",
+    "notes": "Tier 1 - Solo, PhD, ATA-certified",
+    "created": "2026-03-25T10:55:29.597666",
+    "used": false
+  },
+  "GW-BFBC5690": {
+    "company": "Patent Translations Intl",
+    "email": "contact@patenttranslationsinternational.com",
+    "notes": "Tier 1 - Pure patent shop, UK",
+    "created": "2026-03-25T10:55:29.600749",
+    "used": false
+  },
+  "GW-FFAE8326": {
+    "company": "Steve Vitek / PatentTranslators",
+    "email": "via-blog@patenttranslators.com",
+    "notes": "Tier 1 - Influencer, approach carefully",
+    "created": "2026-03-25T10:55:29.603093",
+    "used": false
+  },
+  "GW-38380768": {
+    "company": "Apex Translations",
+    "email": "hans@apex-translations.com",
+    "notes": "US Mid - CEO did DE\u2192EN patents personally",
+    "created": "2026-03-25T10:55:29.605740",
+    "used": false
+  },
+  "GW-E70D2EB8": {
+    "company": "Stepes / Carl Yao",
+    "email": "via-stepes@stepes.com",
+    "notes": "US Mid - Built TermWiki, tech-savvy",
+    "created": "2026-03-25T10:55:29.608196",
+    "used": false
+  },
+  "GW-66376535": {
+    "company": "Language Scientific",
+    "email": "contact@languagescientific.com",
+    "notes": "US Mid - Only hires degreed translators",
+    "created": "2026-03-25T10:55:29.611192",
+    "used": false
+  },
+  "GW-874497AF": {
+    "company": "CSOFT International",
+    "email": "info@csoftintl.com",
+    "notes": "US Mid - Large patent div, life sciences",
+    "created": "2026-03-25T10:55:29.613804",
+    "used": false
+  },
+  "GW-E449C79E": {
+    "company": "Morningside",
+    "email": "contact@morningtrans.com",
+    "notes": "US Mid - Questel IP arm, Hamburg office",
+    "created": "2026-03-25T10:55:29.616254",
+    "used": false
+  },
+  "GW-02525EE2": {
+    "company": "Express Language Solutions",
+    "email": "contact@elstranslations.com",
+    "notes": "US Mid - NYC, patent-focused",
+    "created": "2026-03-25T10:55:29.618835",
+    "used": false
+  },
+  "GW-B93F8C89": {
+    "company": "Veolin Translations",
+    "email": "contact@veolintrans.com",
+    "notes": "EU Mid - Berlin + DC",
+    "created": "2026-03-25T10:55:29.621281",
+    "used": false
+  },
+  "GW-975ABE92": {
+    "company": "Murgitroyd",
+    "email": "translations@murgitroyd.com",
+    "notes": "EU Mid - In-house IP translation, Glasgow",
+    "created": "2026-03-25T10:55:29.623732",
+    "used": false
+  },
+  "GW-97BD3FB5": {
+    "company": "Seprotec Germany",
+    "email": "sales.germany@seprotec.com",
+    "notes": "EU Mid - Cologne/Berlin, dedicated patent team",
+    "created": "2026-03-25T11:00:14.034603",
+    "used": false
+  },
+  "GW-8417E63C": {
+    "company": "GTS Translation Services",
+    "email": "contact@gts-translation.com",
+    "notes": "EU Mid - EPO official provider",
+    "created": "2026-03-25T11:00:14.037307",
+    "used": false
+  },
+  "GW-9E3FA5CD": {
+    "company": "KERN Global Language Services",
+    "email": "contact@e-kern.com",
+    "notes": "EU Mid - Major German LSP since 1972",
+    "created": "2026-03-25T11:00:14.040000",
+    "used": false
+  },
+  "GW-DA1A9C79": {
+    "company": "D.O.G. GmbH",
+    "email": "contact@dog-gmbh.de",
+    "notes": "EU Mid - German-based, patent-focused",
+    "created": "2026-03-25T11:00:14.042826",
+    "used": false
+  },
+  "GW-079BD8B0": {
+    "company": "RWS Group",
+    "email": "contact@rws.com",
+    "notes": "Enterprise - World #1 IP services",
+    "created": "2026-03-25T11:00:14.045797",
+    "used": false
+  },
+  "GW-3C48626F": {
+    "company": "Clarivate",
+    "email": "iptranslations@clarivate.com",
+    "notes": "Enterprise - USPTO/EPO/WIPO filings",
+    "created": "2026-03-25T11:00:14.048742",
+    "used": false
+  },
+  "GW-5BAC88A6": {
+    "company": "Questel",
+    "email": "contact@questel.com",
+    "notes": "Enterprise - Owns Morningside",
+    "created": "2026-03-25T11:00:14.051686",
+    "used": false
+  },
+  "GW-C865EE18": {
+    "company": "Park IP / Welocalize",
+    "email": "gary.leblanc@parkip.com",
+    "notes": "Enterprise - Gary LeBlanc, Sr Dir Global Sales",
+    "created": "2026-03-25T11:00:14.054323",
+    "used": false
+  },
+  "GW-228DF7E8": {
+    "company": "Language Scientific",
+    "email": "contact@languagescientific.com",
+    "notes": "US Mid - Only hires degreed translators",
+    "created": "2026-03-25T11:00:14.057345",
+    "used": false
   }
 }
