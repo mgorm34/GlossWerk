@@ -1,5 +1,5 @@
 """
-GlossWerk — DE→EN Patent Translation Pipeline
+GlossWerk — DE→EN Translation Pipeline for Technical Text & Patents
 
 Upload a German patent → scan & review terminology → translate with QE →
 review & edit side-by-side → export.
@@ -106,8 +106,9 @@ st.markdown("""
         padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; color: white;
         display: flex; align-items: center; gap: 1rem;
     }
-    .main-header img { width: 44px; height: 44px; border-radius: 8px; }
-    .main-header h1 { color: white; margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; }
+    .main-header img { display: none; }
+    .main-header h1 { color: white; margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 0.1rem; }
+    .main-header h1 .logo-g-inline { width: 42px; height: 42px; border-radius: 8px; }
     .main-header h1 span { color: #10b981; }
     .main-header p { color: #94a3b8; margin: 0.3rem 0 0 0; font-size: 0.95rem; }
 
@@ -157,12 +158,13 @@ if os.path.exists(_logo_path):
 
 _logo_img = f'<img src="data:image/svg+xml;base64,{_logo_b64}" alt="GlossWerk">' if _logo_b64 else ""
 
+_inline_logo_svg = '<svg class="logo-g-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none"><rect width="512" height="512" rx="96" fill="rgba(255,255,255,0.08)"/><path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50" stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/><polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+
 st.markdown(f"""
 <div class="main-header">
-    {_logo_img}
     <div>
-        <h1>Gloss<span>Werk</span></h1>
-        <p>DE &rarr; EN Patent Translation Pipeline</p>
+        <h1>{_inline_logo_svg}loss<span>Werk</span></h1>
+        <p>DE &rarr; EN Translation Pipeline for Technical Text &amp; Patents</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -226,7 +228,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### Document")
-    uploaded_file = st.file_uploader("German patent (.docx)", type=["docx"])
+    uploaded_file = st.file_uploader("German text (.docx)", type=["docx"])
     glossary_upload = st.file_uploader("Glossary TSV (optional)", type=["tsv", "txt"])
 
 
@@ -279,7 +281,7 @@ if uploaded_file is not None:
 
 # Reconstruct temp file from stored bytes on every run
 if "docx_bytes" not in st.session_state:
-    st.info("Upload a German .docx patent in the sidebar to get started.")
+    st.info("Upload a German .docx file in the sidebar to get started.")
     st.stop()
 
 _tmp = tempfile.NamedTemporaryFile(suffix=".docx", delete=False)
@@ -999,9 +1001,12 @@ with tab_review:
                     st.markdown(f"<div class='locked-box'>{_confirmed[idx]}</div>",
                                 unsafe_allow_html=True)
                 else:
-                    current_text = trans.get("translation", "")
+                    # Only set default value if key not already in session state
+                    # (Apply fix / Add term sets it via session state API)
+                    if f"edit_{idx}" not in st.session_state:
+                        st.session_state[f"edit_{idx}"] = trans.get("translation", "")
                     st.text_area(
-                        f"edit_{idx}", value=current_text,
+                        f"edit_{idx}",
                         label_visibility="collapsed", key=f"edit_{idx}",
                         height=100,
                     )
