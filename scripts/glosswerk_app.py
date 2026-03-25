@@ -104,12 +104,17 @@ st.markdown("""
     .main-header {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; color: white;
-        display: flex; align-items: center; gap: 1rem;
+        display: flex; align-items: center; gap: 1.2rem;
     }
+    .main-header .logo-icon { width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0; }
     .main-header img { display: none; }
-    .main-header h1 { color: white; margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 0.1rem; }
-    .main-header h1 .logo-g-inline { width: 42px; height: 42px; border-radius: 8px; }
-    .main-header h1 span { color: #10b981; }
+    .main-header h1 {
+        color: white; margin: 0; font-size: 2rem; letter-spacing: -0.5px;
+        font-weight: 700; line-height: 1.1;
+    }
+    .main-header h1 .gw-g { color: #10b981; font-weight: 800; }
+    .main-header h1 .gw-loss { color: #e2e8f0; font-weight: 400; }
+    .main-header h1 .gw-werk { color: #10b981; font-weight: 700; }
     .main-header p { color: #94a3b8; margin: 0.3rem 0 0 0; font-size: 0.95rem; }
 
     .triage-card { padding: 1rem 1.2rem; border-radius: 10px; text-align: center; font-weight: 600; }
@@ -158,13 +163,14 @@ if os.path.exists(_logo_path):
 
 _logo_img = f'<img src="data:image/svg+xml;base64,{_logo_b64}" alt="GlossWerk">' if _logo_b64 else ""
 
-_inline_logo_svg = '<svg class="logo-g-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none"><rect width="512" height="512" rx="96" fill="rgba(255,255,255,0.08)"/><path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50" stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/><polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+_inline_logo_svg = '<svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none"><rect width="512" height="512" rx="96" fill="#1a1a2e"/><path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50" stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/><polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
 
 st.markdown(f"""
 <div class="main-header">
+    {_inline_logo_svg}
     <div>
-        <h1>{_inline_logo_svg}loss<span>Werk</span></h1>
-        <p>DE &rarr; EN Translation Pipeline for Technical Text &amp; Patents</p>
+        <h1><span class="gw-g">G</span><span class="gw-loss">loss</span><span class="gw-werk">Werk</span></h1>
+        <p>DE &rarr; EN Translation Pipeline</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -442,7 +448,20 @@ with tab_terms:
 
     if (not scan_done and st.button("Scan & Translate Terminology", type="primary", use_container_width=True)) or rescan:
       try:
-        progress = st.progress(0, text="Extracting terms...")
+        import time as _time
+        _scan_start = _time.time()
+        progress = st.progress(0)
+        eta_text = st.empty()
+
+        def _scan_eta(pct):
+            elapsed = _time.time() - _scan_start
+            if pct > 0.05:
+                remaining = elapsed / pct * (1 - pct)
+                mins, secs = divmod(int(remaining), 60)
+                eta_text.caption(f"~{mins}m {secs}s remaining" if mins else f"~{secs}s remaining")
+            progress.progress(min(pct, 1.0))
+
+        _scan_eta(0.02)
 
         raw_text = extract_text_from_docx_terms(docx_path)
         sentences = extract_sentences(raw_text)
@@ -462,7 +481,7 @@ with tab_terms:
                     f"First 100 chars: `{sample[:100]}…`"
                 )
 
-        progress.progress(0.15, text="Extracting nouns...")
+        _scan_eta(0.15)
 
         if HAS_SPACY:
             try:
@@ -475,7 +494,7 @@ with tab_terms:
             lemma_map = {}
         noun_counts = {k: v for k, v in noun_counts.items() if v >= min_noun_freq}
 
-        progress.progress(0.25, text="Extracting adjectives & verbs...")
+        _scan_eta(0.25)
         adj_freq, adj_variants = extract_technical_adjectives(sentences, min_freq=min_adj_freq)
         verb_info = extract_patent_verbs(sentences)
         # Filter verbs by frequency threshold
@@ -490,7 +509,7 @@ with tab_terms:
         # API translations: nouns
         untranslated_nouns = [n for n in noun_counts if n not in pre_glossary]
         if untranslated_nouns and api_key:
-            progress.progress(0.35, text=f"Translating {len(untranslated_nouns)} nouns...")
+            _scan_eta(0.35)
             noun_proposals = translate_terms_batch(untranslated_nouns, "noun")
             st.session_state.noun_proposals = noun_proposals
             for de, info in noun_proposals.items():
@@ -500,11 +519,12 @@ with tab_terms:
         # API translations: adjectives
         untranslated_adjs = list(adj_freq.keys())
         if untranslated_adjs and api_key:
-            progress.progress(0.65, text=f"Translating {len(untranslated_adjs)} adjectives...")
+            _scan_eta(0.65)
             adj_proposals = translate_terms_batch(untranslated_adjs, "adjective")
             st.session_state.adj_proposals = adj_proposals
 
-        progress.progress(1.0, text="Done!")
+        progress.progress(1.0)
+        eta_text.empty()
         st.success(f"{len(noun_counts)} nouns · {len(adj_freq)} adjectives · {len(verb_info)} verbs")
       except Exception as e:
         st.error(f"Scan failed: {e}")
@@ -778,18 +798,30 @@ with tab_translate:
                 st.stop()
             record_patent_use(st.session_state.demo_code, st.session_state.get("docx_name", "patent.docx"))
 
-        progress = st.progress(0, text="Starting pipeline...")
-        status = st.empty()
+        import time as _time
+        _pipe_start = _time.time()
+        progress = st.progress(0)
+        eta_text = st.empty()
+
+        def _pipe_eta(pct):
+            elapsed = _time.time() - _pipe_start
+            if pct > 0.03:
+                remaining = elapsed / pct * (1 - pct)
+                mins, secs = divmod(int(remaining), 60)
+                eta_text.caption(f"~{mins}m {secs}s remaining" if mins else f"~{secs}s remaining")
+            progress.progress(min(pct, 1.0))
+
+        _pipe_eta(0.02)
 
         # Step 1: Structural analysis (silent)
-        status.text("Analyzing sentence structure...")
-        progress.progress(0.05, text="Structural analysis...")
         nlp = load_nlp()
         if nlp:
             structural = analyze_document(docx_path, nlp)
             st.session_state.structural_analysis = structural
         else:
             st.session_state.structural_analysis = None
+
+        _pipe_eta(0.08)
 
         # Step 2: Translate
         raw_text = extract_text_translate(docx_path)
@@ -798,9 +830,8 @@ with tab_translate:
 
         def trans_progress(current, total):
             pct = 0.1 + (current / total) * 0.5
-            progress.progress(min(pct, 0.6), text=f"Translating {current}/{total}...")
+            _pipe_eta(pct)
 
-        status.text("Translating...")
         results = translate_document(
             sentences=sentences, api_key=api_key, model=model,
             glossary=glossary, structural_analysis=st.session_state.structural_analysis,
@@ -819,8 +850,7 @@ with tab_translate:
         }
 
         # Step 3: QE
-        progress.progress(0.65, text="Quality estimation...")
-        status.text("Evaluating quality...")
+        _pipe_eta(0.62)
 
         few_shot = None
         if training_pairs_path and os.path.exists(training_pairs_path) and n_few_shot > 0:
@@ -829,7 +859,7 @@ with tab_translate:
 
         def qe_progress(current, total):
             pct = 0.65 + (current / total) * 0.3
-            progress.progress(min(pct, 0.95), text=f"QE {current}/{total}...")
+            _pipe_eta(pct)
 
         qe_results = evaluate_translations(
             translations=results, api_key=api_key, model=model,
@@ -850,8 +880,8 @@ with tab_translate:
                 f"Common causes: API rate limits, model unavailability, or very long segments."
             )
 
-        progress.progress(1.0, text="Complete!")
-        status.empty()
+        progress.progress(1.0)
+        eta_text.empty()
 
     # --- Results ---
     if st.session_state.triage:
