@@ -64,6 +64,7 @@ from quality_estimate import (
 from prompt_layers import get_available_domains
 from assemble import assemble_document
 from demo_auth import show_auth_gate, record_patent_use, validate_code, WATERMARK_TEXT
+from feedback_logger import log_confirmed_segment, log_session_feedback, get_feedback_stats, merge_feedback_to_training
 
 try:
     import anthropic
@@ -1029,9 +1030,22 @@ with tab_review:
                         st.button("Unlock", key=f"unlock_{idx}", type="secondary", on_click=_unlock)
                 else:
                     with btn_cols[0]:
-                        def _confirm(i=idx, t=trans):
+                        def _confirm(i=idx, t=trans, q=qe):
                             edited = st.session_state.get(f"edit_{i}", t.get("translation", ""))
                             st.session_state.confirmed[i] = edited
+                            # Log to feedback for QE training
+                            try:
+                                log_confirmed_segment(
+                                    source_de=t.get("source", ""),
+                                    original_translation=t.get("translation", ""),
+                                    confirmed_translation=edited,
+                                    qe_rating=q.get("rating", "unknown"),
+                                    qe_category=q.get("error_category", ""),
+                                    segment_index=i,
+                                    doc_name=st.session_state.get("docx_name", "unknown"),
+                                )
+                            except Exception:
+                                pass  # Don't let logging break the UI
                         st.button("Confirm", key=f"confirm_{idx}", type="secondary", on_click=_confirm)
                     with btn_cols[1]:
                         # Apply QE suggestion — puts text in editor, does NOT lock
@@ -1233,5 +1247,35 @@ with tab_export:
                 "Glossary (TSV)", data=glossary_tsv,
                 file_name="glossary.tsv", mime="text/tab-separated-values",
             )
+
+        # --- Feedback / Training Data ---
+        st.divider()
+        st.markdown("### QE Training Feedback")
+        fb_stats = get_feedback_stats()
+        if fb_stats["total"] > 0:
+            st.caption(
+                f"{fb_stats['total']} segments logged · "
+                f"{fb_stats['unchanged']} confirmed as-is · "
+                f"{fb_stats['changed']} edited"
+            )
+            # Show QE accuracy: how often did the user agree with QE?
+            if fb_stats.get("by_qe_rating"):
+                agree_count = fb_stats["by_qe_rating"].get("good", 0)  # QE said good, user confirmed
+                disagree_edits = fb_stats["changed"]
+                if fb_stats["total"] > 0:
+                    accuracy = (fb_stats["total"] - disagree_edits) / fb_stats["total"] * 100
+                    st.caption(f"QE agreement rate: {accuracy:.0f}% (user confirmed without edits)")
+
+            if fb_stats["total"] >= 20:
+                if st.button("Merge feedback into training data"):
+                    merged = merge_feedback_to_training()
+                    if merged > 0:
+                        st.success(f"Merged {merged} entries into training_pairs.jsonl")
+                    else:
+                        st.info("Not enough new entries to merge yet.")
+            else:
+                st.caption(f"Need {20 - fb_stats['total']} more confirmed segments before merging into training data.")
+        else:
+            st.caption("No feedback data yet. Confirm segments in the Review tab to start building training data.")
 
     _export_section()
