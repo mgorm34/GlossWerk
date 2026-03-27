@@ -150,8 +150,44 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     [data-testid="stSidebar"] { min-width: 280px; max-width: 320px; }
+
+    /* Custom green progress bar */
+    .gw-progress-wrap {
+        margin: 0.5rem 0 0.25rem;
+    }
+    .gw-progress-track {
+        width: 100%;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .gw-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        border-radius: 4px;
+        transition: width 0.6s ease;
+        width: 0%;
+    }
+    .gw-progress-label {
+        font-size: 0.82rem;
+        color: #6b7280;
+        margin-top: 0.3rem;
+    }
 </style>
 """, unsafe_allow_html=True)
+
+
+def _render_progress(container, pct, label=""):
+    """Render a custom green progress bar with smooth CSS transitions."""
+    w = max(0, min(100, int(pct * 100)))
+    container.markdown(
+        f'<div class="gw-progress-wrap">'
+        f'<div class="gw-progress-track"><div class="gw-progress-fill" style="width:{w}%"></div></div>'
+        f'<div class="gw-progress-label">{label}</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
 # Load logo as base64 for inline embedding
 import base64 as _b64
@@ -448,20 +484,12 @@ with tab_terms:
 
     if (not scan_done and st.button("Scan & Translate Terminology", type="primary", use_container_width=True)) or rescan:
       try:
-        import time as _time
-        _scan_start = _time.time()
-        progress = st.progress(0)
-        eta_text = st.empty()
+        _scan_bar = st.empty()
 
-        def _scan_eta(pct):
-            elapsed = _time.time() - _scan_start
-            if pct > 0.05:
-                remaining = elapsed / pct * (1 - pct)
-                mins, secs = divmod(int(remaining), 60)
-                eta_text.caption(f"~{mins}m {secs}s remaining" if mins else f"~{secs}s remaining")
-            progress.progress(min(pct, 1.0))
+        def _scan_eta(pct, step=""):
+            _render_progress(_scan_bar, pct, step)
 
-        _scan_eta(0.02)
+        _scan_eta(0.02, "Starting scan...")
 
         raw_text = extract_text_from_docx_terms(docx_path)
         sentences = extract_sentences(raw_text)
@@ -481,7 +509,7 @@ with tab_terms:
                     f"First 100 chars: `{sample[:100]}…`"
                 )
 
-        _scan_eta(0.15)
+        _scan_eta(0.15, "Extracting terms...")
 
         if HAS_SPACY:
             try:
@@ -494,7 +522,7 @@ with tab_terms:
             lemma_map = {}
         noun_counts = {k: v for k, v in noun_counts.items() if v >= min_noun_freq}
 
-        _scan_eta(0.25)
+        _scan_eta(0.25, "Analyzing adjectives & verbs...")
         adj_freq, adj_variants = extract_technical_adjectives(sentences, min_freq=min_adj_freq)
         verb_info = extract_patent_verbs(sentences)
         # Filter verbs by frequency threshold
@@ -509,7 +537,7 @@ with tab_terms:
         # API translations: nouns
         untranslated_nouns = [n for n in noun_counts if n not in pre_glossary]
         if untranslated_nouns and api_key:
-            _scan_eta(0.35)
+            _scan_eta(0.35, "Translating nouns...")
             noun_proposals = translate_terms_batch(untranslated_nouns, "noun")
             st.session_state.noun_proposals = noun_proposals
             for de, info in noun_proposals.items():
@@ -519,12 +547,11 @@ with tab_terms:
         # API translations: adjectives
         untranslated_adjs = list(adj_freq.keys())
         if untranslated_adjs and api_key:
-            _scan_eta(0.65)
+            _scan_eta(0.65, "Translating adjectives...")
             adj_proposals = translate_terms_batch(untranslated_adjs, "adjective")
             st.session_state.adj_proposals = adj_proposals
 
-        progress.progress(1.0)
-        eta_text.empty()
+        _render_progress(_scan_bar, 1.0, "Scan complete")
         st.success(f"{len(noun_counts)} nouns · {len(adj_freq)} adjectives · {len(verb_info)} verbs")
       except Exception as e:
         st.error(f"Scan failed: {e}")
@@ -798,20 +825,12 @@ with tab_translate:
                 st.stop()
             record_patent_use(st.session_state.demo_code, st.session_state.get("docx_name", "patent.docx"))
 
-        import time as _time
-        _pipe_start = _time.time()
-        progress = st.progress(0)
-        eta_text = st.empty()
+        _pipe_bar = st.empty()
 
-        def _pipe_eta(pct):
-            elapsed = _time.time() - _pipe_start
-            if pct > 0.03:
-                remaining = elapsed / pct * (1 - pct)
-                mins, secs = divmod(int(remaining), 60)
-                eta_text.caption(f"~{mins}m {secs}s remaining" if mins else f"~{secs}s remaining")
-            progress.progress(min(pct, 1.0))
+        def _pipe_eta(pct, label=""):
+            _render_progress(_pipe_bar, pct, label)
 
-        _pipe_eta(0.02)
+        _pipe_eta(0.02, "Starting pipeline...")
 
         # Step 1: Structural analysis (silent)
         nlp = load_nlp()
@@ -821,16 +840,18 @@ with tab_translate:
         else:
             st.session_state.structural_analysis = None
 
-        _pipe_eta(0.08)
+        _pipe_eta(0.08, "Analyzing structure...")
 
         # Step 2: Translate
         raw_text = extract_text_translate(docx_path)
         sentences = split_sentences_translate(raw_text)
+        _total_segs = len(sentences)
         glossary = st.session_state.glossary if st.session_state.glossary else None
 
         def trans_progress(current, total):
             pct = 0.1 + (current / total) * 0.5
-            _pipe_eta(pct)
+            pct_display = int(pct * 100)
+            _pipe_eta(pct, f"Translating {current} / {total} segments ({pct_display}%)")
 
         results = translate_document(
             sentences=sentences, api_key=api_key, model=model,
@@ -850,7 +871,7 @@ with tab_translate:
         }
 
         # Step 3: QE
-        _pipe_eta(0.62)
+        _pipe_eta(0.62, f"Translation complete — starting QE...")
 
         few_shot = None
         if training_pairs_path and os.path.exists(training_pairs_path) and n_few_shot > 0:
@@ -859,7 +880,8 @@ with tab_translate:
 
         def qe_progress(current, total):
             pct = 0.65 + (current / total) * 0.3
-            _pipe_eta(pct)
+            pct_display = int(pct * 100)
+            _pipe_eta(pct, f"Evaluating {current} / {total} segments ({pct_display}%)")
 
         qe_results = evaluate_translations(
             translations=results, api_key=api_key, model=model,
@@ -880,8 +902,7 @@ with tab_translate:
                 f"Common causes: API rate limits, model unavailability, or very long segments."
             )
 
-        progress.progress(1.0)
-        eta_text.empty()
+        _render_progress(_pipe_bar, 1.0, "Pipeline complete")
 
     # --- Results ---
     if st.session_state.triage:
