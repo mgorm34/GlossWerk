@@ -256,6 +256,9 @@ CORE DE→EN CALQUE DETECTION (CRITICAL — do not overlook these):
 13. Lexical redundancy from German morphology:
     German morphologically related words (Notfall + Nottracheotomie) mapping to the same English root in one clause. Flag as "minor" for reordering.
 
+SUGGESTION SELF-CHECK (CRITICAL):
+Before finalizing any suggestion, re-read it aloud. If your suggested fix introduces new lexical repetition (e.g., "by means of a fastening means"), word echoes, or reads more awkwardly than the original, rephrase to eliminate the collision. The suggestion must always be an improvement — never trade one problem for another.
+
 CROSS-SEGMENT CONSISTENCY (CRITICAL):
 The same error type must receive the same severity rating regardless of which segment it appears in. Do not let surrounding sentence quality, sentence length, or structural complexity influence the rating of an individual error type. Rate each error on its own merits first, then apply escalation rules.
 

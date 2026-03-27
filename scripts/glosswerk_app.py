@@ -377,15 +377,20 @@ def translate_terms_batch(terms, term_type="noun"):
         schema = (
             '{"de": "German", "en": "best translation", '
             '"alternatives": ["alt1", "alt2"], '
-            '"avoid": "common mistranslation to avoid (only if confident)", '
+            '"avoid": "common WRONG translation to avoid — must be DIFFERENT from en field, or empty string if none", '
             '"confidence": "high|medium|low", '
             '"reasoning": "brief explanation of why literal translation is wrong"}'
         )
         instruction = (
             "You are a DE→EN patent terminology expert. "
             "For each German technical adjective, provide: the best English translation, "
-            "1-2 alternatives, an 'avoid' mistranslation ONLY if the literal translation is "
-            "definitely wrong in patent context, confidence level, and reasoning. Return a JSON array."
+            "1-2 alternatives, an 'avoid' field ONLY when there is a specific misleading "
+            "literal translation that is DIFFERENT from your recommended translation (e.g., "
+            "'verbindbar' → en: 'connectable', avoid: '' because there's no misleading alternative; "
+            "but 'vorgesehen' → en: 'provided', avoid: 'foreseen' because 'foreseen' is a common "
+            "false-friend). Leave 'avoid' as empty string if the best translation IS the literal "
+            "translation. The avoid term must NEVER match the en field. "
+            "Return a JSON array."
         )
 
     for batch_start in range(0, len(terms), 40):
@@ -406,6 +411,9 @@ def translate_terms_batch(terms, term_type="noun"):
             if bs >= 0 and be > bs:
                 parsed = json.loads(raw[bs:be + 1])
                 for item in parsed:
+                    # Strip avoid term if it matches the best translation
+                    if item.get("avoid", "").strip().lower() == item.get("en", "").strip().lower():
+                        item["avoid"] = ""
                     all_proposals[item["de"]] = item
         except Exception as e:
             pass
