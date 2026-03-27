@@ -63,8 +63,9 @@ from quality_estimate import (
 )
 from prompt_layers import get_available_domains
 from assemble import assemble_document
-from demo_auth import show_auth_gate, record_patent_use, validate_code, WATERMARK_TEXT
+from demo_auth import show_auth_gate, record_patent_use, validate_code, is_admin, WATERMARK_TEXT
 from feedback_logger import log_confirmed_segment, log_session_feedback, get_feedback_stats, merge_feedback_to_training
+from prompt_evolver import analyze_feedback, generate_feedback_report, load_proposals, run_evolution_pipeline, update_proposal_status
 
 try:
     import anthropic
@@ -218,19 +219,32 @@ st.markdown(f"""
 # ══════════════════════════════════════════════════════════════════════════════
 
 demo_auth = None
+_admin_mode = False
 if DEMO_MODE:
     demo_auth = show_auth_gate()
     if not demo_auth:
         st.stop()
+    _admin_mode = is_admin(st.session_state.get("demo_code", ""))
     # Show demo status bar
-    st.markdown(
-        f"<div style='background:#f0fdf4; padding:0.5rem 1rem; border-radius:8px; "
-        f"font-size:0.85rem; color:#065f46; border:1px solid #6ee7b7; margin-bottom:1rem;'>"
-        f"Demo — <strong>{demo_auth['company']}</strong> · "
-        f"{demo_auth['patents_remaining']} patents remaining · "
-        f"{demo_auth['days_remaining']} days left</div>",
-        unsafe_allow_html=True,
-    )
+    if _admin_mode:
+        st.markdown(
+            "<div style='background:#eff6ff; padding:0.5rem 1rem; border-radius:8px; "
+            "font-size:0.85rem; color:#1e40af; border:1px solid #93c5fd; margin-bottom:1rem;'>"
+            "🔧 <strong>Admin Mode</strong> — Prompt evolution & feedback analysis enabled</div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f"<div style='background:#f0fdf4; padding:0.5rem 1rem; border-radius:8px; "
+            f"font-size:0.85rem; color:#065f46; border:1px solid #6ee7b7; margin-bottom:1rem;'>"
+            f"Demo — <strong>{demo_auth['company']}</strong> · "
+            f"{demo_auth['patents_remaining']} patents remaining · "
+            f"{demo_auth['days_remaining']} days left</div>",
+            unsafe_allow_html=True,
+        )
+else:
+    # Non-demo mode (local dev) — always admin
+    _admin_mode = True
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1057,6 +1071,10 @@ with tab_review:
                             st.session_state.confirmed[i] = edited
                             # Log to feedback for QE training
                             try:
+                                _client = "admin"
+                                _auth = st.session_state.get("demo_auth")
+                                if _auth and _auth.get("company"):
+                                    _client = _auth["company"]
                                 log_confirmed_segment(
                                     source_de=t.get("source", ""),
                                     original_translation=t.get("translation", ""),
@@ -1065,6 +1083,7 @@ with tab_review:
                                     qe_category=q.get("error_category", ""),
                                     segment_index=i,
                                     doc_name=st.session_state.get("docx_name", "unknown"),
+                                    client_id=_client,
                                 )
                             except Exception:
                                 pass  # Don't let logging break the UI
@@ -1270,34 +1289,129 @@ with tab_export:
                 file_name="glossary.tsv", mime="text/tab-separated-values",
             )
 
-        # --- Feedback / Training Data ---
-        st.divider()
-        st.markdown("### QE Training Feedback")
-        fb_stats = get_feedback_stats()
-        if fb_stats["total"] > 0:
-            st.caption(
-                f"{fb_stats['total']} segments logged · "
-                f"{fb_stats['unchanged']} confirmed as-is · "
-                f"{fb_stats['changed']} edited"
-            )
-            # Show QE accuracy: how often did the user agree with QE?
-            if fb_stats.get("by_qe_rating"):
-                agree_count = fb_stats["by_qe_rating"].get("good", 0)  # QE said good, user confirmed
-                disagree_edits = fb_stats["changed"]
-                if fb_stats["total"] > 0:
-                    accuracy = (fb_stats["total"] - disagree_edits) / fb_stats["total"] * 100
-                    st.caption(f"QE agreement rate: {accuracy:.0f}% (user confirmed without edits)")
+        # --- Admin-only sections: Feedback & Prompt Evolution ---
+        if _admin_mode:
+            st.divider()
+            st.markdown("### QE Training Feedback")
+            fb_stats = get_feedback_stats()
+            if fb_stats["total"] > 0:
+                st.caption(
+                    f"{fb_stats['total']} segments logged · "
+                    f"{fb_stats['unchanged']} confirmed as-is · "
+                    f"{fb_stats['changed']} edited"
+                )
+                if fb_stats.get("by_qe_rating"):
+                    disagree_edits = fb_stats["changed"]
+                    if fb_stats["total"] > 0:
+                        accuracy = (fb_stats["total"] - disagree_edits) / fb_stats["total"] * 100
+                        st.caption(f"QE agreement rate: {accuracy:.0f}% (user confirmed without edits)")
 
-            if fb_stats["total"] >= 20:
-                if st.button("Merge feedback into training data"):
-                    merged = merge_feedback_to_training()
-                    if merged > 0:
-                        st.success(f"Merged {merged} entries into training_pairs.jsonl")
-                    else:
-                        st.info("Not enough new entries to merge yet.")
+                if fb_stats["total"] >= 20:
+                    if st.button("Merge feedback into training data"):
+                        merged = merge_feedback_to_training()
+                        if merged > 0:
+                            st.success(f"Merged {merged} entries into training_pairs.jsonl")
+                        else:
+                            st.info("Not enough new entries to merge yet.")
+                else:
+                    st.caption(f"Need {20 - fb_stats['total']} more confirmed segments before merging into training data.")
             else:
-                st.caption(f"Need {20 - fb_stats['total']} more confirmed segments before merging into training data.")
-        else:
-            st.caption("No feedback data yet. Confirm segments in the Review tab to start building training data.")
+                st.caption("No feedback data yet. Confirm segments in the Review tab to start building training data.")
+
+            # --- Prompt Evolution ---
+            st.divider()
+            st.markdown("### Prompt Evolution")
+            st.caption("Analyzes translator edits to detect patterns the QE is missing, then proposes new prompt rules.")
+
+            col_ev1, col_ev2 = st.columns(2)
+            with col_ev1:
+                if st.button("Analyze Feedback Patterns"):
+                    with st.spinner("Analyzing edit patterns..."):
+                        try:
+                            analysis = analyze_feedback()
+                            st.session_state["_evo_analysis"] = analysis
+                        except Exception as e:
+                            st.error(f"Analysis failed: {e}")
+
+            with col_ev2:
+                _api_key = st.session_state.get("api_key", os.environ.get("ANTHROPIC_API_KEY", ""))
+                if st.button("Generate Rule Proposals", disabled=not _api_key):
+                    with st.spinner("Analyzing patterns and generating proposals..."):
+                        try:
+                            result = run_evolution_pipeline(
+                                api_key=_api_key,
+                                min_pattern_count=3,
+                                min_miss_rate=40.0,
+                            )
+                            st.session_state["_evo_analysis"] = result["analysis"]
+                            if result["proposals_generated"] > 0:
+                                st.success(f"Generated {result['proposals_generated']} proposal(s)")
+                            else:
+                                st.info("No patterns met the threshold for proposal generation.")
+                        except Exception as e:
+                            st.error(f"Pipeline failed: {e}")
+
+            # Show analysis results if available
+            _analysis = st.session_state.get("_evo_analysis")
+            if _analysis:
+                st.markdown("#### Edit Pattern Breakdown")
+                if _analysis.get("edit_type_counts"):
+                    for etype, count in sorted(_analysis["edit_type_counts"].items(), key=lambda x: -x[1]):
+                        st.markdown(f"- **{etype}**: {count}")
+                else:
+                    st.caption("No edits recorded yet.")
+
+                disagree = _analysis.get("qe_disagreements", {})
+                fn_count = disagree.get("false_negative_count", 0)
+                fp_count = disagree.get("false_positive_count", 0)
+                if fn_count or fp_count:
+                    st.markdown("#### QE Disagreements")
+                    st.markdown(
+                        f"- QE said good but translator edited: **{fn_count}** (false negatives)\n"
+                        f"- QE flagged but translator accepted: **{fp_count}** (false positives)"
+                    )
+
+                if _analysis.get("recurring_patterns"):
+                    st.markdown("#### Recurring Patterns")
+                    for p in _analysis["recurring_patterns"]:
+                        status_icon = "🔴" if p["catch_rate"] < 50 else "🟡" if p["catch_rate"] < 80 else "🟢"
+                        st.markdown(
+                            f"{status_icon} **{p['type']}** — {p['count']}x, "
+                            f"QE catches {p['catch_rate']}%"
+                        )
+
+            # Show pending proposals
+            try:
+                pending = load_proposals(status="pending")
+            except Exception:
+                pending = []
+
+            if pending:
+                st.markdown("#### Pending Rule Proposals")
+                for prop in pending:
+                    fname = prop.get("_filename", "unknown")
+                    with st.expander(f"📋 {prop.get('rule_name', 'Unnamed rule')} — {fname}"):
+                        st.markdown(f"**Target:** {prop.get('target_prompt', '?')} → {prop.get('target_section', '?')}")
+                        st.markdown(f"**Severity:** {prop.get('severity', '?')}")
+                        st.markdown(f"**Rationale:** {prop.get('rationale', 'N/A')}")
+                        st.code(prop.get("rule_text", ""), language="text")
+
+                        if prop.get("examples"):
+                            st.markdown("**Examples:**")
+                            for ex in prop["examples"][:3]:
+                                st.markdown(f"- Before: *{ex.get('before', '')}*")
+                                st.markdown(f"  After: *{ex.get('after', '')}*")
+
+                        col_a, col_r = st.columns(2)
+                        with col_a:
+                            if st.button(f"✅ Approve", key=f"approve_{fname}"):
+                                update_proposal_status(fname, "approved")
+                                st.success("Approved — add to prompt_layers.py and run A/B eval")
+                                st.rerun()
+                        with col_r:
+                            if st.button(f"❌ Reject", key=f"reject_{fname}"):
+                                update_proposal_status(fname, "rejected")
+                                st.info("Rejected")
+                                st.rerun()
 
     _export_section()
