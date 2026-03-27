@@ -282,6 +282,7 @@ def _evaluate_batch(batch, global_offset, api_key, model, system_prompt):
         message = client.messages.create(
             model=model,
             max_tokens=16384,
+            temperature=0.0,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>GlossWerk Wordmark Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap');
+  body { background: #0a0a14; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 3rem; margin: 0; font-family: 'DM Sans', sans-serif; }
+
+  .main-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 1.5rem 2rem; border-radius: 12px; color: white;
+    display: flex; align-items: center; gap: 1.2rem;
+    width: 600px;
+  }
+  .main-header .logo-icon { width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0; }
+  .main-header h1 {
+    color: white; margin: 0; font-size: 2rem; letter-spacing: -0.5px;
+    font-weight: 700; line-height: 1.1;
+  }
+  .main-header h1 .gw-g { color: #10b981; font-weight: 800; }
+  .main-header h1 .gw-loss { color: #e2e8f0; font-weight: 400; }
+  .main-header h1 .gw-werk { color: #10b981; font-weight: 700; }
+  .main-header p { color: #94a3b8; margin: 0.3rem 0 0 0; font-size: 0.95rem; }
+
+  .label { color: #64748b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: -1.5rem; }
+</style>
+</head>
+<body>
+
+<div class="label">App Header</div>
+<div class="main-header">
+  <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+    <rect width="512" height="512" rx="96" fill="#1a1a2e"/>
+    <path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50"
+          stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/>
+    <polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
+  <div>
+    <h1><span class="gw-g">G</span><span class="gw-loss">loss</span><span class="gw-werk">Werk</span></h1>
+    <p>DE &rarr; EN Translation Pipeline</p>
+  </div>
+</div>
+
+</body>
+</html>
