@@ -274,6 +274,31 @@ with st.sidebar:
     uploaded_file = st.file_uploader("German text (.docx)", type=["docx"])
     glossary_upload = st.file_uploader("Glossary TSV (optional)", type=["tsv", "txt"])
 
+    # Sidebar review progress (always visible while scrolling)
+    if (st.session_state.get("translations") is not None
+            and st.session_state.get("qe_results") is not None):
+        st.divider()
+        st.markdown("### Review Progress")
+        _sb_translations = st.session_state.translations["translations"]
+        _sb_confirmed = st.session_state.confirmed
+        _sb_green = set(st.session_state.triage["green"]) if st.session_state.get("triage") else set()
+        _sb_total = len(_sb_translations)
+        _sb_n_conf = len(_sb_confirmed)
+        _sb_n_green = sum(1 for i in _sb_green if i not in _sb_confirmed)
+        _sb_n_done = _sb_n_conf + _sb_n_green
+        _sb_pct = int(_sb_n_conf / _sb_total * 100) if _sb_total else 0
+
+        # Color-coded counts
+        _sb_red_count = sum(1 for r in st.session_state.qe_results if r.get("rating") in ("major", "critical"))
+        _sb_orange_count = sum(1 for r in st.session_state.qe_results if r.get("rating") == "minor")
+        _sb_green_count = sum(1 for r in st.session_state.qe_results if r.get("rating") == "good")
+
+        st.progress(_sb_pct / 100)
+        st.markdown(
+            f"**{_sb_n_conf}** / {_sb_total} confirmed\n\n"
+            f"🟢 {_sb_green_count} · 🟡 {_sb_orange_count} · 🔴 {_sb_red_count}"
+        )
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SESSION STATE
@@ -965,19 +990,7 @@ with tab_review:
     green_set = set(st.session_state.triage["green"]) if st.session_state.triage else set()
     confirmed = st.session_state.confirmed
 
-    # Progress tracker
-    total_segs = len(translations)
-    n_confirmed = len(confirmed)
-    n_green = len(green_set)
-    # "Done" = confirmed + unconfirmed greens (publishable without edits)
-    n_done = n_confirmed + sum(1 for i in green_set if i not in confirmed)
-    pct_confirmed = int(n_confirmed / total_segs * 100) if total_segs else 0
-    pct_done = int(n_done / total_segs * 100) if total_segs else 0
-    needs_review = total_segs - n_done
-
-    st.progress(pct_confirmed / 100, text=f"**{pct_confirmed}%** confirmed ({n_confirmed}/{total_segs})  ·  {needs_review} segments need review")
-
-    # Filter controls
+    # Filter controls (progress bar moved inside fragment so it updates on confirm)
     col_filter, _ = st.columns([4, 1])
     with col_filter:
         view_mode = st.radio(
@@ -994,6 +1007,15 @@ with tab_review:
         _qe_by_idx = {r["index"]: r for r in st.session_state.qe_results}
         _green_set = set(st.session_state.triage["green"]) if st.session_state.triage else set()
         _confirmed = st.session_state.confirmed
+
+        # Progress bar (inside fragment so it updates on each confirm)
+        _total_segs = len(_translations)
+        _n_confirmed = len(_confirmed)
+        _n_done = _n_confirmed + sum(1 for i in _green_set if i not in _confirmed)
+        _pct_confirmed = int(_n_confirmed / _total_segs * 100) if _total_segs else 0
+        _needs_review = _total_segs - _n_done
+
+        st.progress(_pct_confirmed / 100, text=f"**{_pct_confirmed}%** confirmed ({_n_confirmed}/{_total_segs})  ·  {_needs_review} segments need review")
 
         for trans in _translations:
             idx = trans["index"]
