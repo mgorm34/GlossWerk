@@ -21,15 +21,19 @@ import os
 from datetime import datetime, timezone
 
 
-# Default path for feedback data
-FEEDBACK_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+# Default path for feedback data — uses DATA_DIR env var if set (for Railway persistent volumes)
+_data_root = os.environ.get("DATA_DIR") or os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"
+)
+FEEDBACK_DIR = _data_root
 FEEDBACK_FILE = os.path.join(FEEDBACK_DIR, "feedback_pairs.jsonl")
-TRAINING_FILE = os.path.join(FEEDBACK_DIR, "hter_training", "training_pairs.jsonl")
+TRAINING_FILE = os.path.join(_data_root, "hter_training", "training_pairs.jsonl")
 
 
 def log_confirmed_segment(source_de, original_translation, confirmed_translation,
                           qe_rating, qe_category, segment_index,
-                          doc_name="unknown", feedback_path=None):
+                          doc_name="unknown", client_id="unknown",
+                          feedback_path=None):
     """
     Log a single confirmed segment to the feedback JSONL file.
 
@@ -41,6 +45,7 @@ def log_confirmed_segment(source_de, original_translation, confirmed_translation
         qe_category: The QE error category
         segment_index: Segment number in the document
         doc_name: Name of the source document
+        client_id: Client identifier (company name or demo code)
         feedback_path: Override path for the feedback file
     """
     path = feedback_path or FEEDBACK_FILE
@@ -52,6 +57,7 @@ def log_confirmed_segment(source_de, original_translation, confirmed_translation
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "patent": doc_name,
         "segment_id": segment_index,
+        "client_id": client_id,
         "de": source_de,
         "deepl": original_translation,  # "deepl" for backward compat with training format
         "corrected": confirmed_translation,
