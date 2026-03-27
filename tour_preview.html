@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlossWerk — AI-Powered Translation for Technical Text & Patents</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='none'%3E%3Crect width='512' height='512' rx='96' fill='%231a1a2e'/%3E%3Cpath d='M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50' stroke='%2310b981' stroke-width='44' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cline x1='284' y1='256' x2='380' y2='256' stroke='%2310b981' stroke-width='44' stroke-linecap='round'/%3E%3Cpolyline points='348,196 414,256 348,316' stroke='%2310b981' stroke-width='36' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #ffffff;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .nav-brand .logo-g {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            margin-right: 0.1rem;
+            vertical-align: middle;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #10b981;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #ffffff;
+            padding: 6rem 2rem;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: #d1d5db;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #10b981;
+            border: 2px solid #10b981;
+        }
+
+        .btn-secondary:hover {
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero .tagline {
+                font-size: 1.25rem;
+            }
+            .hero .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 2rem;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: #1f2937;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .step p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        /* Key Features */
+        .features {
+            padding: 6rem 2rem;
+            background: #f9fafb;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid .feature-card:nth-child(4),
+        .features-grid .feature-card:nth-child(5) {
+            max-width: 380px;
+            justify-self: center;
+        }
+
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .features-grid .feature-card:nth-child(4),
+            .features-grid .feature-card:nth-child(5) {
+                max-width: none;
+            }
+        }
+
+        .feature-card {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.15);
+            transform: translateY(-5px);
+            border-color: #10b981;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        /* Quality Triage Visual */
+        .triage-section {
+            margin: 4rem auto 0;
+            max-width: 1200px;
+        }
+
+        .triage-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .triage-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .triage-item {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid;
+            background: #ffffff;
+        }
+
+        .triage-green {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .triage-green::before {
+            content: '✓ ';
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .triage-orange {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .triage-orange::before {
+            content: '⚠ ';
+            color: #f59e0b;
+        }
+
+        .triage-red {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .triage-red::before {
+            content: '✕ ';
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .triage-item strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .triage-item p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Product Tour */
+        .tour-section {
+            padding: 6rem 2rem;
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .tour-section .section-title {
+            color: #ffffff;
+        }
+
+        .tour-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .tour-tab {
+            padding: 0.75rem 1.75rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 2rem;
+            background: transparent;
+            color: #d1d5db;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tour-tab:hover {
+            border-color: #10b981;
+            color: #ffffff;
+        }
+
+        .tour-tab.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
+        }
+
+        .tour-step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            font-size: 0.75rem;
+            line-height: 24px;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        .tour-tab.active .tour-step-number {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .tour-panel {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: tourFadeIn 0.4s ease;
+        }
+
+        .tour-panel.active {
+            display: block;
+        }
+
+        @keyframes tourFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tour-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .tour-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .tour-text h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .tour-text p {
+            color: #d1d5db;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .tour-highlights {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tour-highlights li {
+            padding: 0.4rem 0;
+            color: #d1d5db;
+            font-size: 0.95rem;
+        }
+
+        .tour-highlights li::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            vertical-align: middle;
+        }
+
+        /* App mockup frame */
+        .app-mockup {
+            background: #0d1117;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .mockup-titlebar {
+            background: #161b22;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mockup-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .mockup-dot.red { background: #ff5f57; }
+        .mockup-dot.yellow { background: #febc2e; }
+        .mockup-dot.green { background: #28c840; }
+
+        .mockup-url {
+            flex: 1;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8b949e;
+        }
+
+        .mockup-body {
+            padding: 1.25rem;
+            min-height: 280px;
+        }
+
+        .mockup-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #21262d;
+        }
+
+        .mockup-tab {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            color: #8b949e;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-weight: 500;
+        }
+
+        .mockup-tab.active {
+            color: #10b981;
+            border-bottom-color: #10b981;
+        }
+
+        /* Scan mockup */
+        .scan-upload-zone {
+            border: 2px dashed #30363d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .scan-upload-zone .upload-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-upload-zone p {
+            color: #8b949e;
+            font-size: 0.75rem;
+        }
+
+        .scan-term-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.7rem;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .scan-term-de { color: #d1d5db; }
+        .scan-term-en { color: #10b981; }
+        .scan-term-conf { color: #8b949e; font-size: 0.65rem; }
+
+        /* Translate mockup */
+        .progress-mockup {
+            background: #21262d;
+            border-radius: 4px;
+            height: 6px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            width: 72%;
+        }
+
+        .segment-mockup {
+            background: #161b22;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid;
+        }
+
+        .segment-mockup.seg-good { border-left-color: #10b981; }
+        .segment-mockup.seg-minor { border-left-color: #f59e0b; }
+        .segment-mockup.seg-critical { border-left-color: #ef4444; }
+
+        .segment-mockup .seg-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .segment-mockup.seg-good .seg-label { color: #10b981; }
+        .segment-mockup.seg-minor .seg-label { color: #f59e0b; }
+        .segment-mockup.seg-critical .seg-label { color: #ef4444; }
+
+        .segment-mockup .seg-text {
+            font-size: 0.7rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .seg-suggestion {
+            font-size: 0.65rem;
+            color: #f59e0b;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        /* Review mockup */
+        .review-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-col-header {
+            font-size: 0.6rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .review-box {
+            background: #161b22;
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .review-box.editable {
+            border: 1px solid #30363d;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+        }
+
+        .review-btn {
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .review-btn.apply { background: #f59e0b; color: #000; }
+        .review-btn.confirm { background: #10b981; color: #fff; }
+
+        /* Export mockup */
+        .export-card {
+            background: #161b22;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .export-icon {
+            width: 36px;
+            height: 36px;
+            background: #21262d;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .export-info { flex: 1; }
+
+        .export-info strong {
+            display: block;
+            font-size: 0.75rem;
+            color: #d1d5db;
+            margin-bottom: 0.15rem;
+        }
+
+        .export-info span {
+            font-size: 0.65rem;
+            color: #8b949e;
+        }
+
+        .export-dl-btn {
+            padding: 0.3rem 0.75rem;
+            background: #10b981;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        /* LSP Section */
+        .lsp-section {
+            padding: 6rem 2rem;
+            background: #ffffff;
+        }
+
+        .lsp-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .lsp-content h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #1f2937;
+        }
+
+        .lsp-content p {
+            font-size: 1.1rem;
+            color: #6b7280;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat {
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Demo Form */
+        .demo-form-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #f9fafb, #ffffff);
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-container h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #1f2937;
+        }
+
+        .form-container > p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-note {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 1rem;
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .form-submit:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .form-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a2e;
+            color: #d1d5db;
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-tagline {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #10b981;
+        }
+
+        .footer-divider {
+            width: 60px;
+            height: 2px;
+            background: #10b981;
+            margin: 0 auto 1.5rem;
+            border-radius: 1px;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-brand {
+                font-size: 1.25rem;
+            }
+
+            .hero {
+                padding: 4rem 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 2.5rem;
+            }
+
+            .how-it-works,
+            .features,
+            .lsp-section,
+            .demo-form-section {
+                padding: 3rem 1.5rem;
+            }
+
+            .steps-container,
+            .features-grid {
+                gap: 1.5rem;
+            }
+
+            .form-container {
+                padding: 0 1rem;
+            }
+
+            footer {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-brand">
+            <svg class="logo-g" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+                <rect width="512" height="512" rx="96" fill="#1a1a2e"/>
+                <path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50" stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/>
+                <polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>loss<span style="color:#10b981;">Werk</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#tour">Product Tour</a></li>
+            <li><a href="#lsp">For LSPs</a></li>
+            <li><a href="#demo">Demo Access</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 style="display:flex;align-items:center;justify-content:center;gap:0.1rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" style="width:72px;height:72px;border-radius:14px;">
+                    <rect width="512" height="512" rx="96" fill="rgba(255,255,255,0.08)"/>
+                    <path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50" stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/>
+                    <polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>loss<span style="color:#10b981;">Werk</span>
+            </h1>
+            <p class="tagline">AI-Powered Translation for Technical Text & Patents</p>
+            <p class="subtitle">Translate German technical text and patents to English with structural analysis, terminology management, and automated quality estimation — so your reviewers spend minutes, not hours.</p>
+            <a href="#demo" class="btn btn-primary">Request Demo Access</a>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Upload & Scan</h3>
+                <p>Upload your German text. GlossWerk extracts and translates terminology automatically.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Translate & Evaluate</h3>
+                <p>AI translation with structural analysis and real-time quality estimation. Every segment rated green/orange/red.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Review & Export</h3>
+                <p>Edit flagged segments side-by-side. Apply suggested fixes with one click. Export clean, publication-ready documents.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="features" id="features">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Structural Analysis</h3>
+                <p>Detects complex German constructions (nested clauses, participials, nominalizations) and guides the translator to restructure them naturally.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Quality Triage</h3>
+                <p>Every segment rated publishable (green), quick review (orange), or needs editing (red). Reviewers focus only where it matters.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Terminology Management</h3>
+                <p>Automatic term extraction with confidence scoring, alternatives, and glossary enforcement throughout the document.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>One-Click Fixes</h3>
+                <p>QE suggestions with highlighted changes. Apply fixes instantly or edit further before confirming.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Publication-Ready Export</h3>
+                <p>Export polished .docx files with consistent formatting, confirmed terminology, and full traceability to the source patent.</p>
+            </div>
+        </div>
+
+        <!-- Quality Triage Demo -->
+        <div class="triage-section">
+            <h3 class="triage-title">Quality Triage in Action</h3>
+            <div class="triage-demo">
+                <div class="triage-item triage-green">
+                    <strong>Publishable</strong>
+                    <p>High confidence translation. Ready to go.</p>
+                </div>
+                <div class="triage-item triage-orange">
+                    <strong>Quick Review</strong>
+                    <p>Minor issues. Fast to review and confirm.</p>
+                </div>
+                <div class="triage-item triage-red">
+                    <strong>Needs Editing</strong>
+                    <p>Structural or terminology issues. Requires revision.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Tour -->
+    <section class="tour-section" id="tour">
+        <h2 class="section-title">See It in Action</h2>
+
+        <div class="tour-tabs">
+            <button class="tour-tab active" onclick="showTourStep(0)">
+                <span class="tour-step-number">1</span>Upload & Scan
+            </button>
+            <button class="tour-tab" onclick="showTourStep(1)">
+                <span class="tour-step-number">2</span>Translate & QE
+            </button>
+            <button class="tour-tab" onclick="showTourStep(2)">
+                <span class="tour-step-number">3</span>Review
+            </button>
+            <button class="tour-tab" onclick="showTourStep(3)">
+                <span class="tour-step-number">4</span>Export
+            </button>
+        </div>
+
+        <!-- Step 1: Upload & Scan -->
+        <div class="tour-panel active" data-tour="0">
+            <div class="tour-layout">
+                <div class="tour-text">
+                    <h3>Upload Your Document</h3>
+                    <p>Drop in a German patent or technical document. GlossWerk automatically extracts terminology, identifies domain-specific terms, and builds a glossary with confidence scores and translation alternatives.</p>
+                    <ul class="tour-highlights">
+                        <li>Supports .docx and .txt uploads</li>
+                        <li>Automatic term extraction with confidence scoring</li>
+                        <li>Edit glossary before translation begins</li>
+                        <li>Terms enforced consistently across all segments</li>
+                    </ul>
+                </div>
+                <div class="app-mockup">
+                    <div class="mockup-titlebar">
+                        <span class="mockup-dot red"></span>
+                        <span class="mockup-dot yellow"></span>
+                        <span class="mockup-dot green"></span>
+                        <span class="mockup-url">app.glosswerk.com</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-tabs">
+                            <div class="mockup-tab active">Terminology / Scan</div>
+                            <div class="mockup-tab">Translate + QE</div>
+                            <div class="mockup-tab">Review</div>
+                            <div class="mockup-tab">Export</div>
+                        </div>
+                        <div class="scan-upload-zone">
+                            <div class="upload-icon">📄</div>
+                            <p>DE2024102876A1.docx uploaded</p>
+                        </div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin-bottom:0.5rem;font-weight:600;">EXTRACTED TERMINOLOGY</div>
+                        <div class="scan-term-row" style="color:#8b949e;font-weight:600;">
+                            <span>German</span><span>English</span><span>Conf.</span>
+                        </div>
+                        <div class="scan-term-row">
+                            <span class="scan-term-de">Vorrichtung</span>
+                            <span class="scan-term-en">device</span>
+                            <span class="scan-term-conf">0.97</span>
+                        </div>
+                        <div class="scan-term-row">
+                            <span class="scan-term-de">Ausführungsform</span>
+                            <span class="scan-term-en">embodiment</span>
+                            <span class="scan-term-conf">0.95</span>
+                        </div>
+                        <div class="scan-term-row">
+                            <span class="scan-term-de">Steuereinheit</span>
+                            <span class="scan-term-en">control unit</span>
+                            <span class="scan-term-conf">0.93</span>
+                        </div>
+                        <div class="scan-term-row">
+                            <span class="scan-term-de">Erfindung</span>
+                            <span class="scan-term-en">invention</span>
+                            <span class="scan-term-conf">0.91</span>
+                        </div>
+                        <div class="scan-term-row" style="border:none;">
+                            <span class="scan-term-de">Verfahren</span>
+                            <span class="scan-term-en">method</span>
+                            <span class="scan-term-conf">0.89</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Translate & QE -->
+        <div class="tour-panel" data-tour="1">
+            <div class="tour-layout">
+                <div class="tour-text">
+                    <h3>Translate with Quality Estimation</h3>
+                    <p>One click runs translation and quality estimation together. Every segment is rated green (publishable), orange (quick review), or red (needs editing) — so you know exactly where to focus.</p>
+                    <ul class="tour-highlights">
+                        <li>AI translation tuned for DE→EN technical text</li>
+                        <li>13 calque-pattern checks catch common MT errors</li>
+                        <li>Structural analysis of German syntax</li>
+                        <li>Real-time progress with ETA</li>
+                    </ul>
+                </div>
+                <div class="app-mockup">
+                    <div class="mockup-titlebar">
+                        <span class="mockup-dot red"></span>
+                        <span class="mockup-dot yellow"></span>
+                        <span class="mockup-dot green"></span>
+                        <span class="mockup-url">app.glosswerk.com</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-tabs">
+                            <div class="mockup-tab">Terminology / Scan</div>
+                            <div class="mockup-tab active">Translate + QE</div>
+                            <div class="mockup-tab">Review</div>
+                            <div class="mockup-tab">Export</div>
+                        </div>
+                        <div class="progress-mockup"><div class="progress-fill"></div></div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin-bottom:0.75rem;">~12s remaining</div>
+
+                        <div class="segment-mockup seg-good">
+                            <div class="seg-label">Publishable</div>
+                            <div class="seg-text">The device comprises a control unit configured to process input signals.</div>
+                        </div>
+                        <div class="segment-mockup seg-minor">
+                            <div class="seg-label">Minor issue</div>
+                            <div class="seg-text">According to a further embodiment, the method provides for monitoring of the sensor data.</div>
+                            <div class="seg-suggestion">Suggestion: "the method provides for monitoring" → "the method monitors"</div>
+                        </div>
+                        <div class="segment-mockup seg-good">
+                            <div class="seg-label">Publishable</div>
+                            <div class="seg-text">The invention relates to a method for operating a device in a vehicle.</div>
+                        </div>
+                        <div class="segment-mockup seg-critical">
+                            <div class="seg-label">Critical</div>
+                            <div class="seg-text">The arrangement is arranged in the housing arrangement.</div>
+                            <div class="seg-suggestion">Lexical redundancy — "arrangement...arranged...arrangement"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Review -->
+        <div class="tour-panel" data-tour="2">
+            <div class="tour-layout">
+                <div class="tour-text">
+                    <h3>Side-by-Side Review</h3>
+                    <p>Source and translation displayed together with QE annotations. Apply suggested fixes with one click, or edit directly. Confirm when satisfied — confirmed segments lock in place.</p>
+                    <ul class="tour-highlights">
+                        <li>German source alongside English translation</li>
+                        <li>One-click "Apply Fix" for QE suggestions</li>
+                        <li>Inline editing with live confirmation</li>
+                        <li>Skip green segments — focus only on flagged ones</li>
+                    </ul>
+                </div>
+                <div class="app-mockup">
+                    <div class="mockup-titlebar">
+                        <span class="mockup-dot red"></span>
+                        <span class="mockup-dot yellow"></span>
+                        <span class="mockup-dot green"></span>
+                        <span class="mockup-url">app.glosswerk.com</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-tabs">
+                            <div class="mockup-tab">Terminology / Scan</div>
+                            <div class="mockup-tab">Translate + QE</div>
+                            <div class="mockup-tab active">Review</div>
+                            <div class="mockup-tab">Export</div>
+                        </div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin-bottom:0.5rem;">SEGMENT 4 OF 28 — MINOR ISSUE</div>
+                        <div class="review-columns">
+                            <div>
+                                <div class="review-col-header">German source</div>
+                                <div class="review-box">Gemäß einer weiteren Ausführungsform sieht das Verfahren eine Überwachung der Sensordaten vor.</div>
+                            </div>
+                            <div>
+                                <div class="review-col-header">English translation</div>
+                                <div class="review-box editable">According to a further embodiment, the method monitors the sensor data.</div>
+                            </div>
+                        </div>
+                        <div style="background:#161b22;border-radius:4px;padding:0.5rem;border-left:3px solid #f59e0b;margin-bottom:0.5rem;">
+                            <div style="font-size:0.65rem;color:#f59e0b;font-weight:600;">Calque: Funktionsverbgefüge</div>
+                            <div style="font-size:0.7rem;color:#d1d5db;">Replaced "provides for monitoring" with direct verb "monitors"</div>
+                        </div>
+                        <div class="review-actions">
+                            <span class="review-btn apply">Apply Fix</span>
+                            <span class="review-btn confirm">Confirm</span>
+                        </div>
+
+                        <div style="height:1px;background:#21262d;margin:0.75rem 0;"></div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin-bottom:0.5rem;">SEGMENT 5 OF 28 — PUBLISHABLE ✓</div>
+                        <div class="review-columns">
+                            <div>
+                                <div class="review-col-header">German source</div>
+                                <div class="review-box">Die Erfindung betrifft ein Verfahren zum Betrieb einer Vorrichtung in einem Fahrzeug.</div>
+                            </div>
+                            <div>
+                                <div class="review-col-header">English translation</div>
+                                <div class="review-box" style="border:1px solid #10b981;opacity:0.8;">The invention relates to a method for operating a device in a vehicle.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Export -->
+        <div class="tour-panel" data-tour="3">
+            <div class="tour-layout">
+                <div class="tour-text">
+                    <h3>Export Publication-Ready Documents</h3>
+                    <p>Generate color-coded QE review documents or clean translation-only files. Export your glossary for reuse across future projects. All outputs in .docx format, ready for delivery.</p>
+                    <ul class="tour-highlights">
+                        <li>QE review doc with color-coded annotations</li>
+                        <li>Clean translation doc with confirmed edits</li>
+                        <li>Glossary export in TSV format</li>
+                        <li>JSON data exports for integration</li>
+                    </ul>
+                </div>
+                <div class="app-mockup">
+                    <div class="mockup-titlebar">
+                        <span class="mockup-dot red"></span>
+                        <span class="mockup-dot yellow"></span>
+                        <span class="mockup-dot green"></span>
+                        <span class="mockup-url">app.glosswerk.com</span>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-tabs">
+                            <div class="mockup-tab">Terminology / Scan</div>
+                            <div class="mockup-tab">Translate + QE</div>
+                            <div class="mockup-tab">Review</div>
+                            <div class="mockup-tab active">Export</div>
+                        </div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin-bottom:0.75rem;font-weight:600;">QE REVIEW DOCUMENT</div>
+                        <div class="export-card">
+                            <div class="export-icon">📊</div>
+                            <div class="export-info">
+                                <strong>QE Review Document</strong>
+                                <span>Color-coded .docx with triage summary and annotations</span>
+                            </div>
+                            <span class="export-dl-btn">Download</span>
+                        </div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin:0.75rem 0 0.5rem;font-weight:600;">TRANSLATION ONLY</div>
+                        <div class="export-card">
+                            <div class="export-icon">📄</div>
+                            <div class="export-info">
+                                <strong>Clean Translation</strong>
+                                <span>English-only .docx with confirmed edits applied</span>
+                            </div>
+                            <span class="export-dl-btn">Download</span>
+                        </div>
+                        <div style="font-size:0.65rem;color:#8b949e;margin:0.75rem 0 0.5rem;font-weight:600;">DATA EXPORTS</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                            <div class="export-card" style="margin:0;">
+                                <div class="export-icon" style="width:28px;height:28px;font-size:0.8rem;">{ }</div>
+                                <div class="export-info">
+                                    <strong>Translations</strong>
+                                    <span>JSON</span>
+                                </div>
+                            </div>
+                            <div class="export-card" style="margin:0;">
+                                <div class="export-icon" style="width:28px;height:28px;font-size:0.8rem;">📋</div>
+                                <div class="export-info">
+                                    <strong>Glossary</strong>
+                                    <span>TSV</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For LSPs -->
+    <section class="lsp-section" id="lsp">
+        <div class="lsp-content">
+            <h2>Built for Language Service Providers</h2>
+            <p>GlossWerk seamlessly integrates into your LSP workflow, dramatically reducing the time your post-editors spend on technical translations. By automatically triaging every segment, we ensure your team focuses on what actually matters.</p>
+
+            <div class="stats-grid">
+                <div class="stat" style="border: 2px solid #10b981; background: rgba(16, 185, 129, 0.05);">
+                    <div class="stat-number" style="color: #10b981;">67%</div>
+                    <div class="stat-label">Publishable Without Edits</div>
+                </div>
+                <div class="stat" style="border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.05);">
+                    <div class="stat-number" style="color: #f59e0b;">32%</div>
+                    <div class="stat-label">Quick Review Only</div>
+                </div>
+                <div class="stat" style="border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="stat-number" style="color: #ef4444;">1%</div>
+                    <div class="stat-label">Requires Full Revision</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Form -->
+    <section class="demo-form-section" id="demo">
+        <div class="form-container">
+            <h2>Request Demo Access</h2>
+            <p>Get started with GlossWerk today</p>
+
+            <form id="demo-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="company">Company</label>
+                    <input type="text" id="company" name="company" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Your Role</label>
+                    <select id="role" name="role" style="width:100%;padding:0.875rem 1rem;border:1px solid #e5e7eb;border-radius:0.5rem;font-family:'DM Sans',sans-serif;font-size:1rem;background:#fff;color:#1f2937;">
+                        <option value="">Select your role</option>
+                        <option value="Project Manager">Project Manager</option>
+                        <option value="Translator / Post-Editor">Translator / Post-Editor</option>
+                        <option value="Quality Manager">Quality Manager</option>
+                        <option value="Executive / Director">Executive / Director</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="form-submit">Request Access</button>
+            </form>
+
+            <p class="form-note">
+                Demo includes 3 translations. No credit card required.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-brand" style="display:flex;align-items:center;justify-content:center;gap:0.1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" style="width:28px;height:28px;border-radius:5px;">
+                <rect width="512" height="512" rx="96" fill="#1a1a2e"/>
+                <path d="M310 140H240c-55.228 0-100 44.772-100 100v32c0 55.228 44.772 100 100 100h50v-116h-50" stroke="#10b981" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <line x1="284" y1="256" x2="380" y2="256" stroke="#10b981" stroke-width="44" stroke-linecap="round"/>
+                <polyline points="348,196 414,256 348,316" stroke="#10b981" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>loss<span style="color:#10b981;">Werk</span>
+        </div>
+        <p class="footer-tagline">AI-Powered Translation for Technical Text & Patents</p>
+        <div class="footer-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#features">Features</a>
+            <a href="#tour">Product Tour</a>
+            <a href="#lsp">For LSPs</a>
+            <a href="#demo">Request Demo</a>
+        </div>
+        <div class="footer-divider"></div>
+        <p>Contact: <a href="mailto:mjg@glosswerk.com">mjg@glosswerk.com</a></p>
+        <p>&copy; 2026 GlossWerk. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Product Tour tab switching
+        function showTourStep(index) {
+            document.querySelectorAll('.tour-tab').forEach(function(tab, i) {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.tour-panel').forEach(function(panel) {
+                var isTarget = parseInt(panel.getAttribute('data-tour')) === index;
+                panel.classList.toggle('active', isTarget);
+            });
+        }
+
+        // Handle form submission via Formspree
+        document.getElementById('demo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const data = new FormData(form);
+            const submitBtn = form.querySelector('.form-submit');
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            fetch('https://formspree.io/f/xwvrgjye', {
+                method: 'POST',
+                body: data,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(response => {
+                if (response.ok) {
+                    form.innerHTML = '<p style="text-align:center;color:#10b981;font-size:1.2rem;padding:2rem 0;">Thank you! We\'ll be in touch within 24 hours.</p>';
+                } else {
+                    submitBtn.textContent = 'Request Access';
+                    submitBtn.disabled = false;
+                    alert('Something went wrong. Please email mjg@glosswerk.com directly.');
+                }
+            })
+            .catch(error => {
+                submitBtn.textContent = 'Request Access';
+                submitBtn.disabled = false;
+                alert('Something went wrong. Please email mjg@glosswerk.com directly.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -269,6 +269,7 @@ def _translate_batch(sentences, global_offset, api_key, model,
         message = client.messages.create(
             model=model,
             max_tokens=16384,
+            temperature=0.2,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )
@@ -293,6 +294,7 @@ def _translate_fallback(sentences, client, model, system_prompt):
             message = client.messages.create(
                 model=model,
                 max_tokens=4096,
+                temperature=0.2,
                 system=system_prompt,
                 messages=[{
                     "role": "user",

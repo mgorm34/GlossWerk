@@ -1,0 +1,752 @@
+{
+  "generated": "2026-03-16T14:03:09.216138",
+  "total_segments": 74,
+  "summary": {
+    "publish": 4,
+    "review": 63,
+    "full_edit": 7,
+    "ape_changed": 66
+  },
+  "segments": [
+    {
+      "id": 1,
+      "source": "(1 9)\tDE 10 2006 052 564 B3 2007.12.13 Bundesrepublik Deutschland Deutsches Patent- und Markenamt Innerhalb von drei Monaten nach Veröffentlichung der Patenterteilung kann nach S 59 Patentgesetz gegen das Patent Einspruch erhoben werden.",
+      "deepl": "(1 9) DE 10 2006 052 564 B3 2007.12.13 Federal Republic of Germany German Patent and Trade Mark Office Within three months of publication of the patent grant, an opposition to the patent may be filed in accordance with S 59 Patent Act.",
+      "corrected": "(1 9) DE 10 2006 052 564 B3 2007.12.13 Federal Republic of Germany German Patent and Trade Mark Office Within three months of publication of the patent application, an opposition to the patent can be filed in accordance with S 59 Patent Act.",
+      "changed": true,
+      "qe_score": 0.8047,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 2,
+      "source": "Der Einspruch ist schriftlich zu erklären und zu begründen.",
+      "deepl": "The objection must be declared and justified in writing.",
+      "corrected": "The objection must be declared and justified in writing.",
+      "changed": false,
+      "qe_score": 0.8489,
+      "triage": "publish",
+      "terms_applied": []
+    },
+    {
+      "id": 3,
+      "source": "Innerhalb der Einspruchsfrist ist eine Einspruchsgebühr in Höhe von 200 Euro zu entrichten(S 6 Patentkostengesetz in Verbindung mit der Anlage zu S 2 Abs. 2 Patentkostengesetz). (54) Bezeichnung: Mitralklappenstent (57) Zusammenfassung: Faltbarer Mitralklappenstent (10) mit einer Mehrzahl von distal angeordneten Stentbügeln (20) und einer Mehrzahl von proximal angeordneten Verankerungselementen (30), dadurch gekennzeichnet, dass der Mitralklappenstent (10) wenigstens einen, einen sich im entfalteten Zustand spiralartig nach außen einrollenden Abschnitt ausbildenden Stentbügel (20) aufweist.",
+      "deepl": "An opposition fee of 200 euros must be paid within the opposition period (S 6 Patent Costs Act in conjunction with the Annex to S 2 (2) Patent Costs Act). (54) Designation: Mitral valve stent (57) Summary: Foldable mitral valve stent (10) with a plurality of distally arranged stent hoops (20) and a plurality of proximally arranged anchoring elements (30), characterized in that the mitral valve stent (10) has at least one stent hoop (20) forming a section which spirals outwards in the unfolded state.",
+      "corrected": "An opposition fee of 200 euros must be paid within the opposition period (S 6 Patent Costs Act in conjunction with the appendix to S 2 (2) Patent Costs Act). (54) Description: Foldable mitral valve stent (10) with a plurality of distally arranged stent hoops (20) and a plurality of proximally arranged anchoring elements (30), characterized in that the mitral valve stent (10) has at least one stent hoops (20) which form a section which spirals outward in the unfolded state.",
+      "changed": true,
+      "qe_score": 0.7847,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 4,
+      "source": "CT 20 Beschreibung [0001] Die Erfindung betrifft einen faltbaren Mitralklappenstent mit einer Mehrzahl von distal angeordneten Stentbügeln und einer Mehrzahl von proximal angeordneten Verankerungselementen. [0002] Die chirurgische Implantation von Herzklappenprothesen wird am kardioplegischen (herzschlafenden) Herzen durchgeführt (Goldener Standard).",
+      "deepl": "CT 20 Description [0001] The invention relates to a foldable mitral valve stent with a plurality of distally arranged stent bars and a plurality of proximally arranged anchoring elements. [0002] Surgical implantation of heart valve prostheses is performed on the cardioplegic (heart asleep) heart (golden standard).",
+      "corrected": "CT 20 Description [0001] The invention relates to a foldable mitral valve stent with a plurality of distally arranged stent webs and a plurality of proximally arranged anchoring elements. [0002] The surgical implantation of heart valve prostheses is carried out on the cardioplegic (heart resting) heart (gold standard).",
+      "changed": true,
+      "qe_score": 0.8174,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 5,
+      "source": "Die alte, in ihrer Funktion beeinträchtigte Herzklappe wird üblicherweise herausgeschnitten und die zu implantierende Herzklappenprothese eingenäht. [0003] Bei Vorliegen von Erkrankungen der Mitralklappe hingegen wird versucht, die alte Klappe trotz aufgetretener Fehlfunktion weitestgehend zu erhalten, damit der gesamte Mitralklappenapparat nicht zerstört wird.",
+      "deepl": "The old, functionally impaired heart valve is usually cut out and the heart valve prosthesis to be implanted is sewn in. [0003] In the presence of diseases of the mitral valve, however, an attempt is made to preserve the old valve as far as possible despite the malfunction that has occurred so that the entire mitral valve apparatus is not destroyed.",
+      "corrected": "The old, functionally impaired heart valve is usually cut out and the heart valve prosthesis to be implanted is sewn in. [0003] In the case of diseases of the mitral valve, however, an attempt is made to preserve the old valve as far as possible despite the malfunction which has occurred, so that the entire mitral valve apparatus is not destroyed.",
+      "changed": true,
+      "qe_score": 0.8234,
+      "triage": "publish",
+      "terms_applied": []
+    },
+    {
+      "id": 6,
+      "source": "Das liegt daran, dass z.B. die Sehnenfäden, die an der Mitralklappe ansetzen, sehr wichtig für die Ventrikelfunktion sind und daher auch möglichst nicht von der alten Mitralklappe losgelöst werden sollten.",
+      "deepl": "This is because, for example, the chordae tendineae that attach to the mitral valve are very important for ventricular function and should therefore not be detached from the old mitral valve if possible.",
+      "corrected": "This is because, for example, the chordae tendinae which are attached to the mitral valve are very important for the ventricular function and should therefore not be detached from the old mitral valve, if possible.",
+      "changed": true,
+      "qe_score": 0.7958,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 7,
+      "source": "Ideal ist es daher, die Mitralklappe weitestgehend zur Seite zu drängen, um der neuen Klappe Platz zu machen, wenn sie nicht rekonstruiert werden kann.",
+      "deepl": "It is therefore ideal to push the mitral valve aside as far as possible to make room for the new valve if it cannot be reconstructed.",
+      "corrected": "It is therefore ideal to push the mitral valve as far as possible aside in order to make room for the new valve if it cannot be reconstructed.",
+      "changed": true,
+      "qe_score": 0.8259,
+      "triage": "publish",
+      "terms_applied": []
+    },
+    {
+      "id": 8,
+      "source": "Der Platz spielt hier eine nicht so gravierende Rolle wie in dem Aortenannulus, bei dem eine Einengung viel leichter zu Stande kommt (z.B. beim Verdrängen der alten Aortenklappe bei rein perkutaner Implantation). [0004] Die Sehnenfäden (Chordae tendineae) der Mitralklappe sollten dabei nach Möglichkeit in ihrer Struktur erhalten bleiben, um die Ventrikelgeometrie weitestgehend zu erhalten und damit eine bestmögliche Funktion der linken Kammer zu erhalten und zu erreichen. [0005] Hierbei ist es wiederum sehr wichtig, dass das vordere (anteriore) Mitralklappesegel nicht einfach in den freien Raum Richtung linken Ventrikel gedrückt wird, sondern an den Mitralklappen-Armalus angeheftet wird, damit ein Vorwärts-Drängen des vorderen Mitralklappensegels in den Ausflusstrakt des linken Ventrikels (Sam-Phänomen: Systolic Anterior Movement) verhindert wird.",
+      "deepl": "Space does not play as important a role here as in the aortic annulus, where narrowing occurs much more easily (e.g. when the old aortic valve is displaced during purely percutaneous implantation). [0004] The chordae tendineae of the mitral valve should be preserved in their structure as far as possible in order to preserve the ventricular geometry as far as possible and thus maintain and achieve the best possible function of the left ventricle. [0005] Here again, it is very important that the anterior (anterior) mitral valve leaflet is not simply pushed into the free space towards the left ventricle, but is attached to the mitral valve armalus to prevent the anterior mitral valve leaflet from being pushed forward into the outflow tract of the left ventricle (Sam phenomenon: systolic anterior movement).",
+      "corrected": "Here, space does not play as important a role as in the aortic annulus, where constriction occurs much more easily (for example when the old aortic valve is displaced during purely percutaneous implantation). [0004] The chordae tendinae of the mitral valve should be preserved as far as possible in their structure in order to preserve the ventricular geometry as far as possible and thus to maintain and achieve the best possible function of the left ventricle. [0005] Here again, it is very important that the anterior (anterior) mitral valve leaflet is not simply pushed into the free space in the direction of the left ventricle, but is fastened to the mitral valve armalus in order to prevent the anterior mitral valve leaflet being pushed forward into the outflow tract of the left ventricle (Sam phenomenon: systolic anterior movement).",
+      "changed": true,
+      "qe_score": 0.7883,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 9,
+      "source": "Dieses ist sehr wichtig, da es sonst schnell zu einer Linksherz-Dekompensation (massives Fehlverhalten des linken Ventrikels) kommen kann. [0006] Chirurgisch wird also die alte Mitralklappe an den alten Annulus geheftet, so dass ein ungehinderter Blutfluss durch die Klappe und durch die beiden anliegenden Herzkammern gegeben ist.",
+      "deepl": "This is very important, as otherwise left ventricular decompensation (massive malfunction of the left ventricle) can quickly occur. [0006] The old mitral valve is therefore surgically attached to the old annulus so that blood can flow freely through the valve and through the two adjacent ventricles.",
+      "corrected": "This is very important because otherwise left ventricular decompensation (massive malfunction of the left ventricle) can quickly occur. [0006] The old mitral valve is therefore surgically attached to the old annulus so that blood can flow freely through the valve and through the two adjacent ventricles.",
+      "changed": true,
+      "qe_score": 0.815,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 10,
+      "source": "Nach dem Zurückdrängen (dem Anheften der Klappe an den Annulus) wird die Herzklappenprothese chirurgisch in diesen Annulus implantiert. [0007] Diese aufwendige Methode geschieht obligatorisch unter zur Hilfenahme der Herz-Lungen-Maschine und kommt für Hochrisikopatienten regelmäßig nicht in Frage, sodass nach minimal-invasiven oder perkutanen Methoden zur Implantation einer Herzklappe gesucht wurde. [0008] so ist aus der DE 195 46 692 C2 oder in EP 1 469 797 BI eine selbstexpandierbare Herzklappenprothese zur Implantation im menschlichen Körper über ein Kathetersystem mit einer Herzklappe und mit einem mit der Herzklappe verbundenen zusammenfaltbaren und expandierbaren Stent bekannt. [0009] Eine solche selbstexpandierbare Herzklappenprothese kann mit Hilfe eines Kathetersystems durch eine Leistenarterie bis hin zum Implantationsort am Herzen geführt werden.",
+      "deepl": "After pushing back (attaching the valve to the annulus), the heart valve prosthesis is surgically implanted into this annulus. [0007] This complex method requires the use of a heart-lung machine and is generally not an option for high-risk patients, so that minimally invasive or percutaneous methods for implanting a heart valve were sought. [0008] For example, DE 195 46 692 C2 or EP 1 469 797 BI disclose a self-expandable heart valve prosthesis for implantation in the human body via a catheter system with a heart valve and a collapsible and expandable stent connected to the heart valve. [0009] Such a self-expandable heart valve prosthesis can be guided through a groin artery to the implantation site on the heart with the aid of a catheter system.",
+      "corrected": "After the valve has been pushed back (attaching the valve to the annulus), the heart valve prosthesis is surgically implanted into this annulus. [0007] This complex method requires the use of a heart-lung machine and is generally not an option for high-risk patients, so that minimally invasive or percutaneous methods for implanting a heart valve have been sought. [0008] For example, DE 195 46 692 C2 or EP 1 469 797 BI disclose a self-expandable heart valve prosthesis for implantation in the human body via a catheter system with a heart valve and a collapsible and expandable stent connected to the heart valve. [0009] Such a self-expandable heart valve prosthesis can be guided through a groin artery to the implantation site on the heart with the aid of a catheter system.",
+      "changed": true,
+      "qe_score": 0.7657,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 11,
+      "source": "Nach Erreichen des Implantationsortes kann dann ein solcher Stent, der in seiner Längsrichtung aus mehreren relativ zueinander abwinkelbaren selbstexpandierenden Segmenten zusammengesetzt ist, sukzessiv entfaltet werden.",
+      "deepl": "After reaching the implantation site, such a stent, which is composed of several self-expanding segments that can be angled relative to each other in its longitudinal direction, can then be successively deployed.",
+      "corrected": "After reaching the implantation site, such a stent, which is composed of a plurality of self-expanding segments which can be angled relative to each other in its longitudinal direction, can then be successively deployed.",
+      "changed": true,
+      "qe_score": 0.8139,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 12,
+      "source": "Nach der Entfaltung kann die Herzklappenprothese auch mit Unterstützung von Verankerungshaken zumindest im herznahen Bereich im jeweiligen Blutgefäss verankert werden.",
+      "deepl": "After deployment, the heart valve prosthesis can also be anchored in the respective blood vessel with the support of anchoring hooks, at least in the area close to the heart.",
+      "corrected": "After the deployment, the heart valve prosthesis can also be anchored in the respective blood vessel with the aid of anchoring hooks, at least in the region close to the heart.",
+      "changed": true,
+      "qe_score": 0.7593,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 13,
+      "source": "Die eigentliche Herzklappenprothese befindet sich dabei im proximalen Anteil des Stents. [0010] Eine weitere Vorrichtung zur Befestigung und Verankerung von Herklappenprothesen ist in der DE 100 10 074 Al beschrieben, die im Wesentlichen aus drahtförmigen miteinander verbundenen Elementen gebildet wird.",
+      "deepl": "The actual heart valve prosthesis is located in the proximal part of the stent. [0010] A further device for fastening and anchoring heart valve prostheses is described in DE 100 10 074 Al, which is essentially formed from wire-like elements connected to one another.",
+      "corrected": "The actual heart valve prosthesis is located in the proximal part of the stent. [0010] A further device for fastening and anchoring heart valve prostheses is described in DE 100 10 074 Al, which is essentially formed from wire-like elements connected to one another.",
+      "changed": false,
+      "qe_score": 0.815,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 14,
+      "source": "Verschiedene Bügel werden hierbei eingesetzt, um eine sichere Befestigung und Abstützung einer Herzklappe zu erreichen. [0011] Bei diesen bekannten Lösungen besteht jedoch die Gefahr einer Fehlimplantation von Herklappen bei der exakten Positionierung und der angularen Ausrichtung der zu implantierenden Heæklappenprothesen. [0012] Eine verbesserte Positionierung und angulare Ausrichtung zur Aortenklappe kann durch den Stent der EP 1 469 797 BI erreicht werden, bei dem sogenannte Stützbügel ausgebildet sind, die in die Aortentaschen einführbar sind und so eine definierte Entfernung zur Aortenklappe herstellen. [0013] Darüber hinaus besteht auch die Möglichkeit eine fehlgeschlagene Implantation einer Herzklappenprothese abzubrechen und den Klappenstent (in einen Stent integrierte Klappe) wieder in das Kathetersystem (genauer die Kartusche) hineinzuziehen.",
+      "deepl": "Various brackets are used to achieve secure attachment and support of a heart valve. [0011] With these known solutions, however, there is a risk of incorrect implantation of heart valves in the exact positioning and angular alignment of the heart valve prostheses to be implanted. [0012] An improved positioning and angular alignment to the aortic valve can be achieved by the stent of EP 1 469 797 BI, in which so-called support brackets are formed, which can be inserted into the aortic pockets and thus create a defined distance to the aortic valve. [0013] In addition, it is also possible to abort a failed implantation of a heart valve prosthesis and pull the valve stent (valve integrated into a stent) back into the catheter system (more precisely the cartridge).",
+      "corrected": "Various clamps are used to achieve secure fastening and support of a heart valve. [0011] In these known solutions, however, there is a risk of incorrect implantation of heart valves in the exact positioning and angular alignment of the heart valve prostheses to be implanted. [0012] An improved positioning and angular alignment with respect to the aortic valve can be achieved by the stent of EP 1 469 797 BI, in which so-called support clamps are formed, which can be inserted into the aortic pockets and thus create a defined distance with respect to the aortic valve. [0013] In addition, it is also possible to abort a failed implantation of a heart valve stent (valve integrated in a stent) into the catheter system (more precisely the cartridge).",
+      "changed": true,
+      "qe_score": 0.7376,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 15,
+      "source": "Hierbei wird dann der gesamte Stent wieder zusammengefaltet und in die Katheteröffnung (Kartusche) zurückgeführt.",
+      "deepl": "The entire stent is then folded up again and returned to the catheter opening (cartridge).",
+      "corrected": "The entire stent is then folded up again and returned to the catheter opening (cartridge).",
+      "changed": false,
+      "qe_score": 0.8046,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 16,
+      "source": "Dabei ist es möglich den Stent wieder heraus gleiten zu lassen, wenn eine gute Positionierung für den Klappenstent erreicht wird.",
+      "deepl": "It is possible to allow the stent to slide out again if good positioning for the valve stent is achieved.",
+      "corrected": "It is possible to allow the stent to slide out again if a good positioning for the valve stent is achieved.",
+      "changed": true,
+      "qe_score": 0.813,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 17,
+      "source": "So kann der Klappenstent heraus und wieder hereingeholt werden bis die optimale Positionierung erreicht wird („sliding technique\"). [0014] Zum Positionieren des Stents können Bowdenzüge für die Kartusche oder für einzelne Katheter-Anteile eingesetzt werden, damit eine Biegsamkeit in alle Richtungen für das Kathetersystem erreicht wird und der Klappenstent damit senkrecht zur Klappenebene und zentriert zur nativen Öffnung der Klappe positioniert werden kann. [0015] Ein weitaus größeres Problem für die optimale Platzierung der neuen Herzklappe im Stent (bzw.",
+      "deepl": "This allows the valve stent to be removed and replaced until optimal positioning is achieved (\"sliding technique\"). [0014] To position the stent, Bowden cables can be used for the cartridge or for individual catheter components so that flexibility is achieved in all directions for the catheter system and the valve stent can thus be positioned perpendicular to the valve plane and centered to the native opening of the valve. [0015] A far greater problem for the optimal placement of the new heart valve in the stent (or",
+      "corrected": "As a result, the valve stent can be removed and replaced until optimal positioning is achieved (“sliding technique”). [0014] For positioning the stent, Bowden cables can be used for the cartridge or for individual catheter components, so that flexibility is achieved in all directions for the catheter system and the valve stent can thus be positioned perpendicular to the valve plane and centered to the native opening of the valve. [0015] A far greater problem for optimal placement of the new heart valve in the stent (or",
+      "changed": true,
+      "qe_score": 0.7237,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 18,
+      "source": "Klappenstent) besteht jedoch darin, dass die alte native Klappe in den meisten Fällen der zuvor beschriebenen Implantationstechnik nicht entfernt werden soll. [0016] Dies für allerdings dazu, dass die neue Klappe, die in eine alte, deformierte Klappe hineingedrückt (teilweise hineingequetscht) wird, in ihrer ursprünglichen Stentform abgewandelt wird.",
+      "deepl": "valve stent), however, is that the old native valve should not be removed in most cases of the implantation technique described above. [0016] However, this means that the new valve, which is pressed (partially squeezed) into an old, deformed valve, is modified in its original stent shape.",
+      "corrected": "valve stent), however, is that the old native valve should not be removed in most cases of the implantation technique described above. [0016] This means that the new valve, which is pressed (partially squeezed) into an old, deformed valve, is modified in its original stent shape.",
+      "changed": true,
+      "qe_score": 0.7464,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 19,
+      "source": "Dies liegt daran, dass der Implantationsort für den Klappenstent durch die Morphologie, den Zustand und die Beschaffenheit der alten nativen Klappe bestimmt wird (z.B. bei Klappersklerose oder -verkalkung der nativen Klappe). [0017] Daher bestimmt der alte Klappenannulus mit den dazugehörigen veränderten Klappen/Taschen inwieweit und wohin sich die neue Klappe entfalten und damit in ihrer Form entwickeln kann.",
+      "deepl": "This is because the implantation site for the valve stent is determined by the morphology, condition and nature of the old native valve (e.g. in the case of valve sclerosis or calcification of the native valve). [0017] Therefore, the old valve annulus with the associated altered valves/pockets determines to what extent and where the new valve can unfold and thus develop in its shape.",
+      "corrected": "This is because the implantation site for the valve stent is determined by the morphology, the state and the nature of the old native valve (for example in the case of valve sclerosis or calcification of the native valve). [0017] Therefore, the old valve annulus with the associated altered valves/pockets determines to what extent and where the new valve can unfold and thus develop in its shape.",
+      "changed": true,
+      "qe_score": 0.8128,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 20,
+      "source": "Somit ist also nicht nur die Verankerung/Positionierung wichtig, um eine optimale Klapperfunktion und Vorhof- und Ventrikelfunktion zu erhalten, sondern auch das Einpassen des Klappenstents in den Neo-Annulus (alter Klappenannulus bildet diesen mit alter Klappe aus) und damit das Zurückdrängen der alten Klappe. [0018] Ausgehend von den bei den bekannten Stens auftretenden Problemen ist es daher die Aufgabe der Erfindung, einen Stent zu schaffen, der die Anantomie des Herzens möglichst unbeeinflusst lässt.",
+      "deepl": "Thus, not only the anchoring/positioning is important in order to maintain optimal valve function and atrial and ventricular function, but also the fitting of the valve stent into the neo-annulus (old valve annulus forms this with the old valve) and thus the pushing back of the old valve. [0018] Based on the problems occurring with the known stents, it is therefore the task of the invention to create a stent that leaves the anantomy of the heart as unaffected as possible.",
+      "corrected": "Thus, not only the anchoring/positioning is important in order to maintain optimum valve function and atrial and ventricular function, but also the fitting of the valve stent into the neoannulus (old valve annulus forms this with the old valve) and thus the pushing back of the old valve. [0018] Based on the problems occurring with the known stents, it is therefore the object of the invention to provide a stent which leaves the anantomy of the heart as unaffected as possible.",
+      "changed": true,
+      "qe_score": 0.7855,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 21,
+      "source": "Insbesondere soll ein Stent zur Aufnahme einer Mitralldappenprothese geschaffen werden, bei dessen Implantation die Klappenanteile der alten Mitralklappe nicht mehr den Durchfluss des Blutes stören (insbesondere das anteriore Mitralklappensegel) und andererseits aber die Sehnenfadenspannung im Ventrikel erhalten bleibt. [0019] Erfindungsgemäß wird diese Aufgabe durch einen Mitralklappenstent mit den Merkmalen des Anspruchs 1 gelöst.",
+      "deepl": "In particular, a stent for accommodating a mitral valve prosthesis is to be created, during the implantation of which the valve parts of the old mitral valve no longer interfere with the blood flow (in particular the anterior mitral valve leaflet) and, on the other hand, the chordal tension in the ventricle is maintained. [0019] According to the invention, this task is solved by a mitral valve stent with the features of claim 1.",
+      "corrected": "In particular, a stent for accommodating a mitral valve prosthesis is to be provided, during the implantation of which the valve parts of the old mitral valve no longer interfere with the blood flow (in particular the anterior mitral valve leaflet) and, on the other hand, the chordal tension in the ventricle is maintained. [0019] According to the invention, this object is achieved by a mitral valve stent having the features of claim 1 .",
+      "changed": true,
+      "qe_score": 0.7877,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 22,
+      "source": "Vorteilhafte Ausgestaltungsformen und Weiterbildungen der Erfindung werden mit den in den untergeordneten Ansprüchen bezeichneten Merkmalen erreicht. [0020] Die Grundidee der Erfindung ist es, die Vorteile einer invasiven, chirurgischen Fixierung des anterioren Mitralklappensegels an den alten Annulus mit den Vorteilen der minimal-invasiven Operation durch Einbringen eines in einem Katheter geführten Stents dadurch zu vereinen, dass der erfindungsgemäße Stent das Einrollen des anterioren Mitralklappensegels bewirkt und damit zu ähnlich vorteilhaften Verhältnissen wie beim chirurgischen Anheften der Mitralklappe an den Annulus führt. [0021] Die Erfindung wird im Folgenden anhand eines in den beigefügten Zeichnungen abgebildeten besonders bevorzugten Ausführungsbeispiels näher erläutert.",
+      "deepl": "Advantageous embodiments and further embodiments of the invention are achieved with the features described in the subordinate claims. [0020] The basic idea of the invention is to combine the advantages of invasive, surgical fixation of the anterior mitral valve leaflet to the old annulus with the advantages of minimally invasive surgery by inserting a stent guided in a catheter, in that the stent according to the invention causes the anterior mitral valve leaflet to curl and thus leads to similarly advantageous conditions as with surgical attachment of the mitral valve to the annulus. [0021] The invention is explained in more detail below with reference to a particularly preferred embodiment example illustrated in the accompanying drawings.",
+      "corrected": "Advantageous embodiments and further embodiments of the invention are achieved with the features described in the dependent claims. [0020] The basic idea of the invention is to combine the advantages of invasive, surgical fixation of the anterior mitral valve leaflet to the old annulus with the advantages of minimally invasive surgery by inserting a stent guided in a catheter, in that the stent according to the invention causes the anterior mitral valve leaflet to curl and thus leads to similarly advantageous conditions as in the case of surgical fixation of the mitral valve to the annulus.",
+      "changed": true,
+      "qe_score": 0.7616,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 23,
+      "source": "Es zeigen: [0022] Ejg=laeine Seitenansicht des erfindungsgemäßen Stents; [0023] Fig. lb eine Draufsicht auf den erfindungsgemäßen Stent; [0024] \teine perspektivische Ansicht des erfindungsgemäßen Stent von schräg oben; [0025] Ejg=ld eine Lateral-Ansicht des erfindungsgemäßen Stents; [0026] Ejcle eine weitere Lateral-Ansicht des erfindungsgemäßen Stents; [0027] Elg=lf eine weitere Lateral-Ansicht des erfindungsgemäßen Stents; [0028] Fig. lg eine Seitenansicht des Stents in gefaltetem Zustand; [0029] Ec? eine perspektivische Ansicht des erfindungsgemäßen Stents; [0030] \teine Draufsicht des Stents nach der Erfindung; [0031] „Ejg=4 eine Detailansicht eines Stentbügels mit Verstärkung des ventrikulären Anteils; [0032] eine Detailansicht eines Stentbügels mit Schlaufen im proximalen und distalen mittleren Drittel zum Erhalt der Elastizität oder einer möglichen Fixation von Gewebe oder der Herzklappenprothese; [0033] eine Detailansicht eines Stentbügels (atrial bis ventrikulär) mit als Ösen ausgebildeten Befestigungselementen zur Befestigung einer Abdichtungsmembran (Abdichtung zwischen Stent und Klappe); [0034] eine schematische Abfolge des Einrollablaufs eines ventrikulären Stentbügels zur Ausbildung einer \"Mozartlocke\" aus dem anterioren Mitralklappensegel; [0035] \teine Darstellung des Herzen mit linkem Vorhof und linker Kammer und umgebenden Strukturen in einem ersten Stadium des Operationsverlaufs zur Implantation einer Herzklappe; [0036] eine Darstellung des Herzen einem gegenüber leicht fortgeschrittenen Stadium des Operationsverlaufs; [0037] Eig=nnIQ eine Darstellung eines Operationsstadiums im Zeitpunkt der Stent-Ausbringung; [00381 F-&11 eine Darstellung eines Operationsstadiums im Zeitpunkt der Positionierung des erfindungsgemäßen Stents; stadiums bei nahezu vollständiger Ausdehnung des Stents, [0040] eine Darstellung der räumlichen Verhältnisse nach Anordnen des erfindungsgemäßen Stents unter Fixieren des Stents durch Einrollen des alten anterioren Mitralklappensegels auf der anterioren Seite und [0041] eine vergrößerte Darstellung des anterioren Mitralklappensegels bei vollständig eingesetztem Stent in situ. [0042] Die Fig.",
+      "deepl": "It shows: [0022] Ejg=laa side view of the stent according to the invention; [0023] Fig. lb a top view of the stent according to the invention; [0024] a perspective view of the stent according to the invention from an oblique top view; [0025] Ejg=ld a lateral view of the stent according to the invention; [0026] Ejcle a further lateral view of the stent according to the invention; [0027] Elg=lf a further lateral view of the stent according to the invention; [0028] Fig. lg a lateral view of the stent in the folded state; [0029] Ec? a perspective view of the stent according to the invention; [0030] a top view of the stent according to the invention; [0031] \"Ejg=4 a detailed view of a stent strut with reinforcement of the ventricular portion; [0032] a detailed view of a stent strut with loops in the proximal and distal middle third for maintaining elasticity or possible fixation of tissue or the heart valve prosthesis; [0033] a detailed view of a stent bar (atrial to ventricular) with fastening elements in the form of eyelets for fastening a sealing membrane (sealing between stent and valve); [0034] a schematic sequence of the rolling-in process of a ventricular stent bar for forming a \"Mozart curl\" from the anterior mitral valve leaflet; [0035] a representation of the heart with left atrium and left ventricle and surrounding structures at a first stage of the surgical procedure for implantation of a heart valve; [0036] a representation of the heart at a slightly advanced stage of the surgical procedure; [0037] Eig=nnIQ a representation of a surgical stage at the time of stent deployment; [00381 F-&11 a representation of a surgical stage at the time of positioning of the stent according to the invention; stage with almost complete expansion of the stent, [0040] a representation of the spatial conditions after placement of the stent according to the invention with fixation of the stent by rolling in the old anterior mitral valve leaflet on the anterior side and [0041] an enlarged representation of the anterior mitral valve leaflet with fully deployed stent in situ. [0042] The Fig.",
+      "corrected": "It shows: [0022] Ejg=1a side view of the stent according to the invention; [0023] FIG. 1b a top view of the stent according to the invention; [0024] a perspective view of the stent according to the invention from an oblique top view; [0025] Ejg=1d a lateral view of the stent according to the invention; [0026] Ejcle a further lateral view of the stent according to the invention; [0028] FIG. 1g a perspective view of the stent according to the invention; [0030] a top view of the stent according to the invention; [0031] “Ejg=4 a detailed view of a ventricular portion; [0032] a detailed view of a ventricular portion.",
+      "changed": true,
+      "qe_score": 0.5913,
+      "triage": "full_edit",
+      "terms_applied": []
+    },
+    {
+      "id": 24,
+      "source": "IA-IG zeigen den erfindungsgemäßen Stent zur Implantation und Befestigung von Herzklappenprothesen in verschiedenen Ansichten zur Verdeutlichung des Aufbaus des Stents und der räumlichen Verhältnisse der einzelnen Stentabschnitte zueinander in einem entfalteten Zustand (Fig.",
+      "deepl": "IA-IG show the stent according to the invention for implantation and fixation of heart valve prostheses in different views to illustrate the structure of the stent and the spatial relationships of the individual stent sections to each other in an unfolded state (Fig.",
+      "corrected": "IA-IG show the stent according to the invention for implantation and fixation of cardiac valve prostheses in different views in order to illustrate the structure of the stent and the spatial relationships of the individual stent sections with respect to one another in an unfolded state (FIG.",
+      "changed": true,
+      "qe_score": 0.7675,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 25,
+      "source": "IA-IF) und einem gefalteten Zustand (Fig.",
+      "deepl": "IA-IF) and a folded state (Fig.",
+      "corrected": "IA-IF) and a folded state (FIG.",
+      "changed": true,
+      "qe_score": 0.7134,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 26,
+      "source": "Die Maßangaben haben sich als für die Mitralklappenimplantation vorteilhafte Angaben herausgestellt. [0043] zeigt den faltbaren Mitralklappenstent 10 nach der Erfindung in einer perspektivischen Seitenansicht ähnlich der in Fig.",
+      "deepl": "The dimensions have proven to be advantageous for mitral valve implantation. [0043] shows the foldable mitral valve stent 10 according to the invention in a perspective side view similar to that shown in Fig.",
+      "corrected": "The dimensions have proven to be advantageous for mitral valve implantation. [0043] shows the foldable mitral valve stent 10 according to the invention in a perspective side view similar to that shown in FIG.",
+      "changed": true,
+      "qe_score": 0.7936,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 27,
+      "source": "IC gezeigten Ansicht.",
+      "deepl": "IC view shown.",
+      "corrected": "IC view.",
+      "changed": true,
+      "qe_score": 0.5323,
+      "triage": "full_edit",
+      "terms_applied": []
+    },
+    {
+      "id": 28,
+      "source": "Der Stent 10 weist im wesentlichen zwei Abschnitte auf, die jeweils in weitere Unterabschnitte unterteilt sein können.",
+      "deepl": "The stent 10 essentially has two sections, each of which can be subdivided into further subsections.",
+      "corrected": "The stent 10 essentially has two sections, each of which can be subdivided into further sections.",
+      "changed": true,
+      "qe_score": 0.8108,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 29,
+      "source": "Proximal sind am Stent 10 kreisförmig eine Vielzahl von Verankerungselementen 30 angeordnet, die den Mitralklappenstent 10 im implantierten Zustand supravalvulär bzw. atrial verankern.",
+      "deepl": "Proximally, a plurality of anchoring elements 30 are arranged in a circle on the stent 10, which anchor the mitral valve stent 10 supravalvularly or atrially in the implanted state.",
+      "corrected": "Proximally, a plurality of anchoring elements 30 are arranged in a circle on the stent 10, which anchor the mitral valve stent 10 supravalvularly or atrially in the implanted state.",
+      "changed": false,
+      "qe_score": 0.7906,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 30,
+      "source": "Di-Distal angeordnet befinden sich eine Vielzahl von Stentbügel 20, die bevorzugt einen ersten, den Verankerungselementen benachbart angeordneten Abschnitt 20a aufweisen, an dem ein zweiter Abschnitt 20b gebildet ist, dessen freies Ende sich in einem definierten Winkel vom ersten Abschnitt 20a (in Fig.",
+      "deepl": "Di-distally arranged are a plurality of stent bars 20, which preferably have a first section 20a arranged adjacent to the anchoring elements, on which a second section 20b is formed, the free end of which extends at a defined angle from the first section 20a (in Fig.",
+      "corrected": "A plurality of stent webs 20 are arranged at a distance from one another, which preferably have a first section 20 a arranged adjacent to the anchoring elements, on which a second section 20 b is formed, the free end of which extends at a defined angle from the first section 20 a (in FIG.",
+      "changed": true,
+      "qe_score": 0.6779,
+      "triage": "full_edit",
+      "terms_applied": []
+    },
+    {
+      "id": 31,
+      "source": "IF sind es beispielsweise 40 0) erstreckt.",
+      "deepl": "IF, for example, is 40 0).",
+      "corrected": "IF is, for example, 40 0).",
+      "changed": true,
+      "qe_score": 0.4902,
+      "triage": "full_edit",
+      "terms_applied": []
+    },
+    {
+      "id": 32,
+      "source": "Dieser zweite Abschnitt 20b ist zur ventrikulären Verankerung des Stents 10 eingerichtet. [0044] \tzeigt den Stent aus  in einer Draufsicht.",
+      "deepl": "This second section 20b is designed for ventricular anchoring of the stent 10. [0044] shows a top view of the stent.",
+      "corrected": "This second section 20 b is designed for ventricular anchoring of the stent 10 [0044] shows a plan view of the stent.",
+      "changed": true,
+      "qe_score": 0.7973,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 33,
+      "source": "Dabei ist zu erkennen, dass der Stent 10 einen Annulus bildet, in den die Herzklappenprothese eingesetzt und an dem sie befestigt werden kann.",
+      "deepl": "It can be seen that the stent 10 forms an annulus into which the heart valve prosthesis can be inserted and to which it can be attached.",
+      "corrected": "It can be seen that the stent 10 forms an annulus into which the heart valve prosthesis can be inserted and to which it can be attached.",
+      "changed": false,
+      "qe_score": 0.8274,
+      "triage": "publish",
+      "terms_applied": []
+    },
+    {
+      "id": 34,
+      "source": "Weiterhin ist zu erkennen, dass der erfindungsgemäße Stent 10 in Bezug auf die Vielzahl von Stentbügeln 20 asymmetrisch ausgebildet sein kann.",
+      "deepl": "Furthermore, it can be seen that the stent 10 according to the invention can be formed asymmetrically with respect to the plurality of stent hoops 20.",
+      "corrected": "Furthermore, it can be seen that the stent 10 according to the invention can be formed asymmetrically with respect to the plurality of stent hoops 20 .",
+      "changed": true,
+      "qe_score": 0.7815,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 35,
+      "source": "Dieses ist daran zu erkennen, dass die mit Bezugszeichen 20 gekennzeichneten Stentbügelabschnitte 20b lediglich die linke Hälfte des erfindungsgemäßen Stents 10 einnehmen. [0045] zeigt einen Ausschnitt der perspektivischen Ansicht des Stents aus die deutlich maChen soll, dass der zweite Abschnitt 20b des Stentbügels 20 verstärkt ausgebildet ist. [0046] Zur Erreichung einer Elastizität der Verankerungselemente 30 und der Stentbügel 20 bzw. des ersten Abschnitts 20a und des zweiten Abschnitts 20b des Stentbügels 20 zueinander sind bevorzugt Ösen ausbildende Schlaufen 40, 50 vorgesehen.",
+      "deepl": "This can be recognized by the fact that the stent bar sections 20b marked with reference sign 20 only occupy the left half of the stent 10 according to the invention. [0045] shows a section of the perspective view of the stent, which is intended to make it clear that the second section 20b of the stent bar 20 is reinforced. [0046] Loops 40, 50 forming eyelets are preferably provided to achieve elasticity between the anchoring elements 30 and the stent bar 20 or the first section 20a and the second section 20b of the stent bar 20.",
+      "corrected": "This can be recognized by the fact that the stent rod sections 20 b designated by reference numeral 20 occupy only the left half of the stent 10 according to the invention. [0045] shows a section of the perspective view of the stent, which is intended to make it clear that the second section 20 b of the stent rod 20 is reinforced. [0046] Eyelets forming loops 40, 50 are preferably provided in order to achieve elasticity between the anchoring elements 30 and the stent rod 20 or the first section 20 a and the second section 20 b of the stent rod 20 .",
+      "changed": true,
+      "qe_score": 0.751,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 36,
+      "source": "Diese Federelemente 40, 50 haben zum einen die Funktion, dass der erfindungsgemäße Stent 10 faltbar und aus dem gefalteten Zustand zum entfalteten Zustand selbstexpandierend ist.",
+      "deepl": "On the one hand, these spring elements 40, 50 have the function that the stent 10 according to the invention is foldable and self-expanding from the folded state to the unfolded state.",
+      "corrected": "On the one hand, these spring elements 40, 50 have the function that the stent 10 according to the invention is foldable and self-expanding from the folded state into the unfolded state.",
+      "changed": true,
+      "qe_score": 0.7711,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 37,
+      "source": "Weiterhin können diese Federelemente 40, 50 aber auch zur Befestigung des Stents 10 am Gewebe oder der (nicht gezeigten) Herzklappenprothese verwendet werden. [0047] Zusätzlich oder alternativ zu den als ösenartigen Schlaufen ausgebildeten Federelementen 40, 50 können auch Befestigungselemente 60, 70 vorgesehen sein, die auch als Ösen ausgebildet sein können und die beispielsweise zum Befestigen des Stents 10 an Herzmuskelgewebe oder einer zwischen der Heæklappenprothese und dem Stent 10 angeordneten Abdichtungsmembran (nicht gezeigt) verwendet werden können. [0048] EigZ verdeutlicht den Grundgedanken der Erfindung anhand einer sequentiellen Darstellung des durch den erfindungsgemäßen Stent 10 bewirkten Einrollvorgangs des anterioren Mitralklappensegels in einer Detailzeichung des Stents 10.",
+      "deepl": "Furthermore, these spring elements 40, 50 can also be used to fasten the stent 10 to the tissue or the (not shown) heart valve prosthesis. [0047] In addition or as an alternative to the spring elements 40, 50 formed as eyelet-like loops, fastening elements 60, 70 can also be provided, which can also be formed as eyelets and which can be used, for example, for fastening the stent 10 to heart muscle tissue or a sealing membrane (not shown) arranged between the prosthetic heart valve and the stent 10. [0048] EigZ illustrates the basic idea of the invention by means of a sequential representation of the rolling-in process of the anterior mitral valve leaflet caused by the stent 10 according to the invention in a detailed drawing of the stent 10.",
+      "corrected": "Furthermore, these spring elements 40, 50 can also be used for fastening the stent 10 to the tissue or to the heart valve prosthesis (not shown). [0047] In addition or as an alternative to the spring elements 40, 50 designed as eyelet-like loops, fastening elements 60, 70 can also be provided, which can also be designed as eyelets and which can be used, for example, for fastening the stent 10 to heart muscle tissue or a sealing membrane (not shown) arranged between the prosthetic heart valve and the stent 10 . [0048] EigZ illustrates the basic idea of the invention by means of a sequential illustration of the rolling-in process of the anterior mitral valve leaflet produced by the stent 10 according to the invention in a detailed drawing of the stent 10 .",
+      "changed": true,
+      "qe_score": 0.7368,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 38,
+      "source": "Gemäß der Erfindung ist wenigstens ein Stentbügel 20', nämlich derjenige Stentbügel 20', der dem anterioren Mitralklappensegel zugewendet sein wird, derart ausgebildet, dass dieser einen Abschnitt aufweist, der sich beim Entfalten des Stents 10 spiralartig nach Außen einrollt und in diesem Zustand bei vollständiger Entfaltung verbleibt.",
+      "deepl": "According to the invention, at least one stent bar 20', namely the stent bar 20' that will face the anterior mitral valve leaflet, is designed in such a way that it has a section that rolls outwards in a spiral when the stent 10 is deployed and remains in this state when fully deployed.",
+      "corrected": "According to the invention, at least one stent rod 20 ′, namely the stent rod 20 ′ facing the anterior mitral valve leaflet, is designed in such a way that it has a section which rolls outwards in a spiral when the stent 10 is deployed and remains in this state when it is fully deployed.",
+      "changed": true,
+      "qe_score": 0.7924,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 39,
+      "source": "Dieser Vorgang wird bevorzugt dadurch erzeugt, dass wenigstens dieser eine Stentbügel 20' aus einer Formgedächtnislegierung besteht.",
+      "deepl": "This process is preferably produced by the fact that at least this one stent bar 20' consists of a shape memory alloy.",
+      "corrected": "This method is preferably produced in that at least one of the stent rods 20 ′ consists of a shape memory alloy.",
+      "changed": true,
+      "qe_score": 0.7432,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 40,
+      "source": "Diese kann beispielsweise NiTiNol, eine andere Legierung oder auch Kunststoffe sein, die diesen Memory-Effekt aufweisen. [0049] Im Folgenden wird das Einbringen des erfindungsgemäßen Stents 10 an seinen vorbestimmten Platz im menschlichen Herz zur weiteren Veranschaulichung der Erfindung anhand der Eige-å-EiA%-14 erläutert. [0050] Der Stent 10 wird bevorzugt eine (nicht gezeigte) Herzklappenprothese tragen (s.o.) und wird dann auch als Klappenstent 10 bezeichnet.",
+      "deepl": "This can be, for example, NiTiNol, another alloy or even plastics that exhibit this memory effect. [0049] In the following, the insertion of the stent 10 according to the invention into its predetermined place in the human heart is explained with reference to Eige-å-EiA%-14 for further illustration of the invention. [0050] The stent 10 will preferably carry a (not shown) heart valve prosthesis (see above) and is then also referred to as a valve stent 10.",
+      "corrected": "This can be, for example, NiTiNol, another alloy or even plastics which exhibit this memory effect. [0049] In the following, the introduction of the stent 10 according to the invention into its predetermined position in the human heart is explained with reference to Eige--EiA%-14 for further illustration of the invention. [0050] The stent 10 will preferably carry a heart valve prosthesis (not shown) (see above) and is then also referred to as a valve stent 10 .",
+      "changed": true,
+      "qe_score": 0.7597,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 41,
+      "source": "Der Stent 10 besitzt bevorzugt die in gezeigten Maße und ist so ausgebildet, dass er in gefalteter Form in einer mit einem in gezeigten Katheter verbindbaren Kartusche 100 aufgenommen werden kann.",
+      "deepl": "The stent 10 preferably has the dimensions shown in and is designed so that it can be accommodated in folded form in a cartridge 100 that can be connected to a catheter shown in.",
+      "corrected": "The stent 10 preferably has the dimensions shown in and is designed in such a way that it can be accommodated in folded form in a cartridge 100 which can be connected to a catheter shown in.",
+      "changed": true,
+      "qe_score": 0.7845,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 42,
+      "source": "Der Stent 10 sollte dabei so komprimiert werden, dass sämtliche Teile ein gewisses Maß einer radial nach Außen wirkenden Vorspannung aufweisen, die nach Freigabe durch eine Kartusche 100 die Selbstexpansion bewirken (z.B. durch die Federelemente 40, 50 und die Verwendung einer Formgedächtnislegierung). [0051] Die im Stent 10 integrierte Herzklappe (Klappenstent) kann mit der Kartusche 100 mit Hilfe eines Katheters perkutan (z.B.",
+      "deepl": "The stent 10 should be compressed in such a way that all parts have a certain degree of pretension acting radially outwards, which causes self-expansion after release by a cartridge 100 (e.g. by the spring elements 40, 50 and the use of a shape memory alloy). [0051] The heart valve integrated in the stent 10 (valve stent) can be inserted percutaneously (e.g., via a catheter) with the cartridge 100.",
+      "corrected": "The stent 10 should be compressed in such a way that all parts have a certain pretension acting radially outwards, which causes self-expansion after release by a cartridge 100 (for example by the spring elements 40, 50 and the use of a shape memory alloy). [0051] The heart valve integrated in the stent 10 (valve stent) can be inserted percutaneously (for example via a catheter) with the cartridge 100 .",
+      "changed": true,
+      "qe_score": 0.7657,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 43,
+      "source": "Femoralarterie oder -vene), endovaskulär oder minimal-invasiv über ein oder mehrere Gefäß(e) oder direkt zum Herzen vorgeführt werden und dort annulär in den Mitralring implantiert werden.",
+      "deepl": "femoral artery or vein), endovascularly or minimally invasively via one or more vessels or directly to the heart, where it is implanted annularly in the mitral ring.",
+      "corrected": "femoral artery or vein), endovascularly or minimally invasively via one or more vessels or directly to the heart, where it is implanted annularly in the mitral ring.",
+      "changed": false,
+      "qe_score": 0.7489,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 44,
+      "source": "Eine andere Möglichkeit besteht darin, den Klappenstent minimal-invasiv oder perkutan über die Brustwand direkt in die linke Herzkammer und dann retrograd in die Mitralklappenposition oder durch die Brustwand und den linken Vorhof antegrad in die Mitralklappenposition zu bringen, um den Stent 10 dort zu positionieren und zu verankern.",
+      "deepl": "Another option is to place the valve stent minimally invasively or percutaneously via the chest wall directly into the left ventricle and then retrograde into the mitral valve position or through the chest wall and the left atrium antegrade into the mitral valve position in order to position and anchor the stent there.",
+      "corrected": "Another option is to place the valve stent minimally invasively or percutaneously via the chest wall directly into the left ventricle and then retrogradely into the mitral valve position or via the chest wall and the left atrium antegradely into the mitral valve position in order to position and anchor the stent there.",
+      "changed": true,
+      "qe_score": 0.777,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 45,
+      "source": "Ein weitere Möglichkeit besteht darin, dass der Mitralklappenstent 10 am offenen Brustkorb mit/oder ohne Herz-Lungenmaschine durch den linken Vorhof (antegrad) oder durch die linke Herzkammer (retrograd) in den Mitralklappenannulus implantiert werden kann. [0052] Zur besseren Orientierung werden zunächst in Ejgz_å die anatomischen Verhältnisse im Herzen näher erläutert.",
+      "deepl": "Another possibility is that the mitral valve stent 10 can be implanted in the open chest with or without a heart-lung machine through the left atrium (antegrade) or through the left ventricle (retrograde) into the mitral valve annulus. [0052] For better orientation, the anatomical conditions in the heart are first explained in more detail in Ejgz_å.",
+      "corrected": "Another possibility is that the mitral valve stent 10 can be implanted into the mitral valve annulus in the open chest with or without a heart-lung machine through the left atrium (antegrade) or through the left ventricle (retrograde). [0052] For better orientation, the anatomical conditions in the heart are first explained in more detail in Ejgz_.",
+      "changed": true,
+      "qe_score": 0.7385,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 46,
+      "source": "Die den Stent 10 enthaltende Kartusche 100 wird bei antegradem Einführen durch den linken Vorhof LA eingeführt.",
+      "deepl": "The cartridge 100 containing the stent 10 is inserted antegrade through the left atrium LA.",
+      "corrected": "The cartridge 100 containing the stent 10 is inserted antegradely through the left atrium LA.",
+      "changed": true,
+      "qe_score": 0.6563,
+      "triage": "full_edit",
+      "terms_applied": []
+    },
+    {
+      "id": 47,
+      "source": "Die zu ersetzende Mitralklappe besteht aus dem anterioren Mitralklappensegel AMKS und dem posterioren Mitralklappensegel PMKS, die im linken Ventrikel LV über die Sehnenfäden (Chordae tendineae; CT) mit dem anterioren Pappillarmuskel AP oder mit dem posterioren Papillarmuskel verbunden sind.",
+      "deepl": "The mitral valve to be replaced consists of the anterior mitral valve leaflet AMKS and the posterior mitral valve leaflet PMKS, which are connected to the anterior papillary muscle AP or the posterior papillary muscle in the left ventricle LV via the chordae tendineae (CT).",
+      "corrected": "The mitral valve to be replaced consists of the anterior mitral valve leaflet AMKS and the posterior mitral valve leaflet PMKS, which are connected to the anterior papillary muscle AP or the posterior papillary muscle in the left ventricle LV via the chordae tendinae (CT).",
+      "changed": true,
+      "qe_score": 0.8099,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 48,
+      "source": "Schließlich ist auch die Aortenklappe AK zu erkennen, die bei den herkömmlichen Stents Gefahr läuft, in ihrer Funktion beeinträchtigt zu werden. [0053] Die Länge der Kartusche 100 ist so abgestimmt, dass vor dem Öffnen dieser Kartusche 100 (z.B. bei transatrialem Zugang) die Spitze der Kartusche 100 im Apex des linken Ventrikels zu liegen kommt.",
+      "deepl": "Finally, the aortic valve AK can also be recognized, which runs the risk of being impaired in its function with conventional stents. [0053] The length of the cartridge 100 is adjusted so that the tip of the cartridge 100 comes to rest in the apex of the left ventricle before this cartridge 100 is opened (e.g. for transatrial access).",
+      "corrected": "Finally, the aortic valve AK can also be recognized, which has the risk of being impaired in its function in conventional stents. [0053] The length of the cartridge 100 is adjusted so that the tip of the cartridge 100 comes to rest in the apex of the left ventricle before this cartridge 100 is opened (for example for transatrial access).",
+      "changed": true,
+      "qe_score": 0.7986,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 49,
+      "source": "Wie aus ersichtlich, kommt die Öffnung der Kartusche 100 mit dem Mitralklappenstent 10 dabei so zu liegen, dass beim Öffnen der Kartusche 100 der proximalseitige, ventrikuläre Anteil des Klappenstents 10 kurz unterhalb des anterioren Mitralklappensegels AMKS im Bereich der distalen Cordae tendineae CT liegt. [0054] Dann werden, wie in Eic1Q und Ein—Il g e zeigt, die proximalseitigen Stützbügel 20 langsam ausgefahren, so dass hier ein \\Mderstand am ventrikelwärts-gelegenen Teil der Mitralklappensegel AMKS, PMKS entsteht, wenn der Katheter langsam nach atrial gezogen wird.",
+      "deepl": "As can be seen from , the opening of the cartridge 100 with the mitral valve stent 10 is positioned in such a way that when the cartridge 100 is opened, the proximal-side ventricular portion of the valve stent 10 lies just below the anterior mitral valve leaflet AMKS in the region of the distal cordae tendineae CT. [0054] Then, as shown in Eic1Q and Ein-Il g e , the proximal-side support brackets 20 are slowly extended so that a \\mderstand is created here on the ventricleward part of the mitral valve leaflets AMKS, PMKS when the catheter is slowly pulled atrially.",
+      "corrected": "As can be seen from FIG. 1, the opening of the cartridge 100 with the mitral valve stent 10 is positioned in such a way that, when the cartridge 100 is opened, the proximal-side ventricular portion of the valve stent 10 lies just below the anterior mitral valve leaflet AMKS in the region of the distal cordae tendineae CT. [0054] Then, as shown in Eic1Q and Ein-Il g e, the proximal-side support brackets 20 are slowly extended so that a umderstand is produced here on the ventricle-side portion of the mitral valve leaflets AMKS, PMKS when the catheter is slowly drawn atrial.",
+      "changed": true,
+      "qe_score": 0.69,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 50,
+      "source": "Unter gleichzeitiger Visualisierungs-Kontrolle kann dann z.B. damit begonnen werden, das anteriore Mitralklappensegel AMKS einzurollen.",
+      "deepl": "Under simultaneous visualization control, the anterior mitral valve leaflet AMKS can then be rolled in, for example.",
+      "corrected": "With simultaneous visualization control, the anterior mitral valve leaflet AMKS can then be rolled in, for example.",
+      "changed": true,
+      "qe_score": 0.7442,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 51,
+      "source": "Dies geschieht mittels des wenigstens einen proximalseitigen Stentbügels 20', der die Funktion hat, sich selbst mit dem anterioren Mitralklappensegel AMKS einzurollen und das Segel nach lateral und basal zu verdrängen und/oder einzupacken.",
+      "deepl": "This is achieved by means of the at least one proximal-side stent bar 20', which has the function of rolling itself in with the anterior mitral valve leaflet AMKS and displacing and/or packing the leaflet laterally and basally.",
+      "corrected": "This is achieved by means of the at least one proximal-side stent rod 20 ′ which has the function of rolling in with the anterior mitral valve leaflet AMKS and displacing and/or packing the leaflet laterally and basally.",
+      "changed": true,
+      "qe_score": 0.7442,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 52,
+      "source": "So wird das anteriore Mitraklappensegel AMKS zur Seite gedrängt und eingeklappt. [0055] Erst hiernach würde dann der weitere (mediale und distale Anteil) des Klappenstents 10 (mit der nicht gezeigten integrierten Herzklappe) langsam aus der Kartusche 100 gerollt, so das die Herzklappenprothese im Bereich des alten Annulus zu liegen kommt. [0056] Wie in und gezeigt, dienen die nach distal gelegenen Verankerungselemente 30 dazu, sich im Bereich des Vorhofes LA (supravalvulär, atrial) zu verankern.",
+      "deepl": "Thus, the anterior mitral valve leaflet AMKS is pushed to the side and folded in. [0055] Only after this would the further (medial and distal portion) of the valve stent 10 (with the integrated heart valve not shown) be slowly rolled out of the cartridge 100, so that the heart valve prosthesis comes to rest in the region of the old annulus. [0056] As shown in and , the distally located anchoring elements 30 serve to anchor in the region of the atrium LA (supravalvular, atrial).",
+      "corrected": "Thus, the anterior mitral valve leaflet AMKS is pushed to the side and folded in. [0055] Only after this is the further (medial and distal portion) of the valve stent 10 (with the integrated heart valve not shown) slowly rolled out of the cartridge 100, so that the heart valve prosthesis comes to rest in the region of the old annulus. [0056] As shown in and b, the distally arranged anchoring elements 30 serve to anchor in the region of the atrium LA (supravalvular, atrial).",
+      "changed": true,
+      "qe_score": 0.7333,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 53,
+      "source": "Diese Verankerung wird ebenfalls visualisiert (z.",
+      "deepl": "This anchoring is also visualized (e.g.",
+      "corrected": "This anchoring is also visualized (e.g.",
+      "changed": false,
+      "qe_score": 0.7947,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 54,
+      "source": "Echo, NMR, Fluoroskopie, Computertomographie etc.), damit die exakte Positionierung des Klappenstents 10 erreicht wird. [0057] Eig—14 zeigt noch einmal im Detail, wie der wenigstens eine Stentbügel 20' im entfalteten Zustand des Stents 10 das anteriore Mitralklappensegel AMKS fixiert und einen natürlichen Blutfluss ermöglicht ohne dass dieses Auswirkungen beispielsweise auf die Aortenklappe hat.",
+      "deepl": "echo, NMR, fluoroscopy, computed tomography, etc.) so that the exact positioning of the valve stent 10 is achieved. [0057] Eig-14 shows once again in detail how the at least one stent bar 20' fixes the anterior mitral valve leaflet AMKS in the deployed state of the stent 10 and enables natural blood flow without this having any effect on the aortic valve, for example.",
+      "corrected": "echo, NMR, fluoroscopy, computed tomography, etc.) so that the exact positioning of the valve stent 10 is achieved. [0057] Eig-14 shows once again in detail how the at least one stent rod 20 ′ fixes the anterior mitral valve leaflet AMKS in the deployed state of the stent 10 and enables natural blood flow without this having any effect on the aortic valve, for example.",
+      "changed": true,
+      "qe_score": 0.7882,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 55,
+      "source": "Gleichzeitig bleibt dabei die Funktion der Chordae tendineae CT erhalten.",
+      "deepl": "At the same time, the function of the chordae tendineae CT is preserved.",
+      "corrected": "At the same time, the function of the chordae tendinae CT is retained.",
+      "changed": true,
+      "qe_score": 0.757,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 56,
+      "source": "Dabei kann der Abschnitt, der sich im entfalteten Zustand des Stents 10 spiralartig nach Außen einrollt, ein Teilabschnitt des Stentbügels 20' oder der gesamte Stentbügel 20' sein.",
+      "deepl": "The section that spirals outwards when the stent 10 is deployed can be a partial section of the stent bar 20' or the entire stent bar 20'.",
+      "corrected": "The section which spirals outwards when the stent 10 is deployed can be a partial section of the stent web 20 ′ or the entire stent web 20 ′.",
+      "changed": true,
+      "qe_score": 0.8062,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 57,
+      "source": "Denkbar ist auch, dass es sich bei diesem Abschnitt um den zweiten Abschnitt 20b des Stentbügel 20' eines besonders bevorzugten Ausführungsbeispiels des Stents 10 nach der Erfindung handelt. [0058] Gegenüber den bekannten Lösungen besteht hiermit also die Möglichkeit, dass mindestens ein Segel verdrängt wird und partiell oder komplett eingepackt/eingerollt wird.",
+      "deepl": "It is also conceivable that this section is the second section 20b of the stent hoop 20' of a particularly preferred embodiment of the stent 10 according to the invention. [0058] Compared to the known solutions, there is thus the possibility that at least one sail is displaced and partially or completely packed/rolled in.",
+      "corrected": "It is also conceivable that this section is the second section 20 b of the stent hoop 20 ′ of a particularly preferred embodiment of the stent 10 according to the invention. [0058] Compared to the known solutions, there is thus the possibility that at least one sail is displaced and partially or completely packed/rolled in.",
+      "changed": true,
+      "qe_score": 0.7583,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 58,
+      "source": "Dieses erfolgt über den wenigstens einen Stützbügel 20' (siehe Elg=14), der sich mit dem Klappensegel zusammen einrollt.",
+      "deepl": "This takes place via at least one support bracket 20' (see Elg=14), which rolls up together with the flap sail.",
+      "corrected": "This takes place via at least one support bracket 20 ′ (see Elg=14), which rolls up together with the flap sail.",
+      "changed": true,
+      "qe_score": 0.777,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 59,
+      "source": "Sollte das einmal nicht funktionieren und der Klappenstent 10 nicht exakt zu positionieren sein, muss dieser wieder entfaltet und in die Kartusche 100 zurückgezogen werden und erneut positioniert werden. [0059] Um dieses Verdrängen und Einklappen einzelner Klappensegel zu erreichen, kann es sein, dass mehr als ein Stentbügel 20' vonnöten ist.",
+      "deepl": "If this does not work and the flap stent 10 cannot be positioned exactly, it must be deployed again and retracted into the cartridge 100 and repositioned. [0059] More than one stent bar 20' may be required to achieve this displacement and retraction of individual flap sails.",
+      "corrected": "If this does not work and the flap stent 10 cannot be precisely positioned, it must be deployed again and retracted into the cartridge 100 and repositioned. [0059] More than one stent rod 20 ′ may be required in order to achieve this displacement and retraction of individual flap sails.",
+      "changed": true,
+      "qe_score": 0.7813,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 60,
+      "source": "Gleichzeitig gibt es auch die Möglichkeit, unterschiedliche Betätigungselemente für ein Implantations-Manöver einzusetzen, wie z.B.",
+      "deepl": "At the same time, it is also possible to use different actuation elements for an implantation maneuver, such as",
+      "corrected": "At the same time, it is also possible to use different actuating elements for an implantation maneuver, for example",
+      "changed": true,
+      "qe_score": 0.8083,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 61,
+      "source": "Bowdenzüge, flexible Katheter, Ösen oder andere Materialien, die sich mit oder gegeneinander bewegen, so dass sich einzelne oder in Gruppen orientierte Stützbügel 20' zeitlich voneinander abgesetzt entfalten können, bzw. einrollen/einklappen können.",
+      "deepl": "Bowden cables, flexible catheters, eyelets or other materials that move with or against each other, so that individual or group-oriented support brackets 20' can unfold at different times from each other or can roll up/fold in.",
+      "corrected": "Bowden cables, flexible catheters, eyelets or other materials which move with or against one another, so that individual or group-oriented support brackets 20 ′ can unfold at different times from one another or can roll up/fold in.",
+      "changed": true,
+      "qe_score": 0.7121,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 62,
+      "source": "Dieses voneinander unabhängige Entwickeln/Wirken von Teilelementen des Stents 10 ist nötig, um eine genaue Positionierung, Verankerung und lokales Einwickeln des Klappensegel AMKS zu erreichen. [0060] Um eine guten Durchfluss über der neuen Mitralklappe und dem linksventrikulären Ausflusstrakt zu erhalten, muss die alte Klappe mittels der sich proximalseitigen Stentbügel eingerollt und darüber hinaus an den Mitralklappenannulus herangehoben werden.",
+      "deepl": "This independent development/action of partial elements of the stent 10 is necessary to achieve precise positioning, anchoring and local wrapping of the valve leaflet AMKS. [0060] In order to obtain a good flow over the new mitral valve and the left ventricular outflow tract, the old valve must be rolled up by means of the proximal stent struts and also lifted up to the mitral valve annulus.",
+      "corrected": "This independent development/action of partial elements of the stent 10 is necessary in order to achieve precise positioning, anchoring and local wrapping of the valve leaflet AMKS. [0060] In order to obtain a good flow through the new mitral valve and the left ventricular outflow tract, the old valve must be rolled up by means of the proximal stent struts and also lifted up to the mitral valve annulus.",
+      "changed": true,
+      "qe_score": 0.7701,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 63,
+      "source": "Dies geschieht dadurch, dass sich nach dem gesamten Ausfahren des Mitralklappenstents 10 die atrialen und ventrikulären Anteile 20, 30 des Stents 10 aufeinander zu bewegen und damit die Sehenfäden CT wieder durchspannen und die Mitralklappensegel AMKS, PMKS zum Annulus bewegen. [0061] Der Blutstrom aus dem linken Vorhof via linker Herzkammer in die Aorta ascendens ist so frei und ungehindert möglich. [0062] Zur besseren Fixation hat z.B. der Mitralklappenstent einen größeren Winkel als 90 0 zwischen den atrialen (supravalvulären, 30) und den medialen (in der Mitte liegenden, zwischen 20 und 30) Stentstreben.",
+      "deepl": "This occurs because after the mitral valve stent 10 has been fully extended, the atrial and ventricular parts 20, 30 of the stent 10 move towards each other, thus stretching the sutures CT again and moving the mitral valve leaflets AMKS, PMKS towards the annulus. [0061] The blood flow from the left atrium via the left ventricle into the ascending aorta is thus free and unhindered. [0062] For better fixation, the mitral valve stent, for example, has a greater angle than 90 0 between the atrial (supravalvular, 30) and the medial (in the middle, between 20 and 30) stent struts.",
+      "corrected": "This occurs because, after the mitral valve stent 10 has been fully extended, the atrial and ventricular parts 20, 30 of the stent 10 move towards each other, whereby the sutures CT are extended again and the mitral valve leaflets AMKS, PMKS are moved in the direction of the annulus. [0061] The blood flow from the left atrium via the left ventricle into the ascending aorta is thus free and unhindered. [0062] For better fixing, the mitral valve stent has, for example, a greater angle than 900 between the atrial (supravalvular, 30) and the medial (in the middle, between 20 and 30) stent struts.",
+      "changed": true,
+      "qe_score": 0.7277,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 64,
+      "source": "Diese Aufweitung der atrialen zu den annulären und ventrikulären 20 Stentanteilen fördert die Fixation des Klappenstents in dem Neo-Annulus und verhindert seine Migration.",
+      "deepl": "This widening of the atrial to the annular and ventricular stent parts promotes fixation of the valve stent in the neo-annulus and prevents its migration.",
+      "corrected": "This widening of the atrial to the annular and ventricular stent parts promotes the fixation of the valve stent in the neoannulus and prevents its migration.",
+      "changed": true,
+      "qe_score": 0.7494,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 65,
+      "source": "Patentansprüche 1 .",
+      "deepl": "Claims 1 .",
+      "corrected": "Claims 1 .",
+      "changed": false,
+      "qe_score": 0.5839,
+      "triage": "full_edit",
+      "terms_applied": []
+    },
+    {
+      "id": 66,
+      "source": "Faltbarer Mitralklappenstent (10) mit einer Mehrzahl von distal angeordneten Stentbügeln (20) und einer Mehrzahl von proximal angeordneten Verankerungselementen (30), dadurch gekennzeichnet, dass der Mitralklappenstent (10) wenigstens einen, einen sich im entfalteten Zustand des Mitralklappenstents (10) spiralartig nach Außen einrollenden Abschnitt ausbildenden Stentbügel (20') aufweist.",
+      "deepl": "Foldable mitral valve stent (10) with a plurality of distally arranged stent hoops (20) and a plurality of proximally arranged anchoring elements (30), characterized in that the mitral valve stent (10) has at least one stent hoop (20') forming a section which spirals outwards in the unfolded state of the mitral valve stent (10).",
+      "corrected": "Foldable mitral valve stent (10) with a plurality of distally arranged stent hoop (20) and a plurality of proximally arranged anchoring elements (30), characterized in that the mitral valve stent (10) has at least one stent hoop (20 ′) which forms a section which spirals outwards in the unfolded state of the mitral valve stent (10).",
+      "changed": true,
+      "qe_score": 0.7991,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 67,
+      "source": "Mitralklappenstent (10) nach Anspruch 1 , dadurch gekennzeichnet, dass wenigstens ein Stentbügel (20) einen proximalen Abschnitt (20a) und einen distalen Abschnitt (20b) aufweist, wobei der proximale Abschnitt (20a) und der distale Abschnitt (20b) im entfalteten Zustand einen Winkel kleiner als 1 80 0 einnehmen.",
+      "deepl": "Mitral valve stent (10) according to claim 1 , characterized in that at least one stent bar (20) has a proximal section (20a) and a distal section (20b), the proximal section (20a) and the distal section (20b) assuming an angle of less than 1 80 0 in the deployed state.",
+      "corrected": "Mitral valve stent (10) according to claim 1, characterized in that at least one stent web (20) has a proximal portion (20a) and a distal portion (20b), wherein the proximal portion (20a) and the distal portion (20b) assume an angle of less than 180° in the deployed state.",
+      "changed": true,
+      "qe_score": 0.8013,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 68,
+      "source": "Mitralklappenstent (10) nach einem der vorhergehenden Ansprüche, dadurch gekennzeichnet, dass ein ein Verankerungselement (30) und einen Stentbügel (20) verbindendes Federelement (40) vorgesehen ist.",
+      "deepl": "Mitral valve stent (10) according to one of the preceding claims, characterized in that a spring element (40) connecting an anchoring element (30) and a stent bar (20) is provided.",
+      "corrected": "Mitral valve stent (10) according to claim 1, characterized in that a spring element (40) connecting an anchoring element (30) and a stent rod (20) is provided.",
+      "changed": true,
+      "qe_score": 0.8025,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 69,
+      "source": "Mitralklappenstent (10) nach einem der vorhergehenden Ansprüche, dadurch gekennzeichnet, dass ein Federelement (50) vorgesehen ist, das den ersten Abschnitt (20a) und den zweiten Abschnitt (20b) des Stentbügels (20) verbindet.",
+      "deepl": "Mitral valve stent (10) according to one of the preceding claims, characterized in that a spring element (50) is provided which connects the first section (20a) and the second section (20b) of the stent bar (20).",
+      "corrected": "Mitral valve stent (10) according to claim 1, characterized in that a spring element (50) is provided which connects the first section (20 a) and the second section (20 b) of the stent rod (20).",
+      "changed": true,
+      "qe_score": 0.8151,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 70,
+      "source": "Mitralklappenstent (10) nach einem der vorhergehenden Ansprüche, dadurch gekennzeichnet, dass der Mitralklappenstent (10) entlang seiner Längsachse selbstexpandierend zusammenfaltbar ist.",
+      "deepl": "Mitral valve stent (10) according to one of the preceding claims, characterized in that the mitral valve stent (10) is collapsible along its longitudinal axis in a self-expanding manner.",
+      "corrected": "Mitral valve stent (10) according to claim 1, characterized in that the mitral valve stent (10) is collapsible along its longitudinal axis in a self-expanding manner.",
+      "changed": true,
+      "qe_score": 0.7877,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 71,
+      "source": "Mitralklappenstent (10) nach einem der vorhergehenden Ansprüche, dadurch gekennzeichnet, dass ein Stentbügel (20) wenigstens ein Befestigungselement (60, 70) zum Verbinden des Mitralklappenstents (10) mit Herzmuskelgewebe oder einer zwischen der Herzklappe und dem MitralklappenStent (10) angeordneten Abdichtungsmembran aufweist.",
+      "deepl": "Mitral valve stent (10) according to one of the preceding claims, characterized in that a stent bar (20) has at least one fastening element (60, 70) for connecting the mitral valve stent (10) to heart muscle tissue or to a sealing membrane arranged between the heart valve and the mitral valve stent (10).",
+      "corrected": "Mitral valve stent (10) according to claim 1, characterized in that a stent rod (20) has at least one fastening element (60, 70) for connecting the mitral valve stent (10) to heart muscle tissue or to a sealing membrane arranged between the heart valve and the mitral valve stent (10).",
+      "changed": true,
+      "qe_score": 0.811,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 72,
+      "source": "Mitralklappenstent (10) nach einem der vorhergehenden Ansprüche, dadurch gekennzeichnet, dass wenigstens der einen sich spiralartig nach Außen einrollenden Abschnitt ausbildende Stentbügel (20') aus einer Formgedächtnislegierung besteht.",
+      "deepl": "Mitral valve stent (10) according to one of the preceding claims, characterized in that at least the stent hoop (20') forming a section that rolls in spirally towards the outside consists of a shape memory alloy.",
+      "corrected": "Mitral valve stent (10) according to any one of the preceding claims, characterized in that at least the stent hoop (20 ′) forming a section which rolls spirally towards the outside consists of a shape memory alloy.",
+      "changed": true,
+      "qe_score": 0.756,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 73,
+      "source": "Mitralklappenstent (10) nach Anspruch 7, dadurch gekennzeichnet, dass die Formgedächtnislegierung NiTiNol ist.",
+      "deepl": "Mitral valve stent (10) according to claim 7, characterized in that the shape memory alloy is NiTiNol.",
+      "corrected": "Mitral valve stent (10) according to claim 7, wherein the shape memory alloy is NiTiNol.",
+      "changed": true,
+      "qe_score": 0.7883,
+      "triage": "review",
+      "terms_applied": []
+    },
+    {
+      "id": 74,
+      "source": "Es folgen 9 Blatt Zeichnungen Anhangende Zeichnungen FIG. 1 20b FIG. 2\tFIG. 3 40 30 20a 20b2070 FIG. 4\tFIG. 5\tFIG. 6 FIG. 7 100 PMKS FIG. 8 100 FIG. 9 1 0/1 5 100 FIG. 10 1 1 /1 5 B3 100 30 FIG. 12 1 3/1 5 B3 100 FIG. 13 1 4/1 5 ВЗ ст 20 FIG. 14",
+      "deepl": "The following are 9 sheets of drawings Appended drawings FIG. 1 20b FIG. 2 FIG. 3 40 30 20a 20b2070 FIG. 4 FIG. 5 FIG. 6 FIG. 7 100 PMKS FIG. 8 100 FIG. 9 1 0/1 5 100 FIG. 10 1 1 /1 5 B3 100 30 FIG. 12 1 3/1 5 B3 100 FIG. 13 1 4/1 5 ВЗ ст 20 FIG. 14",
+      "corrected": "In the following, 9 sheets of drawings are attached drawings FIG. 1 20 b FIG. 2 FIG. 3 40 30 20 a 20 b 2070 FIG. 4 FIG. 5 FIG. 6 FIG. 7 100 PMKS FIG. 8 100 FIG. 9 1 0/1 5 100 FIG. 10 1 1 /1 5 B3 100 30 FIG. 12 1 3/1 5 B3 100 FIG. 13 1 4/1 5 ст 20 FIG. 14",
+      "changed": true,
+      "qe_score": 0.6479,
+      "triage": "full_edit",
+      "terms_applied": []
+    }
+  ]
+}
